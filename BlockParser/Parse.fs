@@ -46,7 +46,7 @@ module Parse=
         else
             List.map2 columnMatch rowExpr row 
             
-    let block expr index blocks =
+    let block expr index blocks : ((Result list*string) list)=
 
         let rec bmatch idx eidx : (Result list*string) list=
             let erow = expr |> List.tryItem eidx
@@ -71,7 +71,18 @@ module Parse=
                     h @ r
                 | None, None -> []
                 | Some (_,_,n), None -> [[Missing], n]
-                | None, Some r -> [(r |> List.map UnRecognized), ""]
+                | None, Some r -> []
         
         bmatch 0 0
 
+    let rowsOf v = 
+        let valuesOf v' =
+            v'
+            |> List.map Result.value
+            |> List.choose id
+            |> List.map Token.value
+            |> List.choose id
+
+        v |> List.map (
+             fun (row,name)-> (valuesOf row) , name
+             )

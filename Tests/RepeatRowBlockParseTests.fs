@@ -9,18 +9,6 @@ module RepeatRowBlockParseTests=
 
 
     open Parse
-    let valuesOfExpression v = 
-        let valuesOf v' =
-            v'
-            |> List.map Result.value
-            |> List.choose id
-            |> List.map Token.value
-            |> List.choose id
-
-        v
-            |> List.map (
-                 fun (row,name)-> (valuesOf row) , name
-                 )
 
     let block_expression_with_repeat = 
         [
@@ -37,7 +25,7 @@ module RepeatRowBlockParseTests=
                 ["subtitle_1.1"; ""; "";"";"";""; ""]
                 ["";"th1"; ""; "th2";"";"th3";""]
             ]
-        (valuesOfExpression (block block_expression_with_repeat 0 a_block)) |> should equal [
+        (rowsOf (block block_expression_with_repeat 0 a_block)) |> should equal [
                 (["Header1";"Something else"; "Page:1"], "header")
                 (["subtitle_1.1"],"subtitles")
                 ([],"header_row")]
@@ -51,7 +39,7 @@ module RepeatRowBlockParseTests=
                 ["subtitle_1.2"; ""; "";"";"";""; ""]
                 ["";"th1"; ""; "th2";"";"th3";""]
             ]
-        (valuesOfExpression (block block_expression_with_repeat 0 a_block)) |> should equal [
+        (rowsOf (block block_expression_with_repeat 0 a_block)) |> should equal [
             (["Header1";"Something else"; "Page:1"],"header")
             (["subtitle_1.1"],"subtitles")
             (["subtitle_1.2"],"subtitles")
