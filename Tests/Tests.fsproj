@@ -55,6 +55,7 @@
     <Compile Include="RowParseTests.fs" />
     <Compile Include="SampleBlockMatchTests.fs" />
     <Compile Include="RepeatRowBlockMatchTests.fs" />
+    <Compile Include="RepeatRowBlockParseTests.fs" />
     <Compile Include="Library1.fs" />
     <None Include="Script.fsx" />
     <Content Include="paket.references" />

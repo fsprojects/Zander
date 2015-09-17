@@ -16,6 +16,7 @@ module Parse=
         | Ok of Token
         | WrongConstant of (string * string)
         | UnRecognized of string
+        | Missing of string
         with
             static member isOk result=
                 match result with
@@ -27,7 +28,7 @@ module Parse=
                     | _ -> None
 
 
-    let expression rowExpr row=
+    let expression rowExpr row : Result list=
         let columnMatch columnExpr column=
 
             match columnExpr, column with
@@ -45,3 +46,27 @@ module Parse=
         else
             List.map2 columnMatch rowExpr row 
             
+    let block expr index blocks =
+
+        let rec bmatch idx eidx=
+            let erow = expr |> List.tryItem eidx
+            let row = blocks |> List.tryItem (index + idx)
+
+            let rest_of c e n : Result list=
+                let r = bmatch (idx+1) eidx 
+                if NumberOf.isRepeat c && r |> List.forall Result.isOk then
+                    r
+                else
+                    bmatch (idx+1) (eidx+1)
+
+            match erow, row with
+                | Some (c,e,n), Some r -> 
+                    let h = expression e r 
+                    let r = rest_of c e n
+                    h @ r
+                | None, None -> []
+                | Some (_,_,n), None -> [Missing n]
+                | _, Some r -> r |> List.map UnRecognized
+        
+        bmatch 0 0
+
