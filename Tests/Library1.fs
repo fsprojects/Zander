@@ -60,6 +60,8 @@ module Class1 =
                                 ["1.2.1"; "1.2.2";"1.2.3"]
                           ]
                          ])
+(*
     [<Test>] 
     let ``Can parse simple section`` ()=
            (spec first_section) |> Seq.head |> should equal expected
+           *)

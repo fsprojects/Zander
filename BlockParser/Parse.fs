@@ -6,12 +6,27 @@ module Parse=
         | Value of string
         | Constant
         | Empty
+        with
+            static member value t=
+                match t with
+                    | Value v-> Some v
+                    | _ -> None
 
     type Result=
         | Ok of Token
         | WrongConstant of (string * string)
         | UnRecognized of string
-    
+        with
+            static member isOk result=
+                match result with
+                    | Ok v -> true
+                    | _ -> false
+            static member value result=
+                match result with
+                    | Ok v -> Some v
+                    | _ -> None
+
+
     let expression rowExpr row=
         let columnMatch columnExpr column=
 
