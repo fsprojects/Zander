@@ -5,7 +5,7 @@ open FsUnit
 open BlockParser
 
 [<TestFixture>] 
-module BlockMatchTests=
+module SampleBlockMatchTests=
 
     let block_expression = [
                     Single, ([E; E; V; E; E; V; V]), "header"
