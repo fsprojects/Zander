@@ -1,20 +1,15 @@
 ﻿namespace BlockParser
 
 module Match = 
-
+    
     let expression rowExpr row=
-        let columnMatch columnExpr column=
-            match columnExpr, column with
-                | E, "" -> true
-                | C v1,v2 -> v1 = v2
-                | V _,_ -> true
-                | _,_ -> false 
+        let is_ok v=
+            match v with 
+                | Parse.Result.Ok _ -> true
+                | _ -> false
 
-        if (List.length rowExpr) <> (List.length row) then
-            false
-        else
-            let r = List.map2 columnMatch rowExpr row 
-            r |> List.forall id
+        Parse.expression rowExpr row
+            |> List.forall is_ok
 
     let block expr index blocks =
         let repeat_expression c= // can this be done better?
