@@ -16,7 +16,7 @@ module Parse=
         | Ok of Token
         | WrongConstant of (string * string)
         | UnRecognized of string
-        | Missing of string
+        | Missing 
         with
             static member isOk result=
                 match result with
@@ -48,25 +48,30 @@ module Parse=
             
     let block expr index blocks =
 
-        let rec bmatch idx eidx=
+        let rec bmatch idx eidx : (Result list*string) list=
             let erow = expr |> List.tryItem eidx
             let row = blocks |> List.tryItem (index + idx)
 
-            let rest_of c e n : Result list=
+            let is_ok (r : (Result list*string) list)=
+                r |> List.map fst
+                  |> List.collect id
+                  |> List.forall Result.isOk
+
+            let rest_of c e n : (Result list*string) list=
                 let r = bmatch (idx+1) eidx 
-                if NumberOf.isRepeat c && r |> List.forall Result.isOk then
+                if NumberOf.isRepeat c && is_ok r then
                     r
                 else
                     bmatch (idx+1) (eidx+1)
 
             match erow, row with
                 | Some (c,e,n), Some r -> 
-                    let h = expression e r 
+                    let h = [((expression e r), n)]
                     let r = rest_of c e n
                     h @ r
                 | None, None -> []
-                | Some (_,_,n), None -> [Missing n]
-                | _, Some r -> r |> List.map UnRecognized
+                | Some (_,_,n), None -> [[Missing], n]
+                | None, Some r -> [(r |> List.map UnRecognized), ""]
         
         bmatch 0 0
 

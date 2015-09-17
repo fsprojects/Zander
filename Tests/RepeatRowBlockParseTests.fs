@@ -11,6 +11,8 @@ module RepeatRowBlockParseTests=
     open Parse
     let valuesOfExpression v = 
         v
+            |> List.map fst
+            |> List.collect id
             |> List.map Result.value
             |> List.choose id
             |> List.map Token.value

@@ -8,4 +8,6 @@ module Match =
 
     let block expr index blocks =
         Parse.block expr index blocks
+            |> List.map fst
+            |> List.collect id
             |> List.forall Parse.Result.isOk
