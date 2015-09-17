@@ -10,13 +10,17 @@ module RepeatRowBlockParseTests=
 
     open Parse
     let valuesOfExpression v = 
-        v
-            |> List.map fst
-            |> List.collect id
+        let valuesOf v' =
+            v'
             |> List.map Result.value
             |> List.choose id
             |> List.map Token.value
             |> List.choose id
+
+        v
+            |> List.map (
+                 fun (row,name)-> (valuesOf row) , name
+                 )
 
     let block_expression_with_repeat = 
         [
@@ -34,8 +38,9 @@ module RepeatRowBlockParseTests=
                 ["";"th1"; ""; "th2";"";"th3";""]
             ]
         (valuesOfExpression (block block_expression_with_repeat 0 a_block)) |> should equal [
-            "Header1";"Something else"; "Page:1";
-            "subtitle_1.1"]
+                (["Header1";"Something else"; "Page:1"], "header")
+                (["subtitle_1.1"],"subtitles")
+                ([],"header_row")]
 
     [<Test>] 
     let ``Should match with repeated subtitles`` ()=
@@ -47,6 +52,8 @@ module RepeatRowBlockParseTests=
                 ["";"th1"; ""; "th2";"";"th3";""]
             ]
         (valuesOfExpression (block block_expression_with_repeat 0 a_block)) |> should equal [
-            "Header1";"Something else"; "Page:1";
-            "subtitle_1.1";"subtitle_1.2"]
+            (["Header1";"Something else"; "Page:1"],"header")
+            (["subtitle_1.1"],"subtitles")
+            (["subtitle_1.2"],"subtitles")
+            ([],"header_row")]
 
