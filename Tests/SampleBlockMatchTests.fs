@@ -8,11 +8,11 @@ open Zander.Internal
 module SampleBlockMatchTests=
 
     let block_expression = [
-                    Single, ([E; E; V; E; E; V; V]), "header"
-                    Single, ([V; E; E; E; E; E; E]), "title"
-                    Repeat, ([V; E; E; E; E; E; E]), "subtitles"
+                    Single, ([E; E; V ""; E; E; V ""; V""]), "header"
+                    Single, ([V ""; E; E; E; E; E; E]), "title"
+                    Repeat, ([V ""; E; E; E; E; E; E]), "subtitles"
                     Single, ([E; C "th1"; E; C "th2"; E; C "th3"; E]), "header_row"
-                    Repeat, ([E; V; E; V; E; V; E]), "data_rows"
+                    Repeat, ([E; V ""; E; V ""; E; V ""; E]), "data_rows"
                 ]
 
     open Match

@@ -3,7 +3,7 @@
 type BlockType=
     | E // empty constant
     | C of string // constant
-    | V // variable
+    | V of string // variable with name
 
 
 type NumberOf=

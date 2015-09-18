@@ -2,6 +2,7 @@
 open NUnit.Framework
 open FsUnit
 open Zander.Internal
+open TestHelpers
 
 [<TestFixture>] 
 module RowMatchTests = 
@@ -26,12 +27,12 @@ module RowMatchTests =
 
     [<Test>] 
     let ``Single column should match variable`` ()=
-        expression [V] ["2"] |> should equal true
+        expression [V ""] ["2"] |> should equal true
 
     [<Test>] 
     let ``Single empty column should match variable`` ()=
-        expression [V] [""] |> should equal true
+        expression [V ""] [""] |> should equal true
 
     [<Test>] 
     let ``Should match more complicated example`` ()=
-        expression [E; C "1"; V ; C "2" ] [""; "1"; "X"; "2" ] |> should equal true
+        expression [E; C "1"; V ""; C "2" ] [""; "1"; "X"; "2" ] |> should equal true

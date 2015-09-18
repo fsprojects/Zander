@@ -19,11 +19,11 @@ module ComplexBlockTest =
     ]
 
     let specification = [
-                        Single, ([E; E; V; E; E; V; V]), "header"
-                        Single, ([V; E; E; E; E; E; E]), "title"
-                        Repeat, ([V; E; E; E; E; E; E]), "subtitles"
+                        Single, ([E; E; V ""; E; E; V ""; V ""]), "header"
+                        Single, ([V ""; E; E; E; E; E; E]), "title"
+                        Repeat, ([V ""; E; E; E; E; E; E]), "subtitles"
                         Single, ([E; C "th1"; E; C "th2"; E; C "th3"; E]), "header_row"
-                        Repeat, ([E; V; E; V; E; V; E]), "data_rows"
+                        Repeat, ([E; V ""; E; V ""; E; V ""; E]), "data_rows"
                     ]    
 
     let expected =  [(["Header1";"Something else"; "Page:1"], "header")

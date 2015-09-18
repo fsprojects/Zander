@@ -10,7 +10,7 @@ module Api=
             let trimmed = v.Trim([|' '|])
             match trimmed .ToCharArray() |> Array.toList with
                 | ['_'] -> E
-                | '@'::_ -> V
+                | '@'::_ -> V(trimmed.Substring(1))
                 | _ -> C(trimmed )
 
         let row_regex = new Regex(@"

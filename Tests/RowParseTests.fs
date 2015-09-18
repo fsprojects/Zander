@@ -2,6 +2,7 @@
 open NUnit.Framework
 open FsUnit
 open Zander.Internal
+open TestHelpers
 
 [<TestFixture>] 
 module RowParseTests = 
@@ -10,8 +11,7 @@ module RowParseTests =
     let valuesOfExpression v = 
         v
             |> List.map Result.value
-            |> List.choose id
-            |> List.map Token.value
+            |> List.map Token.tryValue
             |> List.choose id
 
     [<Test>] 
@@ -24,12 +24,12 @@ module RowParseTests =
 
     [<Test>] 
     let ``Single column should match variable`` ()=
-        valuesOfExpression (expression [V] ["2"]) |> should equal ["2"]
+        valuesOfExpression (expression [V ""] ["2"]) |> should equal ["2"]
 
     [<Test>] 
     let ``Single empty column should match variable`` ()=
-        valuesOfExpression ( expression [V] [""]) |> should equal [""]
+        valuesOfExpression ( expression [V ""] [""]) |> should equal [""]
 
     [<Test>] 
     let ``Should match more complicated example`` ()=
-        valuesOfExpression ( expression [E; C "1"; V ; C "2" ] [""; "1"; "X"; "2" ] ) |> should equal ["X"]
+        valuesOfExpression ( expression [E; C "1"; V "" ; C "2" ] [""; "1"; "X"; "2" ] ) |> should equal ["X"]

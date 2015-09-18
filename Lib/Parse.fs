@@ -3,14 +3,18 @@ open System
 
 module Parse=
     type Token=
-        | Value of string
-        | Constant
+        | Value of string * string
+        | Constant of string
         | Empty
         with
-            static member value t=
+            static member tryValue t=
                 match t with
-                    | Value v-> Some v
+                    | Value (name,v) -> Some v
                     | _ -> None
+            static member isValue v=
+                match v with
+                    | Value _ -> true
+                    | _ -> false
 
     type Result=
         | Ok of Token
@@ -22,11 +26,14 @@ module Parse=
                 match result with
                     | Ok v -> true
                     | _ -> false
-            static member value result=
+            static member tryValue result=
                 match result with
                     | Ok v -> Some v
                     | _ -> None
-
+            static member value result=
+                match result with
+                    | Ok v -> v
+                    | _ -> failwithf "Not ok result %s!" (result.ToString())
 
     let expression rowExpr row : Result list=
         let columnMatch columnExpr column=
@@ -35,10 +42,10 @@ module Parse=
                 | E, "" -> Ok( Empty)
                 | C v1,v2 -> 
                     if v1=v2 then 
-                        Ok( Constant )
+                        Ok( Constant v1 )
                     else
                         WrongConstant (v1, v2)
-                | V , v -> Ok( Value v )
+                | V n, v -> Ok( Value (n,v) )
                 | _, v-> UnRecognized v
 
         if (List.length rowExpr) <> (List.length row) then
@@ -78,11 +85,12 @@ module Parse=
     let rowsOf v = 
         let valuesOf v' =
             v'
-            |> List.map Result.value
+            |> List.map Result.tryValue
             |> List.choose id
-            |> List.map Token.value
+            |> List.map Token.tryValue
             |> List.choose id
 
         v |> List.map (
              fun (row,name)-> (valuesOf row) , name
              )
+

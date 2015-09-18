@@ -3,16 +3,17 @@ open NUnit.Framework
 open FsUnit
 open Zander
 open Zander.Internal
+open TestHelpers
 
 [<TestFixture>] 
 module BuilderTests = 
 
     let builder = new Builder()
     let first_expression = [
-                        Single, ([E; V]), "header"
-                        Repeat, ([V; E]), "data_rows"
+                        Single, ([E; V ""]), "header"
+                        Repeat, ([V ""; E]), "data_rows"
                     ]
-    let second_expression = [Repeat, ([E; V]), "data_rows2" ]
+    let second_expression = [Repeat, ([E; V ""]), "data_rows2" ]
 
     let spec input= 
            builder
@@ -24,15 +25,15 @@ module BuilderTests =
 
     let expected_first_part = 
         {Name = "fst" ; Rows = [|
-                                 {Name= "header"; Values= [|"H"|]}
-                                 {Name="data_rows";Values= [|"D1"|]}
-                                 {Name="data_rows";Values= [|"D2"|]}
+                                 {Name= "header"; Values= [| kv "" "H"|]}
+                                 {Name="data_rows";Values= [|kv "" "D1"|]}
+                                 {Name="data_rows";Values= [|kv "" "D2"|]}
                                |]
                     }
         
     let expected_second_part =  
         { Name = "snd"; Rows= [|
-                                {Name= "data_rows2"; Values= [|"D3"|]}
+                                {Name= "data_rows2"; Values= [|kv "" "D3"|]}
                                |] }
 
     [<Test>] 

@@ -1,13 +1,15 @@
 ﻿namespace Zander
 open Zander.Internal
+open System.Collections.Generic
 
 type ParsedRow = {
         Name: string
-        Values: string[]
+        Values: KeyValuePair<string,string>[]
     }
     with
         override self.ToString()=
-                sprintf "%s=%s" self.Name (String.concat "," self.Values )
+            let kvs = self.Values |> Array.map (fun kv-> sprintf "%s : %s" kv.Key kv.Value)
+            sprintf "%s=%s" self.Name (String.concat "," kvs )
 
 type ParsedBlock={
         Name: string
@@ -24,6 +26,21 @@ type ParsedBlock={
 
 type Builder(array : (string *( (NumberOf* BlockType list * string ) list)) list)=
     let array = array
+    let rowsOf v = 
+        let to_kv value : KeyValuePair<string,string>=
+            match value with
+               | Parse.Value (n,v) -> new KeyValuePair<string,string>(n,v)
+               | _ -> failwith "!"
+        // todo: fix this!
+        let valuesOf v' =
+            v'
+            |> List.map Parse.Result.value
+            |> List.filter Parse.Token.isValue
+            |> List.map to_kv
+
+        v |> List.map (
+             fun (row,name)-> (valuesOf row) , name
+             )
 
     member this.RawBlock(x : string*( (NumberOf* BlockType list * string) list )) = 
         new Builder(array @ [ x ])
@@ -37,7 +54,7 @@ type Builder(array : (string *( (NumberOf* BlockType list * string ) list)) list
                    |> Array.toList
 
         let to_rows (parsed: (Parse.Result list*string) list) =
-            parsed |> Parse.rowsOf
+            parsed |> rowsOf
                    |> List.map (fun next -> { Name= (snd next); Values= (fst next |> List.toArray) } ) 
                    |> List.toArray
 
