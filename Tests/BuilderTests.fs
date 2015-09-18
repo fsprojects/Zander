@@ -17,34 +17,63 @@ module BuilderTests =
                 if index >= List.length blocks then
                     []
                 else
-                    let next =  array |> List.find (fun sp-> (Match.block sp index blocks ) )
-                    let parsed = Parse.block next index blocks
-                    let nextIndex = parsed |> List.length
-                    [ parsed ] @ (parse nextIndex) 
+                    let maybeNext =  array |> List.tryFind (fun sp-> (Match.block sp index blocks ) )
+                    match maybeNext with
+                        | Some next -> 
+                            let parsed = Parse.block next index blocks
+                            let nextIndex = parsed |> List.length
+                            [ parsed ] @ (parse nextIndex) 
+                        | None -> 
+                            (failwithf "could not find expression block for index %i" index)
+
             parse 0
 
     let builder = new Builder()
+    let first_expression = [
+                        Single, ([E; V]), "header"
+                        Repeat, ([V; E]), "data_rows"
+                    ]
+    let second_expression = [Repeat, ([E; V]), "data_rows2" ]
 
     let spec input= 
            builder
-                .Block([Single, ([E; V]), "header"
-                        Repeat, ([V; E]), "data_rows"
-                    ]).Block([Repeat, ([E; V]), "data_rows2" ]).Parse( input )
-     
+                .Block(first_expression).Block(second_expression).Parse( input )
+    let sections = [["";"H"];["D1";""];["D2";""];["";"D3"]]
+
+    let expected_first_part = 
+        [
+          (["H"],"header")
+          (["D1"],"data_rows")
+          (["D2"],"data_rows")
+        ]
+    let expected_second_part =  
+           [
+            (["D3"],"data_rows2")
+           ]
+
+    [<Test>] 
+    let ``Can parse first part`` ()=
+        ( Match.block first_expression 0 sections ) |> should equal true
+
+        ( Parse.block first_expression 0 sections ) 
+                 |> List.length
+                 |> should equal 3
+
+    [<Test>] 
+    let ``Cant parse second part with first expression`` ()=
+        ( Match.block first_expression 3 sections ) |> should equal false
+
+    [<Test>] 
+    let ``Can parse second part with second expression`` ()=
+        ( Match.block second_expression 3 sections ) |> should equal true
+
 
     [<Test>] 
     let ``Can parse complex example`` ()=
-        let sections = [["";"H"];["D1";""];["D2";""];["";"D3"]]
         let expected =  
            [
-               [
-                (["H"],"header")
-                (["D1"],"data_rows")
-                (["D2"],"data_rows")
-               ]
-               [
-                (["D3"],"data_rows2")
-               ]
+               expected_first_part
+               expected_second_part
            ]
         ( (spec sections) |> List.map Parse.rowsOf ) |> should equal expected
     
