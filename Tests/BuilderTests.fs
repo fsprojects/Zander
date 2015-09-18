@@ -21,7 +21,7 @@ module BuilderTests =
                     match maybeNext with
                         | Some next -> 
                             let parsed = Parse.block next index blocks
-                            let nextIndex = parsed |> List.length
+                            let nextIndex = index + (List.length parsed)
                             [ parsed ] @ (parse nextIndex) 
                         | None -> 
                             (failwithf "could not find expression block for index %i" index)
