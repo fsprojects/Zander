@@ -37,7 +37,7 @@ namespace CSharp.Tests
                         new ParsedRow("data_rows", new[] { "D1" }),
                         new ParsedRow("data_rows", new[] { "D2" }),
                 }),
-                new ParsedBlock("fst", new []{
+                new ParsedBlock("snd", new []{
                         new ParsedRow("data_rows2", new[] { "D3" }),
                 })
             }));
