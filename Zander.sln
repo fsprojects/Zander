@@ -8,9 +8,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{2FE3B2
 		paket.dependencies = paket.dependencies
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "BlockParser", "BlockParser\BlockParser.fsproj", "{D65A576C-4E1E-4FBF-8EC6-5E785D56E78F}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Zander", "Lib\Zander.fsproj", "{D65A576C-4E1E-4FBF-8EC6-5E785D56E78F}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Tests", "Tests\Tests.fsproj", "{F9429771-B51C-4090-97BB-15D54F36D7D7}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Zander.Tests", "Tests\Zander.Tests.fsproj", "{F9429771-B51C-4090-97BB-15D54F36D7D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,4 +1,4 @@
-﻿namespace BlockParser
+﻿namespace Zander
 
 type BlockType=
     | E // empty constant

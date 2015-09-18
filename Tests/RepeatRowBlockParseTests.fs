@@ -2,7 +2,7 @@
 
 open NUnit.Framework
 open FsUnit
-open BlockParser
+open Zander
 
 [<TestFixture>] 
 module RepeatRowBlockParseTests=

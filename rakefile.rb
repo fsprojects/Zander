@@ -7,7 +7,7 @@ desc "build solution"
 build :build do |msb, args|
   msb.prop :configuration, :Debug
   msb.target = [:Rebuild]
-  msb.sln = "BlockParser.sln"
+  msb.sln = "Zander.sln"
 end
 
 desc "test using console"

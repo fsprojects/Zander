@@ -1,4 +1,4 @@
-﻿namespace BlockParser
+﻿namespace Zander
 open System
 
 module Parse=
