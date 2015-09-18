@@ -134,4 +134,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="paket.template" />
+  </ItemGroup>
 </Project>
