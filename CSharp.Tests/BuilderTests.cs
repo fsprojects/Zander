@@ -30,7 +30,8 @@ namespace CSharp.Tests
                    .Block("snd", @"
                             _   @V : data_rows2+
 ").Parse(section);
-            Assert.That(result, Is.EquivalentTo(new ParsedBlock[] {
+
+            Assert.That(result.ToArray(), Is.EquivalentTo(new ParsedBlock[] {
                 new ParsedBlock( "fst",new []{
                         new ParsedRow("header", new[] { "H" }),
                         new ParsedRow("data_rows", new[] { "D1" }),
