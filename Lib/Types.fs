@@ -1,4 +1,4 @@
-﻿namespace Zander
+﻿namespace Zander.Internal
 
 type BlockType=
     | E // empty constant

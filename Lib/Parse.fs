@@ -1,4 +1,4 @@
-﻿namespace Zander
+﻿namespace Zander.Internal
 open System
 
 module Parse=

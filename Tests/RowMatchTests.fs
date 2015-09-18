@@ -1,7 +1,7 @@
 ﻿namespace Tests
 open NUnit.Framework
 open FsUnit
-open Zander
+open Zander.Internal
 
 [<TestFixture>] 
 module RowMatchTests = 
