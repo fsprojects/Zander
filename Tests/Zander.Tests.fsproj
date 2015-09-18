@@ -69,7 +69,7 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BlockParser\Zander.fsproj">
+    <ProjectReference Include="..\Lib\Zander.fsproj">
       <Name>Zander</Name>
       <Project>{d65a576c-4e1e-4fbf-8ec6-5e785d56e78f}</Project>
       <Private>True</Private>
