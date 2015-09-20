@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{D65A576C-4E1E-4FBF-8EC6-5E785D56E78F}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>BlockParser</RootNamespace>
+    <RootNamespace>Zander</RootNamespace>
     <AssemblyName>Zander</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
@@ -58,6 +58,8 @@
   -->
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="String.fs" />
+    <Compile Include="Option.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="Parse.fs" />
     <Compile Include="Match.fs" />
