@@ -24,7 +24,11 @@ type ParsedBlock={
 
             sprintf "{%s : %s}" self.Name rows
 
-type Builder(array : (string *( (NumberOf* BlockType list * string ) list)) list)=
+type BuildingBlock( name:string, block:( (NumberOf* BlockType list * string) list))=
+    member this.name = name
+    member this.block = block
+
+type Builder(array : BuildingBlock list)=
     let array = array
     let rowsOf v = 
         let to_kv value : KeyValuePair<string,string>=
@@ -42,11 +46,11 @@ type Builder(array : (string *( (NumberOf* BlockType list * string ) list)) list
              fun (row,name)-> (valuesOf row) , name
              )
 
-    member this.RawBlock(x : string*( (NumberOf* BlockType list * string) list )) = 
-        new Builder(array @ [ x ])
+    member internal this.RawBlock  (x : string* ((NumberOf* BlockType list * string) list )) = 
+        new Builder(array @ [ new BuildingBlock(fst x, snd x) ])
 
     member this.Block(name: string, x : string ) = 
-        new Builder(array @ [ ( name, (Api.interpret x) )])
+        new Builder(array @ [ new BuildingBlock( name, (Api.interpret x) )])
 
     member this.Parse(blocks : string array array) : ParsedBlock seq=
         let matrix = 
@@ -62,12 +66,12 @@ type Builder(array : (string *( (NumberOf* BlockType list * string ) list)) list
             if index >= List.length matrix then
                 []
             else
-                let maybeNext =  array |> List.tryFind (fun sp-> (Match.block (snd sp) index matrix ) )
+                let maybeNext =  array |> List.tryFind (fun sp-> (Match.block (sp.block) index matrix ) )
                 match maybeNext with
                     | Some next -> 
-                        let parsed = Parse.block (snd next) index matrix
+                        let parsed = Parse.block (next.block) index matrix
                         let nextIndex = index + (List.length parsed)
-                        [ { Name=fst next; Rows= (to_rows parsed) } ] @ (parse nextIndex) 
+                        [ { Name=next.name; Rows= (to_rows parsed) } ] @ (parse nextIndex) 
                     | None -> 
                         (failwithf "could not find expression block for index %i" index)
 

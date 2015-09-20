@@ -8,7 +8,7 @@ open TestHelpers
 module RowParseTests = 
 
     open Parse
-    let valuesOfExpression v = 
+    let private valuesOfExpression v = 
         v
             |> List.map Result.value
             |> List.map Token.tryValue

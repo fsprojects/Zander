@@ -8,7 +8,6 @@ module Api=
     open Zander.Internal.Option
 
     let (|LooksLikeConstant|) (input:string*int) : ((string*int)  ) option=
-        let endOf = new Regex(@".*(?!\\)""")
         opt{
             let! m = regex_match_i "^\"" input
             let! (gs, l) = regex_match_i @".*(?!\\)""" (s_incr (snd m) input)
@@ -19,12 +18,6 @@ module Api=
     let interpret (s : string) : (NumberOf* BlockType list * string) list=
         ///Match the pattern using a cached compiled Regex
 
-        (*
-         match ("\"Test\"",0) with | LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
-         match (" @Test",0) with | RegexMatch "^\@[A-Z]\w*" ([g], l) -> Some (g, l) ; | _ -> None;;
-         match (" @Test",1) with | RegexMatch "\@[A-Z]\w*" ([g], l) -> Some (g, l) ; | _ -> None;;
-         match ("@Test     ",0) with | RegexMatch "^\@[A-Z]\w*" ([g], l) -> Some (g, l) ; | _ -> None;;
-        *)
         let to_column (v:string*int) : (BlockType option*int)  =
             match v with
                 | RegexMatch @"^\s+" ([g], l) -> None, l
@@ -32,15 +25,6 @@ module Api=
                 | LooksLikeConstant (Some (c, l)) -> Some(C(c)), l 
                 | RegexMatch @"^\@\w+" ([value], l) -> Some( V( value.Value.Substring(1) )) , l
                 | _ -> failwithf "! '%s' %i" ((fst v).Substring(snd v)) (snd v)
-        (*
-           let to_column (v:string*int) : (string option*int)  =
-            match v with
-                | LooksLikeConstant (Some (c, l)) -> (Some "C"), l 
-                | RegexMatch "_"  ([g], l) -> (Some "E"), l
-                | RegexMatch @"\@\w*" ([value], l) -> Some( value.Value.Substring(1) ) , l
-                | RegexMatch @"\s+" ([g], l) -> None, l
-                | _ -> failwithf "! '%s' %i" ((fst v).Substring(snd v)) (snd v)
-        *)
 
         let rec get_columns input =
             let (s, i) = input

@@ -2,7 +2,7 @@
 open System
 open System.Text.RegularExpressions
 
-module String = 
+module internal String = 
     let sub_i (input:string*int) =
         let (s,i) = input
         s.Substring(i)

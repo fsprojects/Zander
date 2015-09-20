@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="TestHelpers.fs" />
+    <Compile Include="StringTests.fs" />
     <Compile Include="RowMatchTests.fs" />
     <Compile Include="RowParseTests.fs" />
     <Compile Include="SampleBlockMatchTests.fs" />
@@ -73,8 +74,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Lib\Zander.fsproj">
       <Name>Zander</Name>
-      <Project>{d65a576c-4e1e-4fbf-8ec6-5e785d56e78f}</Project>
-      <Private>True</Private>
+      <Project>{D65A576C-4E1E-4FBF-8EC6-5E785D56E78F}</Project>
     </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
