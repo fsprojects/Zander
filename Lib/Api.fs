@@ -8,20 +8,13 @@ module Api=
     open Zander.Internal.Option
 
     let (|LooksLikeConstant|) (input:string*int) : ((string*int)  ) option=
-        let start = new Regex("\"")
         let endOf = new Regex(@".*(?!\\)""")
-        let m = regex_match_i "^\"" input
-    
-        if m.IsSome then
-            let m = start.Match(fst input, snd input) 
-            let em = endOf.Match(fst input, (snd input) + m.Length)
-            let l = em.Value.Length
-            if em.Success then
-                Some (em.Value.Substring(0,(l-1)), m.Length+em.Length)
-            else
-                None
-        else
-            None
+        opt{
+            let! m = regex_match_i "^\"" input
+            let! (gs, l) = regex_match_i @".*(?!\\)""" (s_incr (snd m) input)
+            let! g = List.tryHead gs
+            return! Some (g.Value.Substring(0,(l-1)), (snd m)+l)
+        }
 
     let interpret (s : string) : (NumberOf* BlockType list * string) list=
         ///Match the pattern using a cached compiled Regex
