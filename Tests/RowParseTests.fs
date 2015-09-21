@@ -11,8 +11,7 @@ module RowParseTests =
     let private valuesOfExpression v = 
         v
             |> List.map Result.value
-            |> List.map Token.tryValue
-            |> List.choose id
+            |> List.choose Token.tryValue
 
     [<Test>] 
     let ``Single empty column match empty expression`` ()=

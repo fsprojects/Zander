@@ -94,10 +94,8 @@ module Parse=
     let rowsOf v = 
         let valuesOf v' =
             v'
-            |> List.map Result.tryValue
-            |> List.choose id
-            |> List.map Token.tryValue
-            |> List.choose id
+            |> List.choose Result.tryValue
+            |> List.choose Token.tryValue
 
         v |> List.map (
              fun (row,name)-> (valuesOf row) , name
