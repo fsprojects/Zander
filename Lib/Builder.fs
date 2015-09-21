@@ -24,16 +24,15 @@ type ParsedBlock={
 
             sprintf "{%s : %s}" self.Name rows
 
-type BuildingBlock( name:string, block:( (NumberOf* BlockType list * string) list))=
+type BuildingBlock( name:string, block: BlockRecognizer)=
     member this.name = name
     member this.block = block
 
 type Builder(array : BuildingBlock list)=
     let array = array
     let rowsOf v = 
-        let to_kv value : KeyValuePair<string,string>=
-            let (n,v) = value
-            new KeyValuePair<string,string>(n,v)
+        let to_kv (v:(string*string)) : KeyValuePair<string,string>=
+            new KeyValuePair<string,string>(fst v, snd v)
         let valuesOf v' =
             v'
             |> List.map Parse.Result.value
@@ -44,7 +43,7 @@ type Builder(array : BuildingBlock list)=
              fun (row,name)-> (valuesOf row) , name
              )
 
-    member internal this.RawBlock  (x : string* ((NumberOf* BlockType list * string) list )) = 
+    member internal this.RawBlock  (x : string* BlockRecognizer) = 
         new Builder(array @ [ new BuildingBlock(fst x, snd x) ])
 
     member this.Block(name: string, x : string ) = 

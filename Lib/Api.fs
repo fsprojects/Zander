@@ -15,7 +15,7 @@ module Api=
             return! Some (g.Value.Substring(0,(l-1)), (snd m)+l)
         }
 
-    let interpret (s : string) : (NumberOf* BlockType list * string) list=
+    let interpret (s : string) : BlockRecognizer=
         ///Match the pattern using a cached compiled Regex
 
         let to_column (v:StringAndPosition) : (BlockType option*int)  =
@@ -44,7 +44,7 @@ module Api=
         ", RegexOptions.IgnorePatternWhitespace)
 
 
-        let to_row (v:string)=
+        let to_row (v:string) : RowRecognizer=
             let m = row_regex.Match(v)
             let columns =  
                 get_columns {input=(m.Groups.["columns"].Value) ; position=0}

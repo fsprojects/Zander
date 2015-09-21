@@ -1,9 +1,12 @@
 ﻿namespace Zander.Internal
 
 type BlockType=
-    | E // empty constant
-    | C of string // constant
-    | V of string // variable with name
+    /// empty constant
+    | E 
+    /// constant
+    | C of string 
+    /// variable with name
+    | V of string 
     with
         override self.ToString()=
             match self with
@@ -12,8 +15,8 @@ type BlockType=
                 | V v -> sprintf "@%s" v
 
 type NumberOf=
-    | Single // single
-    | Repeat  // repeat
+    | Single 
+    | Repeat 
     with
         override self.ToString()=
             match self with

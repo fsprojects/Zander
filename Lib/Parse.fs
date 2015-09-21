@@ -1,20 +1,33 @@
 ﻿namespace Zander.Internal
 open System
+type ColumnRecognizer=BlockType list
+type RowRecognizer =(NumberOf*ColumnRecognizer*string)
+type BlockRecognizer=RowRecognizer list
 
 module Parse=
-    type Token=
-        | Value of string * string
-        | Constant of string
-        | Empty
+
+    type Token={ value:string; block:BlockType }
         with
-            static member tryValue t=
-                match t with
-                    | Value (name,v) -> Some v
+            override self.ToString()=
+                match self.block with
+                    | E -> "Empty"
+                    | C c -> sprintf "'%s'" c
+                    | V v -> sprintf "@%s = %s" v self.value
+            static member tryValue (t:Token)=
+                match t.block with
+                    | V (name) -> Some (t.value)
                     | _ -> None
-            static member tryKeyValue t=
-                match t with
-                    | Value (name,v) -> Some (name,v)
+            static member tryKeyValue (t:Token)=
+                match t.block with
+                    | V (name) -> Some (name, t.value)
                     | _ -> None
+                
+    let Value v=
+        { value=snd v; block=V (fst v) } //of string * string
+    let Constant v= //of string
+        { value=v; block=C(v) }
+    let Empty()=
+        { value=""; block=E}
 
     type Result=
         | Ok of Token
@@ -35,11 +48,13 @@ module Parse=
                     | Ok v -> v
                     | _ -> failwithf "Not ok result %s!" (result.ToString())
 
-    let expression rowExpr row : Result list=
+    type RecognizedBlock=((Result list*string) list)
+
+    let expression (expr:ColumnRecognizer) row : Result list=
         let columnMatch columnExpr column=
 
             match columnExpr, column with
-                | E, "" -> Ok( Empty)
+                | E, "" -> Ok( Empty() )
                 | C v1,v2 -> 
                     if v1=v2 then 
                         Ok( Constant v1 )
@@ -48,12 +63,12 @@ module Parse=
                 | V n, v -> Ok( Value (n,v) )
                 | _, v-> UnRecognized v
 
-        if (List.length rowExpr) <> (List.length row) then
+        if (List.length expr) <> (List.length row) then
             row |> List.map UnRecognized
         else
-            List.map2 columnMatch rowExpr row 
+            List.map2 columnMatch expr row 
             
-    let block expr index blocks : ((Result list*string) list)=
+    let block (expr:BlockRecognizer) index blocks : RecognizedBlock=
 
         let rec bmatch idx eidx : (Result list*string) list=
             let erow = expr |> List.tryItem eidx
