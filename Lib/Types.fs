@@ -2,17 +2,17 @@
 
 type BlockType=
     /// empty constant
-    | E 
+    | Empty
     /// constant
-    | C of string 
+    | Const of string 
     /// variable with name
-    | V of string 
+    | Value of string 
     with
         override self.ToString()=
             match self with
-                | E -> "Empty"
-                | C c -> sprintf "'%s'" c
-                | V v -> sprintf "@%s" v
+                | Empty -> "Empty"
+                | Const c -> sprintf "'%s'" c
+                | Value v -> sprintf "@%s" v
 
 type NumberOf=
     | Single 

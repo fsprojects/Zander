@@ -10,24 +10,18 @@ module Parse=
         with
             override self.ToString()=
                 match self.block with
-                    | E -> "Empty"
-                    | C c -> sprintf "'%s'" c
-                    | V v -> sprintf "@%s = %s" v self.value
+                    | Empty -> "Empty"
+                    | Const c -> sprintf "'%s'" c
+                    | Value v -> sprintf "@%s = %s" v self.value
             static member tryValue (t:Token)=
                 match t.block with
-                    | V (name) -> Some (t.value)
+                    | Value (name) -> Some (t.value)
                     | _ -> None
             static member tryKeyValue (t:Token)=
                 match t.block with
-                    | V (name) -> Some (name, t.value)
+                    | Value (name) -> Some (name, t.value)
                     | _ -> None
-                
-    let Value v=
-        { value=snd v; block=V (fst v) } //of string * string
-    let Constant v= //of string
-        { value=v; block=C(v) }
-    let Empty()=
-        { value=""; block=E}
+
 
     type Result=
         | Ok of Token
@@ -52,15 +46,15 @@ module Parse=
 
     let expression (expr:ColumnRecognizer) row : Result list=
         let columnMatch columnExpr column=
-
+            let value = { value=column;block=columnExpr }
             match columnExpr, column with
-                | E, "" -> Ok( Empty() )
-                | C v1,v2 -> 
+                | Empty, "" -> Ok( value )
+                | Const v1,v2 -> 
                     if v1=v2 then 
-                        Ok( Constant v1 )
+                        Ok( value )
                     else
                         WrongConstant (v1, v2)
-                | V n, v -> Ok( Value (n,v) )
+                | Value n, v -> Ok( value )
                 | _, v-> UnRecognized v
 
         if (List.length expr) <> (List.length row) then

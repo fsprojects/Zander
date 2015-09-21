@@ -12,9 +12,9 @@ module RepeatRowBlockMatchTests=
 
     let block_expression_with_repeat = 
         [
-            Single, ([E; E; V ""; E; E; V ""; V ""]), "header"
-            Repeat, ([V ""; E; E; E; E; E; E]), "subtitles"
-            Single, ([E; C "th1"; E; C "th2"; E; C "th3"; E]), "header_row"
+            Single, ([Empty; Empty; Value ""; Empty; Empty; Value ""; Value ""]), "header"
+            Repeat, ([Value ""; Empty; Empty; Empty; Empty; Empty; Empty]), "subtitles"
+            Single, ([Empty; Const "th1"; Empty; Const "th2"; Empty; Const "th3"; Empty]), "header_row"
         ]
 
     [<Test>] 

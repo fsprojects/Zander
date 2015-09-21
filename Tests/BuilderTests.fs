@@ -10,10 +10,10 @@ module BuilderTests =
 
     let builder = new Builder()
     let first_expression = [
-                        Single, ([E; V ""]), "header"
-                        Repeat, ([V ""; E]), "data_rows"
+                        Single, ([Empty; Value ""]), "header"
+                        Repeat, ([Value ""; Empty]), "data_rows"
                     ]
-    let second_expression = [Repeat, ([E; V ""]), "data_rows2" ]
+    let second_expression = [Repeat, ([Empty; Value ""]), "data_rows2" ]
 
     let spec input= 
            builder

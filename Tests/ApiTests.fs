@@ -9,13 +9,13 @@ module ApiTests =
 
     [<Test>] 
     let ``Can parse single row expression`` ()=
-        let expression = [Single, ([E; V "Title"]), "header"]
+        let expression = [Single, ([Empty; Value "Title"]), "header"]
         let apiCode =    " _   @Title : header"
         Api.interpret apiCode |> should equal expression
 
     [<Test>] 
     let ``Can parse row expression with constant within "`` ()=
-        let expression = [Single, ([E; C "Some constant"]), "header"]
+        let expression = [Single, ([Empty; Const "Some constant"]), "header"]
         let apiCode =    " _   \"Some constant\" : header"
         Api.interpret apiCode |> should equal expression
 
@@ -23,8 +23,8 @@ module ApiTests =
     [<Test>] 
     let ``Can parse`` ()=
         let expression = [
-                        Single, ([E; V "Header"]), "header"
-                        Repeat, ([V "Data"; E]), "data_rows"
+                        Single, ([Empty; Value "Header"]), "header"
+                        Repeat, ([Value "Data"; Empty]), "data_rows"
                     ]
         let apiCode =    " _   @Header : header 
                           @Data   _ : data_rows+"

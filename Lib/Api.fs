@@ -21,9 +21,9 @@ module Api=
         let to_column (v:StringAndPosition) : (BlockType option*int)  =
             match v with
                 | RegexMatch @"^\s+" ([g], l) -> None, l
-                | RegexMatch "^_" ([g], l) -> Some E, l
-                | LooksLikeConstant (Some (c, l)) -> Some(C(c)), l 
-                | RegexMatch @"^\@\w+" ([value], l) -> Some( V( value.Value.Substring(1) )) , l
+                | RegexMatch "^_" ([g], l) -> Some Empty, l
+                | LooksLikeConstant (Some (c, l)) -> Some(Const(c)), l 
+                | RegexMatch @"^\@\w+" ([value], l) -> Some( Value( value.Value.Substring(1) )) , l
                 | _ -> failwithf "! '%s' %i" (sub_i v) (get_position v)
 
         let rec get_columns input =
