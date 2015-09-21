@@ -25,12 +25,13 @@ namespace CSharp.Tests
         {
             var section = new[] { new[] { "", "H" }, new[] { "D1", "" }, new[] { "D2", "" }, new[] { "", "D3" } };
 
-            var result = builder.Block("fst", @"
+            var result = builder
+                   .Block("fst", @"
                             _   @V : header 
                             @V   _ : data_rows+")
                    .Block("snd", @"
                             _   @V : data_rows2+
-").Parse(section);
+                    ").Parse(section);
 
             Assert.That(result.ToArray(), Is.EquivalentTo(new ParsedBlock[] {
                 new ParsedBlock( "fst",new []{
