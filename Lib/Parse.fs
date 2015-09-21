@@ -11,10 +11,10 @@ module Parse=
                 match t with
                     | Value (name,v) -> Some v
                     | _ -> None
-            static member isValue v=
-                match v with
-                    | Value _ -> true
-                    | _ -> false
+            static member tryKeyValue t=
+                match t with
+                    | Value (name,v) -> Some (name,v)
+                    | _ -> None
 
     type Result=
         | Ok of Token

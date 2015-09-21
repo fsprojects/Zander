@@ -32,14 +32,12 @@ type Builder(array : BuildingBlock list)=
     let array = array
     let rowsOf v = 
         let to_kv value : KeyValuePair<string,string>=
-            match value with
-               | Parse.Value (n,v) -> new KeyValuePair<string,string>(n,v)
-               | _ -> failwith "!"
-        // todo: fix this!
+            let (n,v) = value
+            new KeyValuePair<string,string>(n,v)
         let valuesOf v' =
             v'
             |> List.map Parse.Result.value
-            |> List.filter Parse.Token.isValue
+            |> List.choose Parse.Token.tryKeyValue
             |> List.map to_kv
 
         v |> List.map (

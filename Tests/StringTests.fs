@@ -10,13 +10,13 @@ module StringTests =
 
     [<Test>] 
     let ``Regex match starting with`` ()=
-        regex_match_i "^abc" ("abcxyz",0) |> Option.map snd |> should equal (Some 3)
-        regex_match_i "^abc" ("???abcxyz",3) |> Option.map snd |> should equal (Some 3)
+        regex_match_i "^abc" {input="abcxyz";position=0} |> Option.map snd |> should equal (Some 3)
+        regex_match_i "^abc" {input="???abcxyz";position=3} |> Option.map snd |> should equal (Some 3)
 
 
     [<Test>] 
     let ``Regex match ending with`` ()=
-        regex_match_i "^abc" ("xyzabc",0) |> should equal (None)
+        regex_match_i "^abc" {input="xyzabc";position=0} |> should equal (None)
 
     (*
      match (" @Test",0) with | RegexMatch "^\@[A-Z]\w*" ([g], l) -> Some (g, l) ; | _ -> None;;
@@ -26,14 +26,14 @@ module StringTests =
 
     [<Test>] 
     let ``match looks like constant`` ()=
-         match ("\"Test\"",0) with | Api.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
+         match {input="\"Test\"";position=0} with | Api.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
             |> should equal (Some ("Test",6))
 
-         match ("abc \"Test\" ert",4) with | Api.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
+         match {input="abc \"Test\" ert";position=4} with | Api.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
             |> should equal (Some ("Test",6))
      
 
-         match ("abc Test\" ert",4) with | Api.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
+         match {input="abc Test\" ert";position=4} with | Api.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
             |> should equal None
      
 

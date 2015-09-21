@@ -7,7 +7,7 @@ module Api=
     open Zander.Internal.String
     open Zander.Internal.Option
 
-    let (|LooksLikeConstant|) (input:string*int) : ((string*int)  ) option=
+    let (|LooksLikeConstant|) (input:StringAndPosition) : (StringAndLength) option=
         opt{
             let! m = regex_match_i "^\"" input
             let! (gs, l) = regex_match_i @".*(?!\\)""" (s_incr (snd m) input)
@@ -18,22 +18,22 @@ module Api=
     let interpret (s : string) : (NumberOf* BlockType list * string) list=
         ///Match the pattern using a cached compiled Regex
 
-        let to_column (v:string*int) : (BlockType option*int)  =
+        let to_column (v:StringAndPosition) : (BlockType option*int)  =
             match v with
                 | RegexMatch @"^\s+" ([g], l) -> None, l
                 | RegexMatch "^_" ([g], l) -> Some E, l
                 | LooksLikeConstant (Some (c, l)) -> Some(C(c)), l 
                 | RegexMatch @"^\@\w+" ([value], l) -> Some( V( value.Value.Substring(1) )) , l
-                | _ -> failwithf "! '%s' %i" ((fst v).Substring(snd v)) (snd v)
+                | _ -> failwithf "! '%s' %i" (sub_i v) (get_position v)
 
         let rec get_columns input =
-            let (s, i) = input
+            let {input = s; position= i} = input
             let head = to_column input
             let l = i+ (snd head)
-            if l >= (fst input).Length then
+            if l >= s.Length then
                 [head]
             else
-                head :: get_columns (s, l) 
+                head :: get_columns {input=s; position=l} 
 
         let row_regex = new Regex(@"
               ^
@@ -47,7 +47,7 @@ module Api=
         let to_row (v:string)=
             let m = row_regex.Match(v)
             let columns =  
-                get_columns ((m.Groups.["columns"].Value) ,0) //.Split([|' '|], StringSplitOptions.RemoveEmptyEntries)
+                get_columns {input=(m.Groups.["columns"].Value) ; position=0}
                 |> List.choose fst 
 
             let name =  m.Groups.["name"].Value
