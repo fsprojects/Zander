@@ -18,10 +18,19 @@ then
   mozroots --import --sync --quiet
 fi
 
-run gem install bundler
+gem install bundler
 
-run bundle install
+bundle install
 
-run paket restore
+paket restore
+
+function run() {
+  if [[ "$OS" != "Windows_NT" ]]
+  then
+    mono "$@"
+  else
+    "$@"
+  fi
+}
 
 run packages/FAKE/tools/FAKE.exe "$@" $FSIARGS build.fsx
