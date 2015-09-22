@@ -3,4 +3,4 @@ language: csharp
 sudo: false 
 
 script: 
-  - ./build.sh test
+  - bash ./build.sh test
