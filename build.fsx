@@ -15,7 +15,7 @@ open System.IO
 let solutionFile  = "Zander.sln"
 
 // Pattern specifying assemblies to be tested using NUnit
-let testAssemblies = "tests/**/bin/Release/*Tests*.dll"
+let testAssemblies = "**/bin/Release/*Tests.dll"
 
 // --------------------------------------------------------------------------------------
 // END TODO: The rest of the file includes standard build steps
@@ -43,8 +43,8 @@ Target "CopyBinaries" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Clean build results
 
-Target "Clean" (fun _ ->
-    CleanDirs ["bin"; "temp"]
+Target "clean" (fun _ ->
+    CleanDirs ["bin"; "temp"; "CSharp.Tests/bin/Release"; "Tests/bin/Release"] 
 )
 
 Target "build" (fun _ ->
@@ -82,12 +82,15 @@ Target "BuildPackage" DoNothing
 
 Target "all" DoNothing
 
-"Clean"
+"clean"
   ==> "build"
   ==> "CopyBinaries"
   ==> "test"
   ==> "all"
 
+"build"
+  ==> "test"
+  
 "pack"
   ==> "push"
 
