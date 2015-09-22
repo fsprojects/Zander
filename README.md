@@ -34,3 +34,33 @@ When you have data in a structured format, but with different blocks of informat
 
 But the structure of the block layout might change from "page" to "page".
 
+## How do you match?
+
+### Match columns
+
+* Use ```_``` to indicate that there should be an empty column
+* Use ```"Some constant"``` or ```constant``` to indicate a column with a constant value
+* Use ```@Value``` to indicate that you want the value on that column
+
+### Match rows
+In order to match rows you supply the row specification with a name by postfixing with ``` : title```
+If you want the row to match many rows with the same format you add a '+' : ``` : title+```
+
+### How does it look?
+
+How do you use this library to extract the information above? You use the parser builder:
+```c#
+using Zander;
+...
+ var parsed = new ParserBuilder()
+                .Block("type1", @" _          _ _ _ _ _ ""Report Title"" _  _  _  @Time @Page : report_title
+                                ""Company AB"" _ _ _ _ _ _                _ _ _ _  _          : company
+                                    @Text      _ _ _ _ _ _                _ _ _ _  _          : text+
+                                  _         Id _  Value  Type _ _ ""Attribute 1"" _ ""Attribute 2"" _  _ : header
+                                  _        @Id _ @Value @Type _ _ @Attribute1     _ @Attribute2     _  _ : row+
+                    ")
+                .Parse(arrayOfArrays);
+```
+
+This will give you structured information that will be easy to consume.
+
