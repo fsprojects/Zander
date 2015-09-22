@@ -60,6 +60,7 @@ module Api=
             
 
         let rows = s.Split([| '\n'; '\r'|], StringSplitOptions.RemoveEmptyEntries)
+                        |> Array.filter ( not << String.IsNullOrWhiteSpace)
                         |> Array.map to_row 
         Array.toList rows
 
