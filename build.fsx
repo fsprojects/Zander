@@ -44,7 +44,12 @@ Target "CopyBinaries" (fun _ ->
 // Clean build results
 
 Target "clean" (fun _ ->
-    CleanDirs ["bin"; "temp"; "CSharp.Tests/bin/Release"; "Tests/bin/Release"] 
+    CleanDirs ["bin"; "temp"; 
+            "CSharp.Tests/bin/Release";
+            "CSharp.Tests/bin/Release";
+            "Tests/bin/Debug";
+            "Tests/bin/Debug"
+            ] 
 )
 
 Target "build" (fun _ ->
@@ -90,7 +95,7 @@ Target "all" DoNothing
 
 "build"
   ==> "test"
-  
+
 "pack"
   ==> "push"
 
