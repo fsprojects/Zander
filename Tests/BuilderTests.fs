@@ -8,7 +8,7 @@ open TestHelpers
 [<TestFixture>] 
 module BuilderTests = 
 
-    let builder = new Builder()
+    let builder = new ParserBuilder()
     let first_expression = [
                         Single, ([Empty; Value ""]), "header"
                         Repeat, ([Value ""; Empty]), "data_rows"

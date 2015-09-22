@@ -10,7 +10,7 @@ module Api=
     let (|LooksLikeConstant|) (input:StringAndPosition) : (StringAndLength) option=
         opt{
             let! m = regex_match_i "^\"" input
-            let! (gs, l) = regex_match_i @".*(?!\\)""" (s_incr (snd m) input)
+            let! (gs, l) = regex_match_i @".*?(?!\\)""" (s_incr (snd m) input)
             let! g = List.tryHead gs
             return! Some (g.Value.Substring(0,(l-1)), (snd m)+l)
         }

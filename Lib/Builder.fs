@@ -28,7 +28,7 @@ type BuildingBlock( name:string, block: BlockRecognizer)=
     member this.name = name
     member this.block = block
 
-type Builder(array : BuildingBlock list)=
+type ParserBuilder(array : BuildingBlock list)=
     let array = array
     let rowsOf v = 
         let to_kv (v:(string*string)) : KeyValuePair<string,string>=
@@ -44,10 +44,10 @@ type Builder(array : BuildingBlock list)=
              )
 
     member internal this.RawBlock  (x : string* BlockRecognizer) = 
-        new Builder(array @ [ new BuildingBlock(fst x, snd x) ])
+        new ParserBuilder(array @ [ new BuildingBlock(fst x, snd x) ])
 
     member this.Block(name: string, x : string ) = 
-        new Builder(array @ [ new BuildingBlock( name, (Api.interpret x) )])
+        new ParserBuilder(array @ [ new BuildingBlock( name, (Api.interpret x) )])
 
     member this.Parse(blocks : string array array) : ParsedBlock seq=
         let matrix = 
@@ -61,7 +61,7 @@ type Builder(array : BuildingBlock list)=
 
         let rec parse index : ParsedBlock list =
             let as_csv (m:string list) =
-                System.String.Join(", ", m)
+                System.String.Join(", ", ( List.map (fun s->sprintf "\"%s\"" s) m) )
 
             if index >= List.length matrix then
                 []
@@ -78,4 +78,4 @@ type Builder(array : BuildingBlock list)=
         parse 0 |> List.toSeq
 
     new() =
-        Builder([])
+        ParserBuilder([])

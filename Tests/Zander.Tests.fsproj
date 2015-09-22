@@ -59,7 +59,7 @@
     <Compile Include="RepeatRowBlockMatchTests.fs" />
     <Compile Include="RepeatRowBlockParseTests.fs" />
     <Compile Include="ComplexBlockTest.fs" />
-    <Compile Include="ApiTests.fs" />
+    <Compile Include="InterpretFormatTests.fs" />
     <Compile Include="BuilderTests.fs" />
     <None Include="Script.fsx" />
     <Content Include="paket.references" />

@@ -1,0 +1,32 @@
+;;;;;;Report Title;;;;16/09/15 16:17;Page: 1
+Company AB;;;;;;;;;;;
+Some text;;;;;;;;;;;
+that goes on and explains the report;;;;;;;;;;;
+;Id;;Value;Type;;;Attribute 1;;Attribute 2;;
+;44;;XYZ;A;;;;;;;
+;44;;XYZ;B;;;255;;155;;
+;44;;XYZ;C;;;;;;;
+;50;;XYZ;B;;;255;;100;;
+;50;;XYZ;C;;;;;;;
+;;;;;;Report Title;;;;16/09/15 16:17;Page: 2
+Company AB;;;;;;;;;;;
+Some text;;;;;;;;;;;
+that goes on and explains the report;;;;;;;;;;;
+;Id;;Value;Type;;;Attribute 1;Attribute 2;;;
+;;51;;XYZ;A;;255;;;;
+;;51;;XYZ;B;;;130;;;
+;;51;;XYZ;C;;;;;;
+;;60;;XYZ;A;;;;;;
+;;60;;XYZ;B;;255;15;;;
+;;60;;XYZ;C;;;;;;
+;;;;;;Report Title;;;;16/09/15 16:17;Page: 3
+Company AB;;;;;;;;;;;
+Some text;;;;;;;;;;;
+that goes on and explains the report;;;;;;;;;;;
+;Id;;Value;Type;;;Attribute 1;;Attribute 2;;
+;51;;XYZ;A;;;255;;;;
+;51;;XYZ;B;;;;;130;;
+;51;;XYZ;C;;;;;;;
+;60;;XYZ;A;;;;;;;
+;60;;XYZ;B;;;255;;15;;
+;60;;XYZ;C;;;;;;;

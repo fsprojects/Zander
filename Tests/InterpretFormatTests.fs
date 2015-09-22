@@ -5,7 +5,7 @@ open Zander
 open Zander.Internal
 
 [<TestFixture>] 
-module ApiTests = 
+module InterpretFormatTests = 
 
     [<Test>] 
     let ``Can parse single row expression`` ()=
@@ -24,6 +24,14 @@ module ApiTests =
         let expression = [Single, ([Empty; Const "Some constant"]), "header"]
         let apiCode =    " _   \"Some constant\" : header"
         Api.interpret apiCode |> should equal expression
+
+
+    [<Test>]
+    let ``Regression test for constants`` ()=
+        let apiCode = @"""Attribute 1"" _ ""Attribute 2"": header"
+        let expression = [Single, ([Const "Attribute 1"; Empty; Const "Attribute 2"; ]), "header"]
+        Api.interpret apiCode |> should equal expression
+
 
     [<Test>] 
     let ``Can parse`` ()=

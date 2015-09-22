@@ -1,31 +1,21 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Zander;
 
 namespace CSharp.Tests
 {
     [TestFixture]
-    public class BuilderTests
+    public class BuilderTests: TestHelper
     {
-        private Builder builder;
-        private static KeyValuePair<string, string> Kv(string k, string v) { return new KeyValuePair<string, string>(k, v); }
-
-        [TestFixtureSetUp]
-        public void OnceBeforeAnyTest()
-        {
-            builder = new Builder();
-        }
-
         [Test]
-        public void Test()
+        public void Can_parse_a_simple_specified_format()
         {
-            var section = new[] { new[] { "", "H" }, new[] { "D1", "" }, new[] { "D2", "" }, new[] { "", "D3" } };
+            var section = ParseCsv(@";H
+D1;
+D2;
+;D3");
 
-            var result = builder
+            var result = new ParserBuilder()
                    .Block("fst", @"
                             _   @V : header 
                             @V   _ : data_rows+")
