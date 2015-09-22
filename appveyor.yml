@@ -1,2 +1,2 @@
 build_script:
-  - build.cmd test
+  - build.cmd build
