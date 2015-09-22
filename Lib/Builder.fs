@@ -60,6 +60,9 @@ type Builder(array : BuildingBlock list)=
                    |> List.toArray
 
         let rec parse index : ParsedBlock list =
+            let as_csv (m:string list) =
+                System.String.Join(", ", m)
+
             if index >= List.length matrix then
                 []
             else
@@ -70,7 +73,7 @@ type Builder(array : BuildingBlock list)=
                         let nextIndex = index + (List.length parsed)
                         [ { Name=next.name; Rows= (to_rows parsed) } ] @ (parse nextIndex) 
                     | None -> 
-                        (failwithf "could not find expression block for index %i" index)
+                        (failwithf "could not find block to interpret %s" (as_csv (List.item index matrix)))
 
         parse 0 |> List.toSeq
 

@@ -24,7 +24,8 @@ module Api=
                 | RegexMatch "^_" ([g], l) -> Some Empty, l
                 | LooksLikeConstant (Some (c, l)) -> Some(Const(c)), l 
                 | RegexMatch @"^\@\w+" ([value], l) -> Some( Value( value.Value.Substring(1) )) , l
-                | _ -> failwithf "! '%s' %i" (sub_i v) (get_position v)
+                | RegexMatch "^\w+" ([g], l) -> Some( Const(g.Value) ), l
+                | _ -> failwithf "Could not interpret! '%s' %i" (sub_i v) (get_position v)
 
         let rec get_columns input =
             let {input = s; position= i} = input

@@ -14,11 +14,16 @@ module ApiTests =
         Api.interpret apiCode |> should equal expression
 
     [<Test>] 
+    let ``Can parse constant`` ()=
+        let expression = [Single, ([Empty; Const "constant"]), "header"]
+        let apiCode =    " _   constant : header"
+        Api.interpret apiCode |> should equal expression
+
+    [<Test>] 
     let ``Can parse row expression with constant within "`` ()=
         let expression = [Single, ([Empty; Const "Some constant"]), "header"]
         let apiCode =    " _   \"Some constant\" : header"
         Api.interpret apiCode |> should equal expression
-
 
     [<Test>] 
     let ``Can parse`` ()=
