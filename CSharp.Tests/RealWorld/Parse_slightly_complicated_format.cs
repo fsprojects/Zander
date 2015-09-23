@@ -20,7 +20,7 @@ namespace CSharp.Tests.RealWorld
         public void Can_recognize_title()
         {
             var parsed = new ParserBuilder()
-                .Block("only_title", @" _          _ _ _ _ _ ""Report Title"" _  _  _  @Time @Page : report_title")
+                .Block("only_title", @" _+ ""Report Title"" _+  @Time @Page : report_title")
                 .Parse(file_content.Take(1).ToArray());
             Assert.That(parsed.ToArray(), Is.EquivalentTo(new ParsedBlock[] {
                 new ParsedBlock( "only_title",new []{
@@ -33,7 +33,7 @@ namespace CSharp.Tests.RealWorld
         public void Can_recognize_company()
         {
             var parsed = new ParserBuilder()
-                .Block("only_company", @" ""Company AB"" _ _ _ _ _ _                _ _ _ _  _          : company")
+                .Block("only_company", @" ""Company AB"" _+          : company")
                 .Parse(file_content.Skip(1).Take(1).ToArray());
             Assert.That(parsed.ToArray(), Is.EquivalentTo(new ParsedBlock[] {
                 new ParsedBlock( "only_company", new [] { new ParsedRow("company", EmptyKvs()) })}));
@@ -56,7 +56,7 @@ namespace CSharp.Tests.RealWorld
         public void Can_recognize_header()
         {
             var parsed = new ParserBuilder()
-                .Block("only_header", @" _         Id _  Value  Type _ _ ""Attribute 1"" _ ""Attribute 2"" _  _  : header")
+                .Block("only_header", @" _         Id _  Value  Type _ _ ""Attribute 1"" _ ""Attribute 2"" _*  : header")
                 .Parse(file_content.Skip(4).Take(1).ToArray());
             Assert.That(parsed.ToArray(), Is.EquivalentTo(new ParsedBlock[] {
                 new ParsedBlock( "only_header", new [] {

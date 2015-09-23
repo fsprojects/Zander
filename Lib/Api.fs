@@ -27,13 +27,13 @@ module Api=
         let to_column (v:StringAndPosition) : ((NumberOf*BlockType) option*int)  =
             match v with
                 | RegexMatch @"^\s+" ([g], l) -> None, l
-                | RegexMatch "^(_)(\+)?" ([_;_;numberOf], l) -> 
+                | RegexMatch "^(_)([+*])?" ([_;_;numberOf], l) -> 
                         Some (number_of numberOf.Value, Empty), l
                 | LooksLikeConstant (Some (c, l)) -> 
                         Some((One,Const(c))), l 
-                | RegexMatch @"^\@(\w+)(\+)?" ([_;value;numberOf], l) -> 
+                | RegexMatch @"^\@(\w+)([+*])?" ([_;value;numberOf], l) -> 
                         Some( (number_of numberOf.Value, Value( value.Value ))) , l
-                | RegexMatch @"^(\w+)(\+)?" ([_;value;numberOf], l) -> 
+                | RegexMatch @"^(\w+)([+*])?" ([_;value;numberOf], l) -> 
                         Some( (number_of numberOf.Value, Const( value.Value ))) , l
                 | _ -> failwithf "Could not interpret: '%s' %i" (sub_i v) (get_position v)
 
