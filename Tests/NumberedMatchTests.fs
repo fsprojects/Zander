@@ -32,10 +32,22 @@ module NumberedMatchTests =
         l |> should equal [(Some "1");(Some "1");(Some "1")]
 
     [<Test>] 
+    let ``Match many 1 and then 2`` ()=
+        let l = matches zeroToThree someIsOk [ (Many, '1'); (One, '2') ]
+                              [1;1;1;2] |> List.map MatchResult.value
+        l |> should equal [(Some "1");(Some "1");(Some "1"); (Some "2")]
+
+    [<Test>] 
     let ``Match zero or many 1`` ()=
         let l = matches zeroToThree someIsOk [ (ZeroOrMany, '1'); ]
                               [1;1;1] |> List.map MatchResult.value
         l |> should equal [(Some "1");(Some "1");(Some "1")]
+
+    [<Test>] 
+    let ``Match zero or many 1 and then 2`` ()=
+        let l = matches zeroToThree someIsOk [ (ZeroOrMany, '1'); (One, '2')]
+                              [1;1;1;2] |> List.map MatchResult.value
+        l |> should equal [(Some "1");(Some "1");(Some "1"); (Some "2")]
 
     [<Test>] 
     let ``Match zero or many 1 when empty`` ()=
