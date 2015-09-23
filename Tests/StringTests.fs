@@ -18,6 +18,7 @@ module StringTests =
     let ``Regex match ending with`` ()=
         regex_match_i "^abc" {input="xyzabc";position=0} |> should equal (None)
 
+
     (*
      match (" @Test",0) with | RegexMatch "^\@[A-Z]\w*" ([g], l) -> Some (g, l) ; | _ -> None;;
      match (" @Test",1) with | RegexMatch "\@[A-Z]\w*" ([g], l) -> Some (g, l) ; | _ -> None;;
@@ -36,6 +37,8 @@ module StringTests =
          match {input="abc Test\" ert";position=4} with | Api.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
             |> should equal None
      
+
+
 
 
 

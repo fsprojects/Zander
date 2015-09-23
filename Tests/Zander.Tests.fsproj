@@ -61,6 +61,7 @@
     <Compile Include="ComplexBlockTest.fs" />
     <Compile Include="InterpretFormatTests.fs" />
     <Compile Include="BuilderTests.fs" />
+    <Compile Include="NumberedMatchTests.fs" />
     <None Include="Script.fsx" />
     <Content Include="paket.references" />
     <Content Include="app.config" />

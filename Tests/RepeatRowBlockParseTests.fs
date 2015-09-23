@@ -9,12 +9,13 @@ module RepeatRowBlockParseTests=
 
 
     open Parse
+    open TestHelpers
 
     let block_expression_with_repeat = 
         [
-            Single, ([Empty; Empty; Value ""; Empty; Empty; Value ""; Value ""]), "header"
-            Repeat, ([Value ""; Empty; Empty; Empty; Empty; Empty; Empty]), "subtitles"
-            Single, ([Empty; Const "th1"; Empty; Const "th2"; Empty; Const "th3"; Empty]), "header_row"
+            One,    ([Empty; Empty; Value ""; Empty; Empty; Value ""; Value ""]), "header"
+            Many,   ([Value ""; Empty; Empty; Empty; Empty; Empty; Empty]), "subtitles"
+            One,    ([Empty; Const "th1"; Empty; Const "th2"; Empty; Const "th3"; Empty]), "header_row"
         ]
 
     [<Test>] 
@@ -25,7 +26,7 @@ module RepeatRowBlockParseTests=
                 ["subtitle_1.1"; ""; "";"";"";""; ""]
                 ["";"th1"; ""; "th2";"";"th3";""]
             ]
-        (rowsOf (block block_expression_with_repeat 0 a_block)) |> should equal [
+        (rowsOf (s_block block_expression_with_repeat 0 a_block)) |> should equal [
                 (["Header1";"Something else"; "Page:1"], "header")
                 (["subtitle_1.1"],"subtitles")
                 ([],"header_row")]
@@ -39,7 +40,7 @@ module RepeatRowBlockParseTests=
                 ["subtitle_1.2"; ""; "";"";"";""; ""]
                 ["";"th1"; ""; "th2";"";"th3";""]
             ]
-        (rowsOf (block block_expression_with_repeat 0 a_block)) |> should equal [
+        (rowsOf (s_block block_expression_with_repeat 0 a_block)) |> should equal [
             (["Header1";"Something else"; "Page:1"],"header")
             (["subtitle_1.1"],"subtitles")
             (["subtitle_1.2"],"subtitles")

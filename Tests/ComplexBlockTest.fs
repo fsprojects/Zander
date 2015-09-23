@@ -5,7 +5,7 @@ open Zander.Internal
 
 [<TestFixture>] 
 module ComplexBlockTest = 
-
+    open TestHelpers
 
     let first_section = [
                         [""; ""; "Header1";"";"";"Something else"; "Page:1"]
@@ -19,11 +19,11 @@ module ComplexBlockTest =
     ]
 
     let specification = [
-                        Single, ([Empty; Empty; Value ""; Empty; Empty; Value ""; Value ""]), "header"
-                        Single, ([Value ""; Empty; Empty; Empty; Empty; Empty; Empty]), "title"
-                        Repeat, ([Value ""; Empty; Empty; Empty; Empty; Empty; Empty]), "subtitles"
-                        Single, ([Empty; Const "th1"; Empty; Const "th2"; Empty; Const "th3"; Empty]), "header_row"
-                        Repeat, ([Empty; Value ""; Empty; Value ""; Empty; Value ""; Empty]), "data_rows"
+                        One,    ([Empty; Empty; Value ""; Empty; Empty; Value ""; Value ""]), "header"
+                        One,    ([Value ""; Empty; Empty; Empty; Empty; Empty; Empty]), "title"
+                        Many,   ([Value ""; Empty; Empty; Empty; Empty; Empty; Empty]), "subtitles"
+                        One,    ([Empty; Const "th1"; Empty; Const "th2"; Empty; Const "th3"; Empty]), "header_row"
+                        Many,   ([Empty; Value ""; Empty; Value ""; Empty; Value ""; Empty]), "data_rows"
                     ]    
 
     let expected =  [(["Header1";"Something else"; "Page:1"], "header")
@@ -37,6 +37,6 @@ module ComplexBlockTest =
                      ]
     [<Test>] 
     let ``Can parse complex example`` ()=
-           (Parse.rowsOf (Parse.block specification 0 first_section)) |> should equal expected
+           (Parse.rowsOf (s_block specification 0 first_section)) |> should equal expected
            //(spec first_section) |> Seq.head |> should equal expected
 

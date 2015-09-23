@@ -14,16 +14,16 @@ type BlockType=
                 | Const c -> sprintf "'%s'" c
                 | Value v -> sprintf "@%s" v
 
+open Zander.Internal.Option
+
 type NumberOf=
-    | Single 
-    | Repeat 
+    | One 
+    | ZeroOrMany
+    | Many
     with
         override self.ToString()=
             match self with
-                | Single -> "Single"
-                | Repeat -> "Repeat"
-        static member isRepeat num=
-            match num with
-                | Repeat -> true
-                | _ -> false
+                | One -> "One"
+                | Many -> "Many"
+                | ZeroOrMany -> "ZeroOrMany"
 

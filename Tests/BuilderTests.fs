@@ -10,10 +10,10 @@ module BuilderTests =
 
     let builder = new ParserBuilder()
     let first_expression = [
-                        Single, ([Empty; Value ""]), "header"
-                        Repeat, ([Value ""; Empty]), "data_rows"
+                        One, ([One,Empty; One,Value ""]), "header"
+                        Many, ([One,Value ""; One,Empty]), "data_rows"
                     ]
-    let second_expression = [Repeat, ([Empty; Value ""]), "data_rows2" ]
+    let second_expression = [Many, ([One,Empty; One,Value ""]), "data_rows2" ]
 
     let spec input= 
            builder

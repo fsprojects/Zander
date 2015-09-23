@@ -3,7 +3,7 @@
 open NUnit.Framework
 open FsUnit
 open Zander.Internal
-
+open TestHelpers
 [<TestFixture>] 
 module RepeatRowBlockMatchTests=
 
@@ -12,9 +12,9 @@ module RepeatRowBlockMatchTests=
 
     let block_expression_with_repeat = 
         [
-            Single, ([Empty; Empty; Value ""; Empty; Empty; Value ""; Value ""]), "header"
-            Repeat, ([Value ""; Empty; Empty; Empty; Empty; Empty; Empty]), "subtitles"
-            Single, ([Empty; Const "th1"; Empty; Const "th2"; Empty; Const "th3"; Empty]), "header_row"
+            One,    ([Empty; Empty; Value ""; Empty; Empty; Value ""; Value ""]), "header"
+            Many,   ([Value ""; Empty; Empty; Empty; Empty; Empty; Empty]), "subtitles"
+            One,    ([Empty; Const "th1"; Empty; Const "th2"; Empty; Const "th3"; Empty]), "header_row"
         ]
 
     [<Test>] 
@@ -25,7 +25,7 @@ module RepeatRowBlockMatchTests=
                 ["subtitle_1.1"; ""; "";"";"";""; ""]
                 ["";"th1"; ""; "th2";"";"th3";""]
             ]
-        (block block_expression_with_repeat 0 a_block) |> should equal true
+        (match_s_block block_expression_with_repeat 0 a_block) |> should equal true
 
     [<Test>] 
     let ``Should match with repeated subtitles`` ()=
@@ -36,7 +36,7 @@ module RepeatRowBlockMatchTests=
                 ["subtitle_1.2"; ""; "";"";"";""; ""]
                 ["";"th1"; ""; "th2";"";"th3";""]
             ]
-        (block block_expression_with_repeat 0 a_block) |> should equal true
+        (match_s_block block_expression_with_repeat 0 a_block) |> should equal true
 
     [<Test>] 
     let ``Shouldnt match with repeated header`` ()=
@@ -47,5 +47,5 @@ module RepeatRowBlockMatchTests=
                 ["subtitle_1.1"; ""; "";"";"";""; ""]
                 ["";"th1"; ""; "th2";"";"th3";""]
             ]
-        (block block_expression_with_repeat 0 a_block) |> should equal false
+        (match_s_block block_expression_with_repeat 0 a_block) |> should equal false
 

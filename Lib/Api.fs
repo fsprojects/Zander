@@ -14,18 +14,28 @@ module Api=
             let! g = List.tryHead gs
             return! Some (g.Value.Substring(0,(l-1)), (snd m)+l)
         }
+    let number_of (g:string)=
+        match g with
+            | "" -> One
+            | "+" -> Many
+            | "*" -> ZeroOrMany
+            | v -> failwithf "Could not interpret: '%s'" v
 
     let interpret (s : string) : BlockRecognizer=
         ///Match the pattern using a cached compiled Regex
 
-        let to_column (v:StringAndPosition) : (BlockType option*int)  =
+        let to_column (v:StringAndPosition) : ((NumberOf*BlockType) option*int)  =
             match v with
                 | RegexMatch @"^\s+" ([g], l) -> None, l
-                | RegexMatch "^_" ([g], l) -> Some Empty, l
-                | LooksLikeConstant (Some (c, l)) -> Some(Const(c)), l 
-                | RegexMatch @"^\@\w+" ([value], l) -> Some( Value( value.Value.Substring(1) )) , l
-                | RegexMatch "^\w+" ([g], l) -> Some( Const(g.Value) ), l
-                | _ -> failwithf "Could not interpret! '%s' %i" (sub_i v) (get_position v)
+                | RegexMatch "^(_)(\+)?" ([_;_;numberOf], l) -> 
+                        Some (number_of numberOf.Value, Empty), l
+                | LooksLikeConstant (Some (c, l)) -> 
+                        Some((One,Const(c))), l 
+                | RegexMatch @"^\@(\w+)(\+)?" ([_;value;numberOf], l) -> 
+                        Some( (number_of numberOf.Value, Value( value.Value ))) , l
+                | RegexMatch @"^(\w+)(\+)?" ([_;value;numberOf], l) -> 
+                        Some( (number_of numberOf.Value, Const( value.Value ))) , l
+                | _ -> failwithf "Could not interpret: '%s' %i" (sub_i v) (get_position v)
 
         let rec get_columns input =
             let {input = s; position= i} = input
@@ -52,10 +62,7 @@ module Api=
                 |> List.choose fst 
 
             let name =  m.Groups.["name"].Value
-            let modifier =  
-                match m.Groups.["modifier"].Value with
-                    | "+" -> NumberOf.Repeat
-                    | _ -> NumberOf.Single
+            let modifier = number_of m.Groups.["modifier"].Value
 
             (modifier, columns, name)
             

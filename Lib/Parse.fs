@@ -1,6 +1,6 @@
 ﻿namespace Zander.Internal
 open System
-type ColumnRecognizer=BlockType list
+type ColumnRecognizer=(NumberOf*BlockType) list
 type RowRecognizer =(NumberOf*ColumnRecognizer*string)
 type BlockRecognizer=RowRecognizer list
 
@@ -43,10 +43,13 @@ module Parse=
                     | _ -> failwithf "Not ok result %s!" (result.ToString())
 
     type RecognizedBlock=((Result list*string) list)
+    type ColumnsAndPosition = InputAndPosition<string list>
+    type ResultAndLength = (Result*int)
+    open Zander.Internal.Matches
 
     let expression (expr:ColumnRecognizer) row : Result list=
-        let columnMatch columnExpr column=
-            let value = { value=column;block=columnExpr }
+        let columnMatch (columnExpr:BlockType) column=
+            let value = { value=column;block= columnExpr }
             match columnExpr, column with
                 | Empty, "" -> Ok( value )
                 | Const v1,v2 -> 
@@ -56,12 +59,14 @@ module Parse=
                         WrongConstant (v1, v2)
                 | Value n, v -> Ok( value )
                 | _, v-> UnRecognized v
+        let toResult matchResult = 
+            match matchResult with
+                | MatchOk v -> v
+                | MatchEmptyList -> Missing
+                | MatchFailure -> failwith "match failure"
 
-        if (List.length expr) <> (List.length row) then
-            row |> List.map UnRecognized
-        else
-            List.map2 columnMatch expr row 
-            
+        matches columnMatch Result.isOk expr row |> List.map toResult
+
     let block (expr:BlockRecognizer) index blocks : RecognizedBlock=
 
         let rec bmatch idx eidx : (Result list*string) list=
@@ -69,21 +74,23 @@ module Parse=
             let row = blocks |> List.tryItem (index + idx)
 
             let is_ok (r : (Result list*string) list)=
-                r |> List.map fst
-                  |> List.collect id
+                r |> List.collect fst
                   |> List.forall Result.isOk
 
             let rest_of c e n : (Result list*string) list=
+                // List.takeWhile ?
+                // TODO: !
+                let isRepeat = match c with | One -> false ; | _ -> true
                 let r = bmatch (idx+1) eidx 
-                if NumberOf.isRepeat c && is_ok r then
+                if isRepeat && is_ok r then
                     r
                 else
                     bmatch (idx+1) (eidx+1)
 
             match erow, row with
-                | Some (c,e,n), Some r -> 
-                    let h = [((expression e r), n)]
-                    let r = rest_of c e n
+                | Some (count,column,name), Some r -> 
+                    let h = [((expression column r), name)]
+                    let r = rest_of count column name
                     h @ r
                 | None, None -> []
                 | Some (_,_,n), None -> [[Missing], n]

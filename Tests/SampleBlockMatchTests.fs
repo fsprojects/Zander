@@ -3,17 +3,19 @@
 open NUnit.Framework
 open FsUnit
 open Zander.Internal
-
 [<TestFixture>] 
 module SampleBlockMatchTests=
+    open TestHelpers
 
-    let block_expression = [
-                    Single, ([Empty; Empty; Value ""; Empty; Empty; Value ""; Value ""]), "header"
-                    Single, ([Value ""; Empty; Empty; Empty; Empty; Empty; Empty]), "title"
-                    Repeat, ([Value ""; Empty; Empty; Empty; Empty; Empty; Empty]), "subtitles"
-                    Single, ([Empty; Const "th1"; Empty; Const "th2"; Empty; Const "th3"; Empty]), "header_row"
-                    Repeat, ([Empty; Value ""; Empty; Value ""; Empty; Value ""; Empty]), "data_rows"
-                ]
+    let block_expression =
+         [
+            One,    ([Empty; Empty; Value ""; Empty; Empty; Value ""; Value ""]), "header"
+            One,    ([Value ""; Empty; Empty; Empty; Empty; Empty; Empty]), "title"
+            Many,   ([Value ""; Empty; Empty; Empty; Empty; Empty; Empty]), "subtitles"
+            One,    ([Empty; Const "th1"; Empty; Const "th2"; Empty; Const "th3"; Empty]), "header_row"
+            Many,   ([Empty; Value ""; Empty; Value ""; Empty; Value ""; Empty]), "data_rows"
+         ] 
+         |> map_to_block_single_columns
 
     open Match
 

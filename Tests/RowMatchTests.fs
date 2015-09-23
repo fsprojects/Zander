@@ -11,28 +11,36 @@ module RowMatchTests =
 
     [<Test>] 
     let ``Single empty column match empty expression`` ()=
-        expression [Empty] [""] |> should equal true
+        match_s_expression [Empty] [""] |> should equal true
+
+    [<Test>] 
+    let ``several empty column match repeat empty expression`` ()=
+        expression [Many,Empty] ["";""] |> should equal true
 
     [<Test>] 
     let ``Single non empty column should not match empty expression`` ()=
-        expression [Empty] ["1"] |> should equal false
+        match_s_expression [Empty] ["1"] |> should equal false
 
     [<Test>] 
     let ``Single column match constant expression`` ()=
-        expression [Const "1"] ["1"] |> should equal true
+        match_s_expression [Const "1"] ["1"] |> should equal true
 
     [<Test>] 
     let ``Single column should not match constant expression`` ()=
-        expression [Const "1"] ["2"] |> should equal false
+        match_s_expression [Const "1"] ["2"] |> should equal false
 
     [<Test>] 
     let ``Single column should match variable`` ()=
-        expression [Value ""] ["2"] |> should equal true
+        match_s_expression [Value ""] ["2"] |> should equal true
+
+    [<Test>] 
+    let ``several column should match repeat variable`` ()=
+        expression [Many,Value ""] ["1";"2"] |> should equal true
 
     [<Test>] 
     let ``Single empty column should match variable`` ()=
-        expression [Value ""] [""] |> should equal true
+        match_s_expression [Value ""] [""] |> should equal true
 
     [<Test>] 
     let ``Should match more complicated example`` ()=
-        expression [Empty; Const "1"; Value ""; Const "2" ] [""; "1"; "X"; "2" ] |> should equal true
+        match_s_expression [Empty; Const "1"; Value ""; Const "2" ] [""; "1"; "X"; "2" ] |> should equal true

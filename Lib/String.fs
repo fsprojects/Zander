@@ -1,7 +1,10 @@
 ﻿namespace Zander.Internal
 open System
 open System.Text.RegularExpressions
-type StringAndPosition = { input:string; position:int }
+type InputAndPosition<'t> = { input:'t; position:int }
+
+type StringAndPosition = InputAndPosition<string>
+
 type StringAndLength = (string*int)
 
 module internal String = 
@@ -33,3 +36,4 @@ module internal String =
 
     let s_incr add (input:StringAndPosition) : StringAndPosition =
         {input=get_input input;position= add+(get_position input)}
+
