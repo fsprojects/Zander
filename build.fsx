@@ -80,7 +80,6 @@ Target "push" (fun _ ->
             WorkingDir = "bin" })
 )
 
-Target "BuildPackage" DoNothing
 
 // --------------------------------------------------------------------------------------
 // Run all targets by default. Invoke 'build <Target>' to override
@@ -90,16 +89,11 @@ Target "all" DoNothing
 "clean"
   ==> "build"
   ==> "CopyBinaries"
+  ==> "pack"
   ==> "test"
   ==> "all"
 
-"build"
-  ==> "test"
-
 "pack"
-  ==> "push"
-
-"BuildPackage"
   ==> "push"
 
 RunTargetOrDefault "test"
