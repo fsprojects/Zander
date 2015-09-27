@@ -63,6 +63,7 @@
     <Compile Include="Types.fs" />
     <Compile Include="Matches.fs" />
     <Compile Include="Parse.fs" />
+    <Compile Include="Match.fsi" />
     <Compile Include="Match.fs" />
     <Compile Include="Lang.fsi" />
     <Compile Include="Lang.fs" />

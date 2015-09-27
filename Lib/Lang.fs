@@ -21,6 +21,7 @@ module Lang=
             | "*" -> ZeroOrMany
             | v -> failwithf "Could not interpret: '%s'" v
 
+    [<CompiledName("Row")>]
     let row (v:string) : RecognizesCells list=
        let to_cell (v:StringAndPosition) : ((NumberOf*CellType) option*int)  =
             match v with
@@ -55,9 +56,8 @@ module Lang=
           $
     ", RegexOptions.IgnorePatternWhitespace)
 
+    [<CompiledName("Rows")>]
     let rows (v:string) : RecognizesRows=
-
-
         let m = row_regex.Match(v)
         let columns =  
             row (m.Groups.["columns"].Value) 
@@ -67,6 +67,7 @@ module Lang=
 
         { num= modifier; recognizer= columns; name= name}
 
+    [<CompiledName("Block")>]
     let block (s : string) : (RecognizesRows list)=
         let rows = s.Split([| '\n'; '\r'|], StringSplitOptions.RemoveEmptyEntries)
                         |> Array.filter ( not << String.IsNullOrWhiteSpace)

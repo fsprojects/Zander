@@ -64,7 +64,7 @@ type MatchBlock(matches: Parse.RecognizedBlock)=
 
 type BlockEx(expression:string)=
     let block=Lang.block expression
-    member self.Match (input:string array array,position:int option) : MatchBlock=
+    member self.Match (input:string array array, position:int option) : MatchBlock=
         let start = match position with |Some v->v;|None -> 0
         let parsed = Parse.block block start (input |> Array.map Array.toList
                                                     |> Array.toList)
@@ -72,8 +72,14 @@ type BlockEx(expression:string)=
 
     member self.Match (input:string array array) : MatchBlock=
         self.Match(input, None)
-    member self.Match (input:string array array, position:int ) : MatchBlock=
-        self.Match(input, Some position)
+    member self.Matches (input:string array array)=
+        let rec matchit position=
+            let m = self.Match(input, Some position)
+            if m.Success then
+                m :: matchit (position+m.Size.Height)
+            else
+                []
+        matchit 0 |> List.toArray
 
 type RowEx(expression:string)=
     let row= Lang.row expression

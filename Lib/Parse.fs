@@ -49,6 +49,7 @@ module Parse=
     type ResultAndLength = (Result*int)
     open Zander.Internal.Matches
 
+    [<CompiledName("Expression")>]
     let expression (expr:(NumberOf*CellType) list) row : Result list=
         let columnMatch (columnExpr:CellType) column=
             let value = { value=column;cell= columnExpr }
@@ -69,6 +70,7 @@ module Parse=
 
         matches columnMatch Result.isOk expr row |> List.map toResult
 
+    [<CompiledName("Block")>]
     let block (expr:RecognizesRows list) index blocks : RecognizedBlock=
 
         let rec bmatch idx eidx : (Result list*string) list=
@@ -100,6 +102,7 @@ module Parse=
         
         bmatch 0 0
 
+    [<CompiledName("RowsOf")>]
     let rowsOf v = 
         let valuesOf v' =
             v'

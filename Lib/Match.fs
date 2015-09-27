@@ -2,11 +2,13 @@
 
 module Match = 
     
-    let expression (recognized: Parse.Result list) : bool=
+    [<CompiledName("Expression")>]
+    let expression recognized=
         recognized
             |> List.forall Parse.Result.isOk
 
-    let block (recognized:Parse.RecognizedBlock) : bool=
+    [<CompiledName("Block")>]
+    let block (recognized:Parse.RecognizedBlock) =
         recognized
             |> List.map fst
             |> List.collect id

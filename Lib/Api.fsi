@@ -34,4 +34,5 @@ type MatchBlock=
 type BlockEx=
     new : string->BlockEx
     member Match : (string array array) -> MatchBlock
+    member Matches : (string array array) -> MatchBlock []
     //member Match : ((string array array) * int) -> MatchBlock
