@@ -27,14 +27,14 @@ module StringTests =
 
     [<Test>] 
     let ``match looks like constant`` ()=
-         match {input="\"Test\"";position=0} with | Api.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
+         match {input="\"Test\"";position=0} with | Lang.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
             |> should equal (Some ("Test",6))
 
-         match {input="abc \"Test\" ert";position=4} with | Api.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
+         match {input="abc \"Test\" ert";position=4} with | Lang.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
             |> should equal (Some ("Test",6))
      
 
-         match {input="abc Test\" ert";position=4} with | Api.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
+         match {input="abc Test\" ert";position=4} with | Lang.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
             |> should equal None
      
 

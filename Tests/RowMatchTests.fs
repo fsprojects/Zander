@@ -15,7 +15,7 @@ module RowMatchTests =
 
     [<Test>] 
     let ``several empty column match repeat empty expression`` ()=
-        expression [Many,Empty] ["";""] |> should equal true
+        parse_and_match_expression [Many,Empty] ["";""] |> should equal true
 
     [<Test>] 
     let ``Single non empty column should not match empty expression`` ()=
@@ -35,7 +35,7 @@ module RowMatchTests =
 
     [<Test>] 
     let ``several column should match repeat variable`` ()=
-        expression [Many,Value ""] ["1";"2"] |> should equal true
+        parse_and_match_expression [Many,Value ""] ["1";"2"] |> should equal true
 
     [<Test>] 
     let ``Single empty column should match variable`` ()=

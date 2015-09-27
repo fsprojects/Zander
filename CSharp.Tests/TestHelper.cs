@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Zander;
 
 namespace CSharp.Tests
 {
@@ -21,6 +22,18 @@ namespace CSharp.Tests
             return input.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
                         .Select(l => l.Split(new[] { ';' }))
                         .ToArray();
+        }
+
+        public static IEnumerable<Tuple<string, string>> ToValueTuples(MatchBlock m)
+        {
+            return m.Rows.SelectMany(r => r.Cells
+                                .Where(c => c.CellType == CellType.Value)
+                                .Select(c => Tuple.Create(c.Name, c.Value)));
+        }
+
+        public static IEnumerable<Tuple<string, string>> ToTuples(string[][] expected)
+        {
+            return expected.Select(kv => Tuple.Create(kv[0], kv[1]));
         }
     }
 }

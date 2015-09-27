@@ -1,74 +1,75 @@
-﻿namespace Zander.Internal
-open System
-open System.Text.RegularExpressions
+﻿namespace Zander
+open Zander.Internal
 
-module Api=
+type Size={Height:int;Width:int}
+    with
+        override self.ToString()=sprintf "(%i, %i)" self.Height self.Width
 
-    open Zander.Internal.String
-    open Zander.Internal.Option
+type CellType=
+    | Unknown=0
+    | Constant=1
+    | Value=2
+    
+type MatchCell(matches: Parse.Result)=
+    let result_value = matches |>Parse.Result.tryValue 
+    let null_if_none opt=
+        match opt with
+        | Some v->v
+        | None -> null
 
-    let (|LooksLikeConstant|) (input:StringAndPosition) : (StringAndLength) option=
-        opt{
-            let! m = regex_match_i "^\"" input
-            let! (gs, l) = regex_match_i @".*?(?!\\)""" (s_incr (snd m) input)
-            let! g = List.tryHead gs
-            return! Some (g.Value.Substring(0,(l-1)), (snd m)+l)
-        }
-    let number_of (g:string)=
-        match g with
-            | "" -> One
-            | "+" -> Many
-            | "*" -> ZeroOrMany
-            | v -> failwithf "Could not interpret: '%s'" v
+    member self.Success with get()=Parse.Result.isOk matches
+    member self.Name with get()=
+                                result_value
+                                    |>Option.bind Parse.Token.tryKey
+                                    |>null_if_none
+                                    
+    member self.Value with get()= 
+                                result_value
+                                    |>Option.bind Parse.Token.tryValue
+                                    |>null_if_none
+    member self.CellType with get()=
+                                    Option.opt{
+                                        let! token = result_value
+                                        return match token.cell with
+                                                | Zander.Internal.CellType.Value _ -> CellType.Value
+                                                | _ -> CellType.Constant
+                                    } |> (fun v -> match v with | None -> CellType.Unknown; | Some v -> v ; )
 
-    let interpret (s : string) : BlockRecognizer=
-        ///Match the pattern using a cached compiled Regex
+type MatchRow(matches: Parse.Result list)=
+    let cells = matches |> List.map (fun m->new MatchCell(m))
+    member self.Success with get() = Match.expression matches
+    member self.Length with get() = List.length matches
+    member self.Cells with get() =  cells |> List.toArray
 
-        let to_column (v:StringAndPosition) : ((NumberOf*BlockType) option*int)  =
-            match v with
-                | RegexMatch @"^\s+" ([g], l) -> None, l
-                | RegexMatch "^(_)([+*])?" ([_;_;numberOf], l) -> 
-                        Some (number_of numberOf.Value, Empty), l
-                | LooksLikeConstant (Some (c, l)) -> 
-                        Some((One,Const(c))), l 
-                | RegexMatch @"^\@(\w+)([+*])?" ([_;value;numberOf], l) -> 
-                        Some( (number_of numberOf.Value, Value( value.Value ))) , l
-                | RegexMatch @"^(\w+)([+*])?" ([_;value;numberOf], l) -> 
-                        Some( (number_of numberOf.Value, Const( value.Value ))) , l
-                | _ -> failwithf "Could not interpret: '%s' %i" (sub_i v) (get_position v)
+type MatchBlock(matches: Parse.RecognizedBlock)=
+    let height = matches |> List.length
+    let width = matches |> List.map (fst >> List.length) |> List.max
+    let size = {Height=height;Width=width}
+    
+    let rows = matches |> List.map (fun (m,name)->(new MatchRow(m),name))
 
-        let rec get_columns input =
-            let {input = s; position= i} = input
-            let head = to_column input
-            let l = i+ (snd head)
-            if l >= s.Length then
-                [head]
-            else
-                head :: get_columns {input=s; position=l} 
+    member self.Success with get() = Match.block matches
+    member self.Size with get(): Size= size
+    member self.Rows with get()= rows |> List.map fst |> List.toArray
+    member self.WithName name = rows 
+                                |> List.filter (snd >> (=) name) 
+                                |> List.map fst 
+                                |> List.toArray
 
-        let row_regex = new Regex(@"
-              ^
-              (?<columns>[^:]*) \s*
-              \: \s* 
-              (?<name>\w+) \s* (?<modifier>[+]?) \s*
-              $
-        ", RegexOptions.IgnorePatternWhitespace)
+type BlockEx(expression:string)=
+    let block=Lang.block expression
+    member self.Match (input:string array array,position:int option) : MatchBlock=
+        let start = match position with |Some v->v;|None -> 0
+        let parsed = Parse.block block start (input |> Array.map Array.toList
+                                                    |> Array.toList)
+        MatchBlock(parsed)
 
+    member self.Match (input:string array array) : MatchBlock=
+        self.Match(input, None)
+    member self.Match (input:string array array, position:int ) : MatchBlock=
+        self.Match(input, Some position)
 
-        let to_row (v:string) : RowRecognizer=
-            let m = row_regex.Match(v)
-            let columns =  
-                get_columns {input=(m.Groups.["columns"].Value) ; position=0}
-                |> List.choose fst 
-
-            let name =  m.Groups.["name"].Value
-            let modifier = number_of m.Groups.["modifier"].Value
-
-            (modifier, columns, name)
-            
-
-        let rows = s.Split([| '\n'; '\r'|], StringSplitOptions.RemoveEmptyEntries)
-                        |> Array.filter ( not << String.IsNullOrWhiteSpace)
-                        |> Array.map to_row 
-        Array.toList rows
-
+type RowEx(expression:string)=
+    let row= Lang.row expression
+    member self.Match (input:string array) : MatchRow=
+        new MatchRow(Parse.expression row (input |> Array.toList))

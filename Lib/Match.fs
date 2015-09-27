@@ -2,12 +2,12 @@
 
 module Match = 
     
-    let expression rowExpr row : bool=
-        Parse.expression rowExpr row
+    let expression (recognized: Parse.Result list) : bool=
+        recognized
             |> List.forall Parse.Result.isOk
 
-    let block expr index blocks : bool=
-        Parse.block expr index blocks
+    let block (recognized:Parse.RecognizedBlock) : bool=
+        recognized
             |> List.map fst
             |> List.collect id
             |> List.forall Parse.Result.isOk

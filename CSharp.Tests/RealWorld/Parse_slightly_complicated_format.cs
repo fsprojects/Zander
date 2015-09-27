@@ -1,4 +1,6 @@
 ﻿using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Zander;
@@ -19,49 +21,37 @@ namespace CSharp.Tests.RealWorld
         [Test]
         public void Can_recognize_title()
         {
-            var parsed = new ParserBuilder()
-                .Block("only_title", @" _+ ""Report Title"" _+  @Time @Page : report_title")
-                .Parse(file_content.Take(1).ToArray());
-            Assert.That(parsed.ToArray(), Is.EquivalentTo(new ParsedBlock[] {
-                new ParsedBlock( "only_title",new []{
-                        new ParsedRow("report_title", new[] { Kv("Time", "16/09/15 16:17"), Kv("Page","Page: 1") }),
-                })
-            }));
+            var parsed = new BlockEx(@" _+ ""Report Title"" _+  @Time @Page : report_title")
+                .Match(file_content.Take(1).ToArray());
+            Assert.That(ToValueTuples(parsed), Is.EquivalentTo(ToTuples(
+                new[] { new[] { "Time", "16/09/15 16:17" }, new[] { "Page", "Page: 1" } })));
         }
 
         [Test]
         public void Can_recognize_company()
         {
-            var parsed = new ParserBuilder()
-                .Block("only_company", @" ""Company AB"" _+          : company")
-                .Parse(file_content.Skip(1).Take(1).ToArray());
-            Assert.That(parsed.ToArray(), Is.EquivalentTo(new ParsedBlock[] {
-                new ParsedBlock( "only_company", new [] { new ParsedRow("company", EmptyKvs()) })}));
+            var parsed = new BlockEx(@" ""Company AB"" _+          : company")
+                .Match(file_content.Skip(1).Take(1).ToArray());
+            Assert.That(ToValueTuples(parsed), Is.EquivalentTo(ToTuples(new string[0][])));
         }
 
         [Test]
         public void Can_recognize_text()
         {
-            var parsed = new ParserBuilder()
-                .Block("only_text", @" @Text      _ _ _ _ _ _                _ _ _ _  _          : text+")
-                .Parse(file_content.Skip(2).Take(2).ToArray());
-            Assert.That(parsed.ToArray(), Is.EquivalentTo(new ParsedBlock[] {
-                new ParsedBlock( "only_text", new [] {
-                       new ParsedRow("text", new[] { Kv("Text", "Some text") }),
-                       new ParsedRow("text", new[] { Kv("Text", "that goes on and explains the report") }),
-                })}));
+            var parsed = new BlockEx(@" @Text      _ _ _ _ _ _                _ _ _ _  _          : text+")
+                .Match(file_content.Skip(2).Take(2).ToArray());
+            Assert.That(ToValueTuples(parsed), Is.EquivalentTo(ToTuples(new[] {
+                       new[] { "Text", "Some text" },
+                       new[] { "Text", "that goes on and explains the report" },
+                })));
         }
 
         [Test]
         public void Can_recognize_header()
         {
-            var parsed = new ParserBuilder()
-                .Block("only_header", @" _         Id _  Value  Type _ _ ""Attribute 1"" _ ""Attribute 2"" _*  : header")
-                .Parse(file_content.Skip(4).Take(1).ToArray());
-            Assert.That(parsed.ToArray(), Is.EquivalentTo(new ParsedBlock[] {
-                new ParsedBlock( "only_header", new [] {
-                        new ParsedRow("header", EmptyKvs())
-                })}));
+            var parsed = new BlockEx(@" _         Id _  Value  Type _ _ ""Attribute 1"" _ ""Attribute 2"" _*  : header")
+                .Match(file_content.Skip(4).Take(1).ToArray());
+            Assert.That(ToValueTuples(parsed), Is.EquivalentTo(ToTuples(new string[0][])));
         }
 
         private const string type1 = @" _          _ _ _ _ _ ""Report Title"" _  _  _  @Time @Page : report_title
@@ -70,24 +60,20 @@ namespace CSharp.Tests.RealWorld
                                         _         Id _  Value  Type _ _ ""Attribute 1"" _ ""Attribute 2"" _  _ : header
                                         _        @Id _ @Value @Type _ _ @Attribute1     _ @Attribute2     _  _ : row+
                     ";
-
+        private string[][] expected_1 = new[] {
+                    new[] { "Time", "16/09/15 16:17" }, new[] { "Page", "Page: 1" },
+                    new[] { "Text", "Some text" },
+                    new[] { "Text", "that goes on and explains the report" },
+                    new[] {"Id", "44" },new[] {"Value", "XYZ" }, new[] {"Type", "A" },
+                            new[] {"Attribute1", "" },new[] {"Attribute2", "" }
+                };
         [Test]
         public void Can_extract_information_from_first_block()
         {
-            var parsed = new ParserBuilder()
-                .Block("type1", type1)
-                .Parse(file_content.Take(6).ToArray());
-            Assert.That(parsed.ToArray(), Is.EquivalentTo(new ParsedBlock[] {
-                new ParsedBlock( "type1",new []{
-                        new ParsedRow("report_title", new[] { Kv("Time", "16/09/15 16:17"), Kv("Page","Page: 1") }),
-                        new ParsedRow("company", EmptyKvs()),
-                        new ParsedRow("text", new[] { Kv("Text", "Some text") }),
-                        new ParsedRow("text", new[] { Kv("Text", "that goes on and explains the report") }),
-                        new ParsedRow("header", EmptyKvs()),
-                        new ParsedRow("row", new[] { Kv("Id", "44"), Kv("Value", "XYZ"), Kv("Type", "A"),
-                            Kv("Attribute1", ""),Kv("Attribute2", ""), }),
-                })
-            }));
+            var parsed = new BlockEx(type1)
+                .Match(file_content.Take(6).ToArray());
+            Assert.That(ToValueTuples(parsed), Is.EquivalentTo(ToTuples(
+                expected_1)));
         }
         private const string type2 = @" _          _ _ _ _ _ ""Report Title"" _  _  _  @Time @Page : report_title
                                     ""Company AB"" _ _ _ _ _ _                _ _ _ _  _          : company
@@ -95,33 +81,76 @@ namespace CSharp.Tests.RealWorld
                                         _         Id _   Value  Type   _ _ ""Attribute 1""  ""Attribute 2"" _  _  _ : header
                                         _         _  @Id _      @Value @Type  _ @Attribute1 @Attribute2     _  _  _ : row+ 
                     ";
-
+        private string[][] expected_2 = new[] { new[] { "Time", "16/09/15 16:17" }, new[] { "Page", "Page: 2" },
+                    new [] { "Text", "Some text" },
+                    new [] { "Text", "that goes on and explains the report" },
+                    new [] {"Id", "51" }, new [] {"Value", "XYZ" },new [] {"Type", "A" },
+                            new [] {"Attribute1", "255" },new [] {"Attribute2", "" }
+                };
         [Test]
         public void Can_extract_information_from_second_block()
         {
-            var parsed = new ParserBuilder()
-                .Block("type2", type2)
-                .Parse(file_content.Skip(10).Take(6).ToArray());
-            Assert.That(parsed.ToArray(), Is.EquivalentTo(new ParsedBlock[] {
-                new ParsedBlock( "type2",new []{
-                        new ParsedRow("report_title", new[] { Kv("Time", "16/09/15 16:17"), Kv("Page","Page: 2") }),
-                        new ParsedRow("company", EmptyKvs()),
-                        new ParsedRow("text", new[] { Kv("Text", "Some text") }),
-                        new ParsedRow("text", new[] { Kv("Text", "that goes on and explains the report") }),
-                        new ParsedRow("header", EmptyKvs()),
-                        new ParsedRow("row", new[] { Kv("Id", "51"), Kv("Value", "XYZ"), Kv("Type", "A"),
-                            Kv("Attribute1", "255"),Kv("Attribute2", ""), }),
-                })
-            }));
+            var parsed = new BlockEx(type2)
+                .Match(file_content.Skip(10).Take(6).ToArray());
+            Assert.That(ToValueTuples(parsed), Is.EquivalentTo(
+                ToTuples(expected_2)));
+        }
+
+        /// <summary>
+        /// a procedural implementation of the obsolete "Builder.parse"
+        /// Using while and goto to recreate the recursion.
+        /// </summary>
+        private IEnumerable<MatchBlock> Parse(IEnumerable<BlockEx> matchers, string[][] matrix)
+        {
+            int index = 0;
+            while (index < matrix.Length)
+            {
+                foreach (var matcher in matchers)
+                {
+                    var m = matcher.Match(matrix.Skip(index).ToArray());
+                    if (m.Success)
+                    {
+                        yield return m;
+                        index = m.Size.Height + index;
+                        goto matched;
+                    }
+                }
+                throw new Exception("Could not match at index " + index);
+                matched: { }
+            }
         }
 
         [Test]
         public void Can_extract_entire_thing()
         {
-            var parsed = new ParserBuilder()
-                .Block("type1", type1)
-                .Block("type2", type2)
-                .Parse(file_content).ToArray();
+            var parsed = Parse(new[] { new BlockEx(type1), new BlockEx(type2) },
+                file_content).ToArray();
+            Assert.That(parsed.Length, Is.EqualTo(3));
+            var expected = new List<Tuple<string, string>>();
+            expected.AddRange(ToTuples(expected_1));
+            expected.AddRange(ToTuples(expected_2));
+            var tuples = parsed.SelectMany(ToValueTuples).ToArray();
+            //Assert.That(tuples.Take(expected.Count()), Is.EquivalentTo(expected));
         }
+
+        [Test]
+        public void Parse_a_simple_format()
+        {
+            var section = ParseCsv(@";H
+D1;
+D2;
+;D3");
+
+            var parsed = Parse(new[] {
+                            new BlockEx(@"
+                                _   ""H"" : header 
+                                @V   _ : row+"),
+                            new BlockEx(
+                                "_   @V : row+")
+            }, section).ToArray();
+            Assert.That(parsed.SelectMany(ToValueTuples), Is.EquivalentTo(ToTuples(
+                new[] { new[] { "V", "D1" }, new[] { "V", "D2" }, new[] { "V", "D3" } })));
+        }
+
     }
 }

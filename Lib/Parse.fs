@@ -1,27 +1,29 @@
 ﻿namespace Zander.Internal
 open System
-type ColumnRecognizer=(NumberOf*BlockType) list
-type RowRecognizer =(NumberOf*ColumnRecognizer*string)
-type BlockRecognizer=RowRecognizer list
+type RecognizesCells = (NumberOf*CellType)
+type RecognizesRows ={num:NumberOf; recognizer:RecognizesCells list;name:string}
 
 module Parse=
 
-    type Token={ value:string; block:BlockType }
+    type Token={ value:string; cell:CellType }
         with
             override self.ToString()=
-                match self.block with
+                match self.cell with
                     | Empty -> "Empty"
                     | Const c -> sprintf "'%s'" c
                     | Value v -> sprintf "@%s = %s" v self.value
             static member tryValue (t:Token)=
-                match t.block with
+                match t.cell with
                     | Value (name) -> Some (t.value)
                     | _ -> None
             static member tryKeyValue (t:Token)=
-                match t.block with
+                match t.cell with
                     | Value (name) -> Some (name, t.value)
                     | _ -> None
-
+            static member tryKey (t:Token)=
+                match t.cell with
+                    | Value (name) -> Some name
+                    | _ -> None
 
     type Result=
         | Ok of Token
@@ -47,9 +49,9 @@ module Parse=
     type ResultAndLength = (Result*int)
     open Zander.Internal.Matches
 
-    let expression (expr:ColumnRecognizer) row : Result list=
-        let columnMatch (columnExpr:BlockType) column=
-            let value = { value=column;block= columnExpr }
+    let expression (expr:(NumberOf*CellType) list) row : Result list=
+        let columnMatch (columnExpr:CellType) column=
+            let value = { value=column;cell= columnExpr }
             match columnExpr, column with
                 | Empty, "" -> Ok( value )
                 | Const v1,v2 -> 
@@ -67,7 +69,7 @@ module Parse=
 
         matches columnMatch Result.isOk expr row |> List.map toResult
 
-    let block (expr:BlockRecognizer) index blocks : RecognizedBlock=
+    let block (expr:RecognizesRows list) index blocks : RecognizedBlock=
 
         let rec bmatch idx eidx : (Result list*string) list=
             let erow = expr |> List.tryItem eidx
@@ -88,12 +90,12 @@ module Parse=
                     bmatch (idx+1) (eidx+1)
 
             match erow, row with
-                | Some (count,column,name), Some r -> 
+                | Some {num=count;recognizer=column;name=name}, Some r -> 
                     let h = [((expression column r), name)]
                     let r = rest_of count column name
                     h @ r
                 | None, None -> []
-                | Some (_,_,n), None -> [[Missing], n]
+                | Some {num=_;recognizer=_;name=n}, None -> [[Missing], n]
                 | None, Some r -> []
         
         bmatch 0 0

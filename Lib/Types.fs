@@ -1,6 +1,6 @@
 ﻿namespace Zander.Internal
 
-type BlockType=
+type CellType=
     /// empty constant
     | Empty
     /// constant

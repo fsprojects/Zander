@@ -2,6 +2,7 @@
 open Zander.Internal
 open System.Collections.Generic
 
+[<System.Obsolete("Use MatchRow")>]
 type ParsedRow = {
         Name: string
         Values: KeyValuePair<string,string>[]
@@ -11,6 +12,7 @@ type ParsedRow = {
             let kvs = self.Values |> Array.map (fun kv-> sprintf "%s : %s" kv.Key kv.Value)
             sprintf "%s=%s" self.Name (String.concat "," kvs )
 
+[<System.Obsolete("Use MatchBlock")>]
 type ParsedBlock={
         Name: string
         Rows: ParsedRow array
@@ -24,10 +26,13 @@ type ParsedBlock={
 
             sprintf "{%s : %s}" self.Name rows
 
-type BuildingBlock( name:string, block: BlockRecognizer)=
+
+[<System.Obsolete("Use BlockEx")>]
+type BuildingBlock( name:string, block: RecognizesRows list)=
     member this.name = name
     member this.block = block
 
+[<System.Obsolete("Use BlockEx")>]
 type ParserBuilder(array : BuildingBlock list)=
     let array = array
     let rowsOf v = 
@@ -43,11 +48,11 @@ type ParserBuilder(array : BuildingBlock list)=
              fun (row,name)-> (valuesOf row) , name
              )
 
-    member internal this.RawBlock  (x : string* BlockRecognizer) = 
+    member internal this.RawBlock  (x : string* (RecognizesRows list)) = 
         new ParserBuilder(array @ [ new BuildingBlock(fst x, snd x) ])
 
     member this.Block(name: string, x : string ) = 
-        new ParserBuilder(array @ [ new BuildingBlock( name, (Api.interpret x) )])
+        new ParserBuilder(array @ [ new BuildingBlock( name, (Lang.block x) )])
 
     member this.Parse(blocks : string array array) : ParsedBlock seq=
         let matrix = 
@@ -66,7 +71,7 @@ type ParserBuilder(array : BuildingBlock list)=
             if index >= List.length matrix then
                 []
             else
-                let maybeNext =  array |> List.tryFind (fun sp-> (Match.block (sp.block) index matrix ) )
+                let maybeNext =  array |> List.tryFind (fun sp-> (Match.block (Parse.block (sp.block) index matrix ) ))
                 match maybeNext with
                     | Some next -> 
                         let parsed = Parse.block (next.block) index matrix

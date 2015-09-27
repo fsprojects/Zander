@@ -10,10 +10,10 @@ module BuilderTests =
 
     let builder = new ParserBuilder()
     let first_expression = [
-                        One, ([One,Empty; One,Value ""]), "header"
-                        Many, ([One,Value ""; One,Empty]), "data_rows"
+                        {num=One; recognizer= ([One,Empty; One,Value ""]); name= "header"}
+                        {num=Many; recognizer= ([One,Value ""; One,Empty]); name= "data_rows"}
                     ]
-    let second_expression = [Many, ([One,Empty; One,Value ""]), "data_rows2" ]
+    let second_expression = [{num=Many; recognizer=([One,Empty; One,Value ""]); name= "data_rows2"} ]
 
     let spec input= 
            builder
@@ -35,10 +35,10 @@ module BuilderTests =
         { Name = "snd"; Rows= [|
                                 {Name= "data_rows2"; Values= [|kv "" "D3"|]}
                                |] }
-
+    open TestHelpers
     [<Test>] 
     let ``Can parse first part`` ()=
-        ( Match.block first_expression 0 sections ) |> should equal true
+        ( parse_and_match_block first_expression 0 sections ) |> should equal true
 
         ( Parse.block first_expression 0 sections ) 
                  |> List.length
@@ -46,11 +46,11 @@ module BuilderTests =
 
     [<Test>] 
     let ``Cant parse second part with first expression`` ()=
-        ( Match.block first_expression 3 sections ) |> should equal false
+        ( parse_and_match_block first_expression 3 sections ) |> should equal false
 
     [<Test>] 
     let ``Can parse second part with second expression`` ()=
-        ( Match.block second_expression 3 sections ) |> should equal true
+        ( parse_and_match_block second_expression 3 sections ) |> should equal true
 
 
     [<Test>] 
