@@ -17,6 +17,8 @@ type MatchRow=
     member Success :unit-> bool with get
     member Length :unit-> int with get
     member Cells :unit -> MatchCell array with get
+    /// Will throw an exception if different cells have the same name
+    member ToDictionary: unit -> System.Collections.Generic.IDictionary<string,string>
 
 type RowEx=
     new : string->RowEx

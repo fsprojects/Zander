@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Zander;
-
+using With.Linq;
 namespace CSharp.Tests
 {
     public class TestHelper
@@ -34,6 +34,14 @@ namespace CSharp.Tests
         public static IEnumerable<Tuple<string, string>> ToTuples(string[][] expected)
         {
             return expected.Select(kv => Tuple.Create(kv[0], kv[1]));
+        }
+        public static IEnumerable<IDictionary<string, string>> ToDictionaries(MatchBlock m)
+        {
+            return m.Rows.Select(r => r.ToDictionary());
+        }
+        public IDictionary<string,string> ToDictionary(KeyValuePair<string, string>[] v)
+        {
+            return v.ToDictionary();
         }
     }
 }

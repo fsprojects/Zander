@@ -7,3 +7,4 @@ NUGET
       NUnit (2.6.4)
     NUnit (2.6.4) - framework: >= net45
     NUnit.Runners (2.6.4)
+    With (1.0.6)

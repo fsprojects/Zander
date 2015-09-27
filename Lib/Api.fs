@@ -37,9 +37,15 @@ type MatchCell(matches: Parse.Result)=
 
 type MatchRow(matches: Parse.Result list)=
     let cells = matches |> List.map (fun m->new MatchCell(m))
+    let to_dictionary ()=
+        matches 
+            |> List.choose Parse.Result.tryValue
+            |> List.choose Parse.Token.tryKeyValue
+            |> dict
     member self.Success with get() = Match.expression matches
     member self.Length with get() = List.length matches
     member self.Cells with get() =  cells |> List.toArray
+    member self.ToDictionary() = to_dictionary()
 
 type MatchBlock(matches: Parse.RecognizedBlock)=
     let height = matches |> List.length
