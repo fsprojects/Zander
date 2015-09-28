@@ -7,7 +7,6 @@ open TestHelpers
 
 [<TestFixture>] 
 module BuilderTests = 
-
     let builder = new ParserBuilder()
     let first_expression = [
                         {num=One; recognizer= ([One,Empty; One,Value ""]); name= "header"}
@@ -40,7 +39,7 @@ module BuilderTests =
     let ``Can parse first part`` ()=
         ( parse_and_match_block first_expression 0 sections ) |> should equal true
 
-        ( Parse.block first_expression 0 sections ) 
+        ( Parse.block first_expression opts 0 sections ) 
                  |> List.length
                  |> should equal 3
 

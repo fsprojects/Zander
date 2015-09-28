@@ -35,6 +35,7 @@ type BuildingBlock( name:string, block: RecognizesRows list)=
 [<System.Obsolete("Use BlockEx")>]
 type ParserBuilder(array : BuildingBlock list)=
     let array = array
+    let opts = ParseOptions.Default
     let rowsOf v = 
         let to_kv (v:(string*string)) : KeyValuePair<string,string>=
             new KeyValuePair<string,string>(fst v, snd v)
@@ -71,10 +72,10 @@ type ParserBuilder(array : BuildingBlock list)=
             if index >= List.length matrix then
                 []
             else
-                let maybeNext =  array |> List.tryFind (fun sp-> (Match.block (Parse.block (sp.block) index matrix ) ))
+                let maybeNext =  array |> List.tryFind (fun sp-> (Match.block (Parse.block (sp.block) opts index matrix ) ))
                 match maybeNext with
                     | Some next -> 
-                        let parsed = Parse.block (next.block) index matrix
+                        let parsed = Parse.block (next.block) opts index matrix
                         let nextIndex = index + (List.length parsed)
                         [ { Name=next.name; Rows= (to_rows parsed) } ] @ (parse nextIndex) 
                     | None -> 

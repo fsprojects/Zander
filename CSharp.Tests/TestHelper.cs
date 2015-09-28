@@ -43,5 +43,10 @@ namespace CSharp.Tests
         {
             return v.ToDictionary();
         }
+        public static string ToCsv(string[][] matrix)
+        {
+            return string.Join(Environment.NewLine, matrix.Select(row => string.Join(", ", row)).ToArray());
+        }
+
     }
 }

@@ -64,6 +64,7 @@
     <Compile Include="BlockExTests.fs" />
     <Compile Include="RowEx.fs" />
     <Compile Include="NumberedMatchTests.fs" />
+    <Compile Include="SplitTests.fs" />
     <None Include="Script.fsx" />
     <Content Include="paket.references" />
     <Content Include="app.config" />

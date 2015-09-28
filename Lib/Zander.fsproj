@@ -62,12 +62,12 @@
     <Compile Include="Option.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="Matches.fs" />
+    <Compile Include="ParseOptions.fs" />
     <Compile Include="Parse.fs" />
     <Compile Include="Match.fsi" />
     <Compile Include="Match.fs" />
     <Compile Include="Lang.fsi" />
     <Compile Include="Lang.fs" />
-    <Compile Include="Api.fsi" />
     <Compile Include="Api.fs" />
     <Compile Include="Builder.fs" />
     <Content Include="paket.references" />

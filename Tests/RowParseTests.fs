@@ -8,8 +8,9 @@ open TestHelpers
 module RowParseTests = 
 
     open Parse
+    
     let private valuesOfExpression v a= 
-        s_expression v a
+        s_expression v a 
             |> List.map Result.value
             |> List.choose Token.tryValue
 
@@ -25,10 +26,6 @@ module RowParseTests =
     [<Test>] 
     let ``Single column should match variable`` ()=
         valuesOfExpression [Value ""] ["2"] |> should equal ["2"]
-
-    [<Test>] 
-    let ``Single empty column should match variable`` ()=
-        valuesOfExpression [Value ""] [""] |> should equal [""]
 
     [<Test>] 
     let ``Should match more complicated example`` ()=

@@ -18,54 +18,12 @@ namespace CSharp.Tests.RealWorld
             file_content = ParseCsv(File.ReadAllText(Path.Combine("RealWorld", "slightly_complicated_format.csv")));
         }
 
-        [Test]
-        public void Can_recognize_title()
-        {
-            var parsed = new BlockEx(@" _+ ""Report Title"" _+  @Time @Page : report_title")
-                .Match(file_content.Take(1).ToArray());
-            Assert.That(ToValueTuples(parsed), Is.EquivalentTo(ToTuples(
-                new[] { new[] { "Time", "16/09/15 16:17" }, new[] { "Page", "Page: 1" } })));
-        }
-
-        [Test]
-        public void Can_recognize_company()
-        {
-            var parsed = new BlockEx(@" ""Company AB"" _+          : company")
-                .Match(file_content.Skip(1).Take(1).ToArray());
-            Assert.That(ToValueTuples(parsed), Is.EquivalentTo(ToTuples(new string[0][])));
-        }
-
-        [Test]
-        public void Can_recognize_text()
-        {
-            var parsed = new BlockEx(@" @Text      _ _ _ _ _ _                _ _ _ _  _          : text+")
-                .Match(file_content.Skip(2).Take(2).ToArray());
-            Assert.That(ToValueTuples(parsed), Is.EquivalentTo(ToTuples(new[] {
-                       new[] { "Text", "Some text" },
-                       new[] { "Text", "that goes on and explains the report" },
-                })));
-        }
-
-        [Test]
-        public void Can_recognize_header()
-        {
-            var parsed = new BlockEx(@" _         Id _  Value  Type _ _ ""Attribute 1"" _ ""Attribute 2"" _*  : header")
-                .Match(file_content.Skip(4).Take(1).ToArray());
-            Assert.That(ToValueTuples(parsed), Is.EquivalentTo(ToTuples(new string[0][])));
-        }
-
-        private const string type1 = @" _          _ _ _ _ _ ""Report Title"" _  _  _  @Time @Page : report_title
-                                    ""Company AB"" _ _ _ _ _ _                _ _ _ _  _          : company
-                                        @Text      _ _ _ _ _ _                _ _ _ _  _          : text+
-                                        _         Id _  Value  Type _ _ ""Attribute 1"" _ ""Attribute 2"" _  _ : header
-                                        _        @Id _ @Value @Type _ _ @Attribute1     _ @Attribute2     _  _ : row+
-                    ";
+        private readonly string type1 = First_section.Full();
         private string[][] expected_1 = new[] {
                     new[] { "Time", "16/09/15 16:17" }, new[] { "Page", "Page: 1" },
                     new[] { "Text", "Some text" },
                     new[] { "Text", "that goes on and explains the report" },
                     new[] {"Id", "44" },new[] {"Value", "XYZ" }, new[] {"Type", "A" },
-                            new[] {"Attribute1", "" },new[] {"Attribute2", "" }
                 };
         [Test]
         public void Can_extract_information_from_first_block()
@@ -75,17 +33,12 @@ namespace CSharp.Tests.RealWorld
             Assert.That(ToValueTuples(parsed), Is.EquivalentTo(ToTuples(
                 expected_1)));
         }
-        private const string type2 = @" _          _ _ _ _ _ ""Report Title"" _  _  _  @Time @Page : report_title
-                                    ""Company AB"" _ _ _ _ _ _                _ _ _ _  _          : company
-                                        @Text      _ _ _ _ _ _                _ _ _ _  _          : text+
-                                        _         Id _   Value  Type   _ _ ""Attribute 1""  ""Attribute 2"" _  _  _ : header
-                                        _         _  @Id _      @Value @Type  _ @Attribute1 @Attribute2     _  _  _ : row+ 
-                    ";
+        private readonly string type2 = Second_section.Full();
         private string[][] expected_2 = new[] { new[] { "Time", "16/09/15 16:17" }, new[] { "Page", "Page: 2" },
                     new [] { "Text", "Some text" },
                     new [] { "Text", "that goes on and explains the report" },
                     new [] {"Id", "51" }, new [] {"Value", "XYZ" },new [] {"Type", "A" },
-                            new [] {"Attribute1", "255" },new [] {"Attribute2", "" }
+                            new [] {"Attribute1", "255" },
                 };
         [Test]
         public void Can_extract_information_from_second_block()
@@ -115,7 +68,11 @@ namespace CSharp.Tests.RealWorld
                         goto matched;
                     }
                 }
-                throw new Exception("Could not match at index " + index);
+                var skip = Math.Min(0, index - 2);
+                throw new Exception("Could not match at index " + index+" :\n\n "+
+                    ToCsv(matrix.Skip(skip).Take(skip).ToArray())+"\n"+
+                    ">> "+ToCsv(matrix.Skip(skip).Take(3).ToArray())
+                    );
                 matched: { }
             }
         }
@@ -123,14 +80,25 @@ namespace CSharp.Tests.RealWorld
         [Test]
         public void Can_extract_entire_thing()
         {
-            var parsed = Parse(new[] { new BlockEx(type1), new BlockEx(type2) },
-                file_content).ToArray();
-            Assert.That(parsed.Length, Is.EqualTo(3));
-            var expected = new List<Tuple<string, string>>();
-            expected.AddRange(ToTuples(expected_1));
-            expected.AddRange(ToTuples(expected_2));
-            var tuples = parsed.SelectMany(ToValueTuples).ToArray();
-            //Assert.That(tuples.Take(expected.Count()), Is.EquivalentTo(expected));
+            var header = new BlockEx(string.Join(Environment.NewLine, new[] {
+                First_section.A_Report_Title,
+                First_section.B_Company_AB,
+                First_section.C_Text_empty
+            }));
+            var split = header.Split(file_content)
+                .Where(arr=>arr.Any())
+                .ToArray();
+            Assert.That(split.Length, Is.EqualTo(3));
+            var types = new[] {
+                new BlockEx(string.Join(Environment.NewLine, new[] {
+                    First_section.D_header, First_section.E_row
+                })), new BlockEx(string.Join(Environment.NewLine, new[] {
+                    Second_section.D_header, Second_section.E_row
+                }))
+            };
+            var parsed = split.SelectMany(block =>
+                Parse(types, block)
+            ).ToArray();
         }
 
         [Test]

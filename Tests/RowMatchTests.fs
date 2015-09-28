@@ -8,6 +8,7 @@ open TestHelpers
 module RowMatchTests = 
 
     open Match
+    open Zander
 
     [<Test>] 
     let ``Single empty column match empty expression`` ()=
@@ -38,8 +39,12 @@ module RowMatchTests =
         parse_and_match_expression [Many,Value ""] ["1";"2"] |> should equal true
 
     [<Test>] 
-    let ``Single empty column should match variable`` ()=
-        match_s_expression [Value ""] [""] |> should equal true
+    let ``Single empty column should not match variable`` ()=
+        match_s_expression [Value ""] [""] |> should equal false
+
+    [<Test>]
+    let ``Should match if option is specified to match empty`` ()=
+        match_s_expression_opt [Value ""] ParseOptions.ValueMatchesEmpty [""] |> should equal true
 
     [<Test>] 
     let ``Should match more complicated example`` ()=

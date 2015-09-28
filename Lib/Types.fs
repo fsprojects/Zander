@@ -18,6 +18,7 @@ open Zander.Internal.Option
 
 type NumberOf=
     | One 
+    | ZeroOrOne
     | ZeroOrMany
     | Many
     with
@@ -25,5 +26,6 @@ type NumberOf=
             match self with
                 | One -> "One"
                 | Many -> "Many"
+                | ZeroOrOne -> "ZeroOrOne"
                 | ZeroOrMany -> "ZeroOrMany"
 

@@ -12,7 +12,7 @@ that goes on and explains the report;;;;;;;;;;;
 Company AB;;;;;;;;;;;
 Some text;;;;;;;;;;;
 that goes on and explains the report;;;;;;;;;;;
-;Id;;Value;Type;;;Attribute 1;Attribute 2;;;
+Id;;Value;Type;;;Attribute 1;Attribute 2;;;;
 ;;51;;XYZ;A;;255;;;;
 ;;51;;XYZ;B;;;130;;;
 ;;51;;XYZ;C;;;;;;
