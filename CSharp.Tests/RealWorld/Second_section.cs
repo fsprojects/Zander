@@ -58,7 +58,7 @@ namespace CSharp.Tests.RealWorld
             Assert.That(parsed.Success);
         }
 
-        public static string E_row = @" _ _ @Id _   @Value @Type _ @Attribute1? _? @Attribute2?     _+ : row+ ";
+        public static string E_row = @" _ _ @Id _   @Value @Type _ (@Attribute1|_) (@Attribute2|_)  _+ : row+ ";
         [Test]
         public void Can_recognize_row()
         {

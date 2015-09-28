@@ -17,6 +17,10 @@ module Matches=
         | MatchFailure
 
     module MatchResult=
+        let isOk m =
+            match m with
+                | MatchOk _-> true
+                | _ -> false
         let value m=
             match m with
                 | MatchOk v->v

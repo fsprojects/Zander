@@ -42,6 +42,14 @@ module RowMatchTests =
     let ``Single empty column should not match variable`` ()=
         match_s_expression [Value ""] [""] |> should equal false
 
+    [<Test>] 
+    let ``Single empty column should match variable or empty`` ()=
+        match_s_expression [Or ( Value "", Empty )] [""] |> should equal true
+
+    [<Test>] 
+    let ``Single column should match variable or empty`` ()=
+        match_s_expression [Or ( Value "", Empty )] ["1"] |> should equal true
+
     [<Test>]
     let ``Should match if option is specified to match empty`` ()=
         match_s_expression_opt [Value ""] ParseOptions.ValueMatchesEmpty [""] |> should equal true

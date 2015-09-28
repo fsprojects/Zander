@@ -52,7 +52,7 @@ namespace CSharp.Tests.RealWorld
                 .Match(file_content.Skip(4).Take(1).ToArray());
             Assert.That(ToValueTuples(parsed), Is.EquivalentTo(ToTuples(new string[0][])));
         }
-        public static string E_row = @" _        @Id _ @Value @Type _ _ @Attribute1? _? _? @Attribute2?     _+ : row+";
+        public static string E_row = @" _        @Id _ @Value @Type _ _ (@Attribute1|_) _ (@Attribute2|_)     _+ : row+";
         [Test]
         public void Can_recognize_row()
         {

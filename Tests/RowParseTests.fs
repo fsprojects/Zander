@@ -28,6 +28,10 @@ module RowParseTests =
         valuesOfExpression [Value ""] ["2"] |> should equal ["2"]
 
     [<Test>] 
+    let ``Single column should match variable or empty`` ()=
+        valuesOfExpression [Or ( Value "", Empty )] ["2"] |> should equal ["2"]
+
+    [<Test>] 
     let ``Should match more complicated example`` ()=
         valuesOfExpression  
             [Empty; Const "1"; Value "" ; Const "2" ] 

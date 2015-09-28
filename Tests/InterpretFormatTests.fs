@@ -25,6 +25,25 @@ module InterpretFormatTests =
         let apiCode =    " _   \"Some constant\" : header"
         Lang.block apiCode |> should equal expression
 
+    [<Test>] 
+    let ``Can parse or constant, empty ``()=
+        let expression = [{num=One;recognizer= ([One,Or(Const "Some constant", Empty)]); name= "header"}]
+        let apiCode =    " (\"Some constant\"|_) : header"
+        Lang.block apiCode |> should equal expression
+
+        let apiCode =    " ( \"Some constant\" | _ ) : header"
+        Lang.block apiCode |> should equal expression
+
+
+    [<Test>] 
+    let ``Can parse or value, empty ``()=
+        let expression = [{num=One;recognizer= ([One,Or(Value "A", Empty)]); name= "header"}]
+        let apiCode =    " (@A|_) : header"
+        Lang.block apiCode |> should equal expression
+
+        let apiCode =    " ( @A | _ ) : header"
+        Lang.block apiCode |> should equal expression
+
 
     [<Test>]
     let ``Regression test for constants`` ()=

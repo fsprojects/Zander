@@ -24,18 +24,29 @@ module Lang=
 
     [<CompiledName("Row")>]
     let row (v:string) : RecognizesCells list=
-       let to_cell (v:StringAndPosition) : ((NumberOf*CellType) option*int)  =
+       let rec to_cell (v:StringAndPosition) : ((NumberOf*CellType) option*int)  =
+            let unwrap_to_cell (v:string) : (NumberOf*CellType) option =
+                let value, _ =to_cell (String.emptyPosition v) 
+                value
             match v with
                 | RegexMatch @"^\s+" ([g], l) -> None, l
+                | RegexMatch @"^\(\s*([^)|]*)\s*\|\s*([^)|]*)\s*\)" ([_;a;b], l) ->
+                    let a' = unwrap_to_cell a.Value
+                    let b' = unwrap_to_cell b.Value
+                    match unwrap_to_cell a.Value, unwrap_to_cell b.Value with
+                    | Some a', Some b' -> 
+                        Some (One, (Or (snd a', snd b'))), l
+                    | _,_-> None, l
                 | RegexMatch "^(_)([+*?])?" ([_;_;numberOf], l) -> 
-                        Some (number_of numberOf.Value, Empty), l
+                    Some (number_of numberOf.Value, Empty), l
                 | LooksLikeConstant (Some (c, l)) -> 
-                        Some((One,Const(c))), l 
+                    Some((One,Const(c))), l 
                 | RegexMatch @"^\@(\w+)([+*?])?" ([_;value;numberOf], l) -> 
-                        Some( (number_of numberOf.Value, Value( value.Value ))) , l
+                    Some( (number_of numberOf.Value, Value( value.Value ))) , l
                 | RegexMatch @"^(\w+)([+*?])?" ([_;value;numberOf], l) -> 
-                        Some( (number_of numberOf.Value, Const( value.Value ))) , l
-                | _ -> failwithf "Could not interpret: '%s' %i" (sub_i v) (get_position v)
+                    Some( (number_of numberOf.Value, Const( value.Value ))) , l
+                | _ -> 
+                    failwithf "Could not interpret: '%s' %i" (sub_i v) (get_position v)
 
        let rec get_cells input =
             let {input = s; position= i} = input

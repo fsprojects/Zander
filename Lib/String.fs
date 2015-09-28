@@ -19,6 +19,9 @@ module internal String =
     let get_position (v:StringAndPosition) =
         v.position
 
+    let emptyPosition s=
+        { input =s; position=0 }
+
     let regex_match_i pattern input=
         let r = new Regex(pattern)
         let m = r.Match ( sub_i input )

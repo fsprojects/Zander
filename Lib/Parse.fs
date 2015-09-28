@@ -11,7 +11,8 @@ module Parse=
                 match self.cell with
                     | Empty -> "Empty"
                     | Const c -> sprintf "'%s'" c
-                    | Value v -> sprintf "@%s = %s" v self.value
+                    | Value v -> sprintf "%O = %s" (Value v) self.value
+                    | Or (a,b) -> sprintf "%O = %s" (Or (a,b)) self.value
             static member tryValue (t:Token)=
                 match t.cell with
                     | Value (name) -> Some (t.value)
@@ -53,7 +54,7 @@ module Parse=
     [<CompiledName("Expression")>]
     let expression (expr:(NumberOf*CellType) list) (opts: ParseOptions) row : Result list=
         let valueMatchEmpty = opts.HasFlag(ParseOptions.ValueMatchesEmpty)
-        let columnMatch (columnExpr:CellType) column=
+        let rec columnMatch (columnExpr:CellType) column=
             let value = { value=column;cell= columnExpr }
             match columnExpr, column with
                 | Empty, "" -> Ok( value )
@@ -67,6 +68,12 @@ module Parse=
                         Ok( value )
                 | Value n, v ->
                         UnRecognized v
+                | Or (a, b),v->
+                        let a' = columnMatch a v
+                        if a' |> Result.isOk then
+                            a'
+                        else
+                            columnMatch b v
                 | _, v-> UnRecognized v
 
         let toResult matchResult = 
