@@ -52,14 +52,13 @@ How do you use this library to extract the information above? You use the parser
 ```c#
 using Zander;
 ...
- var parsed = new ParserBuilder()
-                .Block("type1", @" _          _ _ _ _ _ ""Report Title"" _  _  _  @Time @Page : report_title
+ var parsed = new BlockEx( @" _          _ _ _ _ _ ""Report Title"" _  _  _  @Time @Page : report_title
                                 ""Company AB"" _ _ _ _ _ _                _ _ _ _  _          : company
                                     @Text      _ _ _ _ _ _                _ _ _ _  _          : text+
                                   _         Id _  Value  Type _ _ ""Attribute 1"" _ ""Attribute 2"" _  _ : header
                                   _        @Id _ @Value @Type _ _ @Attribute1     _ @Attribute2     _  _ : row+
                     ")
-                .Parse(arrayOfArrays);
+                .Matches(arrayOfArrays);
 ```
 
 This will give you structured information that will be easy to consume.
