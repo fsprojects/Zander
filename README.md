@@ -41,6 +41,7 @@ But the structure of the block layout might change from "page" to "page".
 * Use ```_``` to indicate that there should be an empty column
 * Use ```"Some constant"``` or ```constant``` to indicate a column with a constant value
 * Use ```@Value``` to indicate that you want the value on that column
+* Use ```( .. | .. )``` to match any of 
 
 ### Match rows
 In order to match rows you supply the row specification with a name by postfixing with ``` : title```
@@ -56,7 +57,7 @@ using Zander;
                                 ""Company AB"" _ _ _ _ _ _                _ _ _ _  _          : company
                                     @Text      _ _ _ _ _ _                _ _ _ _  _          : text+
                                   _         Id _  Value  Type _ _ ""Attribute 1"" _ ""Attribute 2"" _  _ : header
-                                  _        @Id _ @Value @Type _ _ @Attribute1     _ @Attribute2     _  _ : row+
+                                  _        @Id _ @Value @Type _ _ (@Attribute1|_) _ (@Attribute2|_) _  _ : row+
                     ")
                 .Matches(arrayOfArrays);
 ```
