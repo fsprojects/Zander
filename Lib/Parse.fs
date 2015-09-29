@@ -32,18 +32,18 @@ module Parse=
         | UnRecognized of string
         | Missing 
         with
-            static member isOk result=
-                match result with
-                    | Ok v -> true
-                    | _ -> false
             static member tryValue result=
                 match result with
                     | Ok v -> Some v
                     | _ -> None
-            static member value result=
+
+            static member isOk result=
                 match result with
-                    | Ok v -> v
-                    | _ -> failwithf "Not ok result %s!" (result.ToString())
+                    | Ok v -> true
+                    | _ -> false
+
+            static member value result=
+                Option.get (Result.tryValue result)
 
     type RecognizedBlock=((Result list*string) list)
     type ColumnsAndPosition = InputAndPosition<string list>
@@ -117,6 +117,7 @@ module Parse=
         
         bmatch 0 0
 
+    /// Returns the values of 'Value' where the match is ok
     [<CompiledName("RowsOf")>]
     let rowsOf v = 
         let valuesOf v' =
@@ -124,7 +125,5 @@ module Parse=
             |> List.choose Result.tryValue
             |> List.choose Token.tryValue
 
-        v |> List.map (
-             fun (row,name)-> (valuesOf row) , name
-             )
+        v |> List.map (fun (row,name)-> (valuesOf row) , name)
 
