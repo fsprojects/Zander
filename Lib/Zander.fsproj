@@ -60,6 +60,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="String.fs" />
     <Compile Include="Option.fs" />
+    <Compile Include="IndexOfNonEscapedQuote.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="Matches.fs" />
     <Compile Include="ParseOptions.fs" />

@@ -44,11 +44,11 @@ module RowMatchTests =
 
     [<Test>] 
     let ``Single empty column should match variable or empty`` ()=
-        match_s_expression [Or ( Value "", Empty )] [""] |> should equal true
+        match_s_expression [Or [ Value ""; Empty ]] [""] |> should equal true
 
     [<Test>] 
     let ``Single column should match variable or empty`` ()=
-        match_s_expression [Or ( Value "", Empty )] ["1"] |> should equal true
+        match_s_expression [Or [ Value ""; Empty ]] ["1"] |> should equal true
 
     [<Test>]
     let ``Should match if option is specified to match empty`` ()=

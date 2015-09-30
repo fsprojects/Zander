@@ -9,22 +9,29 @@ type StringAndLength = (string*int)
 
 module internal String = 
 
-    let sub_i (input:StringAndPosition) =
+    let sub (input:StringAndPosition) =
         let {input=s; position=i} = input
         s.Substring(i)
 
-    let get_input (v:StringAndPosition) =
+    let getInput (v:StringAndPosition) =
         v.input
 
-    let get_position (v:StringAndPosition) =
+    let getPosition (v:StringAndPosition) =
         v.position
+
+    let getLength (v:StringAndPosition) =
+        v.input.Length
 
     let emptyPosition s=
         { input =s; position=0 }
 
+    let toString o=
+        o.ToString()
+    let trim chars (v:string)=
+        v.Trim(chars|>List.toArray)
     let regex_match_i pattern input=
         let r = new Regex(pattern)
-        let m = r.Match ( sub_i input )
+        let m = r.Match ( sub input )
         if m.Success then
             Some ([for x in m.Groups -> x], m.Length)
         else 
@@ -32,11 +39,11 @@ module internal String =
 
     let (|RegexMatch|_|) pattern (input:StringAndPosition) =
         let r = new Regex(pattern)
-        if (get_input input) = null then 
+        if (getInput input) = null then 
             None
         else 
             regex_match_i pattern input
 
     let s_incr add (input:StringAndPosition) : StringAndPosition =
-        {input=get_input input;position= add+(get_position input)}
+        {input=getInput input;position= add+(getPosition input)}
 

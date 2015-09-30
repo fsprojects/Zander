@@ -26,18 +26,41 @@ module InterpretFormatTests =
         Lang.block apiCode |> should equal expression
 
     [<Test>] 
-    let ``Can parse or constant, empty ``()=
-        let expression = [{num=One;recognizer= ([One,Or(Const "Some constant", Empty)]); name= "header"}]
+    let ``Can parse 'or' constant, empty ``()=
+        let expression = [{num=One;recognizer= ([One,Or [Const "Some constant"; Empty]]); name= "header"}]
         let apiCode =    " (\"Some constant\"|_) : header"
         Lang.block apiCode |> should equal expression
 
         let apiCode =    " ( \"Some constant\" | _ ) : header"
         Lang.block apiCode |> should equal expression
 
+    [<Test>] 
+    let ``Can parse 'or' many different constants``()=
+        let expression = [{num=One;recognizer= ([One,Or [Const "A 1"; Const "B 1"; Const "C"]]); name= "header"}]
+        let apiCode =    " (\"A 1\"|\"B 1\"|C) : header"
+        Lang.block apiCode |> should equal expression
+
+    [<Test>] 
+    let ``Can parse 'or' constants with | in the constant``()=
+        let expression = [{num=One;recognizer= ([One,Or [Const "A | 1"]]); name= "header"}]
+        let apiCode =    " (\"A | 1\") : header"
+        Lang.block apiCode |> should equal expression
+
+    [<Test>] 
+    let ``Can parse 'or' constants with " in the constant``()=
+        let expression = [{num=One;recognizer= ([One,Or [Const @"A \"" 1"]]); name= "header"}]
+        let apiCode =    @" (""A \"" 1"") : header"
+        Lang.block apiCode |> should equal expression
+
+    [<Test>] 
+    let ``Can parse constants with " in the constant``()=
+        let expression = [{num=One;recognizer= ([One,Const @"A \"" 1"]); name= "header"}]
+        let apiCode =    @"""A \"" 1"" : header"
+        Lang.block apiCode |> should equal expression
 
     [<Test>] 
     let ``Can parse or value, empty ``()=
-        let expression = [{num=One;recognizer= ([One,Or(Value "A", Empty)]); name= "header"}]
+        let expression = [{num=One;recognizer= ([One,Or[Value "A";Empty]]); name= "header"}]
         let apiCode =    " (@A|_) : header"
         Lang.block apiCode |> should equal expression
 

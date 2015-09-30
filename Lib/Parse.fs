@@ -1,8 +1,11 @@
 ﻿namespace Zander.Internal
+open Zander
 open System
 type RecognizesCells = (NumberOf*CellType)
-type RecognizesRows ={num:NumberOf; recognizer:RecognizesCells list;name:string}
-open Zander
+type RecognizesRows = {num:NumberOf; recognizer:RecognizesCells list;name:string}
+    with
+        override self.ToString()=sprintf "%s %O %O" self.name self.recognizer self.num
+
 module Parse=
 
     type Token={ value:string; cell:CellType }
@@ -12,7 +15,7 @@ module Parse=
                     | Empty -> "Empty"
                     | Const c -> sprintf "'%s'" c
                     | Value v -> sprintf "%O = %s" (Value v) self.value
-                    | Or (a,b) -> sprintf "%O = %s" (Or (a,b)) self.value
+                    | Or cs -> sprintf "%O = %s" (Or cs) self.value
             static member tryValue (t:Token)=
                 match t.cell with
                     | Value (name) -> Some (t.value)
@@ -56,24 +59,29 @@ module Parse=
         let valueMatchEmpty = opts.HasFlag(ParseOptions.ValueMatchesEmpty)
         let rec columnMatch (columnExpr:CellType) column=
             let value = { value=column;cell= columnExpr }
+
             match columnExpr, column with
                 | Empty, "" -> Ok( value )
                 | Const v1,v2 when v1=v2-> 
-                        Ok( value )
+                    Ok( value )
                 | Const v1,v2 when v1<>v2-> 
-                        WrongConstant (v1, v2)
+                    WrongConstant (v1, v2)
                 | Value n, v when String.IsNullOrEmpty(v) && valueMatchEmpty -> 
                     Ok( value )
                 | Value n, v when not(String.IsNullOrEmpty(v)) ->
-                        Ok( value )
+                    Ok( value )
                 | Value n, v ->
-                        UnRecognized v
-                | Or (a, b),v->
-                        let a' = columnMatch a v
-                        if a' |> Result.isOk then
-                            a'
-                        else
-                            columnMatch b v
+                    UnRecognized v
+                | Or cs,v->
+                    let rec first v = function
+                        | [] -> UnRecognized v
+                        | head:: tail-> 
+                            let a' = columnMatch head v;
+                            if a' |> Result.isOk then
+                                a'
+                            else
+                                first v tail
+                    first v cs
                 | _, v-> UnRecognized v
 
         let toResult matchResult = 

@@ -26,14 +26,21 @@ module StringTests =
     *)
 
     [<Test>] 
-    let ``match looks like constant`` ()=
-         match {input="\"Test\"";position=0} with | Lang.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
+    let ``match quoted constant`` ()=
+        let input = "\"Test\""
+        match {input=input;position=0} with | Lang.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
             |> should equal (Some ("Test",6))
+        input.Length |> should equal 6
 
-         match {input="abc \"Test\" ert";position=4} with | Lang.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
+    [<Test>] 
+    let ``match quoted constant among other`` ()=
+        let input ="abc \"Test\" ert"
+        match {input=input;position=4} with | Lang.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
             |> should equal (Some ("Test",6))
-     
+        input.Substring(4,6) |> should equal "\"Test\""
 
+    [<Test>] 
+    let ``should not match quoted constant if it's not quoted`` ()=
          match {input="abc Test\" ert";position=4} with | Lang.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
             |> should equal None
      

@@ -20,12 +20,12 @@ type CellType=
     | Const of string 
     /// variable with name
     | Value of string 
-    | Or of (CellType)*(CellType)
+    | Or of CellType list
     with
         override self.ToString()=
             match self with
                 | Empty -> "Empty"
                 | Const c -> sprintf "'%s'" c
                 | Value v -> sprintf "@%s" v
-                | Or (a,b)-> sprintf "(%O || %O)" a b
+                | Or cs-> cs |> List.map String.toString |> String.concat "||" |> sprintf "(%s)"
 

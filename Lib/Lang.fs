@@ -6,13 +6,16 @@ module Lang=
 
     open Zander.Internal.String
     open Zander.Internal.Option
+    open Zander.Internal.IndexOfNonEscapedQuote
 
     let (|LooksLikeConstant|) (input:StringAndPosition) : (StringAndLength) option=
         opt{
             let! m = regex_match_i "^\"" input
-            let! (gs, l) = regex_match_i @".*?(?!\\)""" (s_incr (snd m) input)
-            let! g = List.tryHead gs
-            return! Some (g.Value.Substring(0,(l-1)), (snd m)+l)
+            let without_first_quote = (s_incr (snd m) input)
+            let! index = indexOfFirstNonEscapedQuote without_first_quote
+            let constant = input.input.Substring(input.position+1, (index-input.position-1))
+            let length = index-input.position+1
+            return (constant, length)
         }
     let number_of (g:string)=
         match g with
@@ -22,21 +25,30 @@ module Lang=
             | "?" -> ZeroOrOne
             | v -> failwithf "Could not interpret: '%s'" v
 
+    let rec parseCells parseCell length_of_input input =
+        let {input = s; position= i} = input
+        let head = parseCell input
+        let l = i+ (snd head)
+        if l >= length_of_input input then
+            [head]
+        else
+            head :: parseCells parseCell length_of_input {input=s; position=l} 
+
     [<CompiledName("Row")>]
     let row (v:string) : RecognizesCells list=
-       let rec to_cell (v:StringAndPosition) : ((NumberOf*CellType) option*int)  =
+       let rec parseCell (v:StringAndPosition) : ((NumberOf*CellType) option*int)  =
             let unwrap_to_cell (v:string) : (NumberOf*CellType) option =
-                let value, _ =to_cell (String.emptyPosition v) 
+                let value, _ =parseCell (String.emptyPosition v) 
                 value
             match v with
                 | RegexMatch @"^\s+" ([g], l) -> None, l
-                | RegexMatch @"^\(\s*([^)|]*)\s*\|\s*([^)|]*)\s*\)" ([_;a;b], l) ->
-                    let a' = unwrap_to_cell a.Value
-                    let b' = unwrap_to_cell b.Value
-                    match unwrap_to_cell a.Value, unwrap_to_cell b.Value with
-                    | Some a', Some b' -> 
-                        Some (One, (Or (snd a', snd b'))), l
-                    | _,_-> None, l
+                | RegexMatch @"^\|" ([g], l) -> None, l
+                | RegexMatch @"^\(([^)]*)\)" ([_;s], l) ->
+                    let cells = parseCells parseCell getLength {input =s.Value; position=0} 
+                                |> List.choose fst
+                    let conditions = 
+                            cells |> List.map snd
+                    Some (One, (Or conditions)), l
                 | RegexMatch "^(_)([+*?])?" ([_;_;numberOf], l) -> 
                     Some (number_of numberOf.Value, Empty), l
                 | LooksLikeConstant (Some (c, l)) -> 
@@ -46,19 +58,12 @@ module Lang=
                 | RegexMatch @"^(\w+)([+*?])?" ([_;value;numberOf], l) -> 
                     Some( (number_of numberOf.Value, Const( value.Value ))) , l
                 | _ -> 
-                    failwithf "Could not interpret: '%s' %i" (sub_i v) (get_position v)
+                    failwithf "Could not interpret: '%s' %i" (sub v) (getPosition v)
 
-       let rec get_cells input =
-            let {input = s; position= i} = input
-            let head = to_cell input
-            let l = i+ (snd head)
-            if l >= s.Length then
-                [head]
-            else
-                head :: get_cells {input=s; position=l} 
-       get_cells {input =v; position=0} |> List.choose fst
+       parseCells parseCell getLength {input =v; position=0} 
+            |> List.choose fst
 
-    let row_regex = new Regex(@"
+    let rowRegex = new Regex(@"
           ^
           (?<columns>[^:]*) \s*
           (
@@ -70,7 +75,7 @@ module Lang=
 
     [<CompiledName("Rows")>]
     let rows (v:string) : RecognizesRows=
-        let m = row_regex.Match(v)
+        let m = rowRegex.Match(v)
         let columns =  
             row (m.Groups.["columns"].Value) 
 
