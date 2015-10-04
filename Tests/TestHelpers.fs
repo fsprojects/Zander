@@ -8,7 +8,7 @@ let map_to_single c=
     One,c
 let map_to_block_single_columns block_expression = 
     block_expression
-           |> List.map (fun (count,row,title)->{num=count; recognizer= (row|>List.map map_to_single); name= title})
+           |> List.map (fun (count,row,title)->(count, {recognizer= (row|>List.map map_to_single); name= title}))
 let opts=ParseOptions.Default
 
 let s_expression expr=
@@ -23,7 +23,7 @@ let match_s_expression_opt expr opt=
 let parse_and_match_expression expr=
     Parse.expression expr opts>> Match.expression
 
-let match_s_block expr index=
-    Parse.block (map_to_block_single_columns expr) opts index >> Match.block
-let parse_and_match_block expr index=
-    Parse.block expr opts index >> Match.block
+let match_s_block expr =
+    Parse.block (map_to_block_single_columns expr) opts >> Match.block
+let parse_and_match_block expr =
+    Parse.block expr opts  >> Match.block

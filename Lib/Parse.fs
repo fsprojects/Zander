@@ -2,9 +2,11 @@
 open Zander
 open System
 type RecognizesCells = (NumberOf*CellType)
-type RecognizesRows = {num:NumberOf; recognizer:RecognizesCells list;name:string}
+
+type RecognizesRow = {recognizer:RecognizesCells list;name:string}
     with
-        override self.ToString()=sprintf "%s %O %O" self.name self.recognizer self.num
+        override self.ToString()=sprintf "%s %O" self.name self.recognizer
+type RecognizesRows = NumberOf*RecognizesRow
 
 module Parse=
 
@@ -94,36 +96,34 @@ module Parse=
         matches columnMatch Result.isOk expr row |> List.map toResult
 
     [<CompiledName("Block")>]
-    let block (expr:RecognizesRows list) (opts: ParseOptions) index blocks : RecognizedBlock=
+    let block (expr:(NumberOf*RecognizesRow) list) (opts: ParseOptions) blocks : RecognizedBlock=
+        let blockMatch (r:RecognizesRow) (row:string list)=
+            let result = expression r.recognizer opts row
+            (result,r.name)
+        let blockIsOk b =
+                b   |> fst
+                    |> List.forall Result.isOk
 
-        let rec bmatch idx eidx : (Result list*string) list=
-            let erow = expr |> List.tryItem eidx
-            let row = blocks |> List.tryItem (index + idx)
+        let toResult matchResult: Result list*string=
+            match matchResult with
+                | MatchOk v -> v
+                | MatchEmptyList -> [Missing],"Match empty list"
+                | MatcherMissing v ->
+                    if opts.HasFlag(ParseOptions.BlockMatchesAll) then
+                        v|> List.map UnRecognized,"Matcher missing"
+                    else
+                        [], "Matcher missing"
+                | MatchFailure -> failwith "Match failure"
 
-            let is_ok (r : (Result list*string) list)=
-                r |> List.collect fst
-                  |> List.forall Result.isOk
+        let result = matches blockMatch blockIsOk expr blocks
+        let isMatcherMissing m=
+             match m with
+             | MatcherMissing _ -> true
+             | _ -> false
 
-            let rest_of c e n : (Result list*string) list=
-                // List.takeWhile ?
-                // TODO: !
-                let isRepeat = match c with | One -> false ; | _ -> true
-                let r = bmatch (idx+1) eidx 
-                if isRepeat && is_ok r then
-                    r
-                else
-                    bmatch (idx+1) (eidx+1)
-
-            match erow, row with
-                | Some {num=count;recognizer=column;name=name}, Some r -> 
-                    let h = [((expression column opts r), name)]
-                    let r = rest_of count column name
-                    h @ r
-                | None, None -> []
-                | Some {num=_;recognizer=_;name=n}, None -> [[Missing], n]
-                | None, Some r -> []
-        
-        bmatch 0 0
+        if opts.HasFlag(ParseOptions.BlockMatchesAll) then result 
+        else result |> List.filter (not<< isMatcherMissing)
+        |> List.map toResult
 
     /// Returns the values of 'Value' where the match is ok
     [<CompiledName("RowsOf")>]

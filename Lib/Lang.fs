@@ -23,7 +23,7 @@ module Lang=
             | "+" -> Many
             | "*" -> ZeroOrMany
             | "?" -> ZeroOrOne
-            | v -> failwithf "Could not interpret: '%s'" v
+            | v -> failwithf "Could not interpret: '%s' as number of" v
 
     let rec parseCells parseCell length_of_input input =
         let {input = s; position= i} = input
@@ -36,7 +36,9 @@ module Lang=
 
     [<CompiledName("Row")>]
     let row (v:string) : RecognizesCells list=
-       let rec parseCell (v:StringAndPosition) : ((NumberOf*CellType) option*int)  =
+       let rec parseCell = function 
+        |{position=0;input=""} -> failwith "Cannot parse empty cell!"
+        |v ->
             let unwrap_to_cell (v:string) : (NumberOf*CellType) option =
                 let value, _ =parseCell (String.emptyPosition v) 
                 value
@@ -44,7 +46,7 @@ module Lang=
                 | RegexMatch @"^\s+" ([g], l) -> None, l
                 | RegexMatch @"^\|" ([g], l) -> None, l
                 | RegexMatch @"^\(([^)]*)\)" ([_;s], l) ->
-                    let cells = parseCells parseCell getLength {input =s.Value; position=0} 
+                    let cells = parseCells parseCell getLength (String.emptyPosition s.Value)
                                 |> List.choose fst
                     let conditions = 
                             cells |> List.map snd
@@ -58,7 +60,7 @@ module Lang=
                 | RegexMatch @"^(\w+)([+*?])?" ([_;value;numberOf], l) -> 
                     Some( (number_of numberOf.Value, Const( value.Value ))) , l
                 | _ -> 
-                    failwithf "Could not interpret: '%s' %i" (sub v) (getPosition v)
+                    failwithf "Could not interpret: '%s' at position %i" (sub v) (getPosition v)
 
        parseCells parseCell getLength {input =v; position=0} 
             |> List.choose fst
@@ -68,7 +70,7 @@ module Lang=
           (?<columns>[^:]*) \s*
           (
             \: \s* 
-            (?<name>\w*) \s* (?<modifier>[+]?) \s*
+            (?<name>\w*) \s* (?<modifier>[+?*]?) \s*
           )?
           $
     ", RegexOptions.IgnorePatternWhitespace)
@@ -82,7 +84,7 @@ module Lang=
         let name =  m.Groups.["name"].Value
         let modifier = number_of m.Groups.["modifier"].Value
 
-        { num= modifier; recognizer= columns; name= name}
+        (modifier,{recognizer= columns; name= name})
 
     [<CompiledName("Block")>]
     let block (s : string) : (RecognizesRows list)=

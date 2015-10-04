@@ -72,10 +72,10 @@ type ParserBuilder(array : BuildingBlock list)=
             if index >= List.length matrix then
                 []
             else
-                let maybeNext =  array |> List.tryFind (fun sp-> (Match.block (Parse.block (sp.block) opts index matrix ) ))
+                let maybeNext =  array |> List.tryFind (fun sp-> (Match.block (Parse.block (sp.block) opts (matrix |> List.skip index)) ))
                 match maybeNext with
                     | Some next -> 
-                        let parsed = Parse.block (next.block) opts index matrix
+                        let parsed = Parse.block (next.block) opts (matrix|> List.skip index)
                         let nextIndex = index + (List.length parsed)
                         [ { Name=next.name; Rows= (to_rows parsed) } ] @ (parse nextIndex) 
                     | None -> 

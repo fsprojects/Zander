@@ -25,7 +25,7 @@ module RepeatRowBlockMatchTests=
                 ["subtitle_1.1"; ""; "";"";"";""; ""]
                 ["";"th1"; ""; "th2";"";"th3";""]
             ]
-        (match_s_block block_expression_with_repeat 0 a_block) |> should equal true
+        (match_s_block block_expression_with_repeat a_block) |> should equal true
 
     [<Test>] 
     let ``Should match with repeated subtitles`` ()=
@@ -36,7 +36,7 @@ module RepeatRowBlockMatchTests=
                 ["subtitle_1.2"; ""; "";"";"";""; ""]
                 ["";"th1"; ""; "th2";"";"th3";""]
             ]
-        (match_s_block block_expression_with_repeat 0 a_block) |> should equal true
+        (match_s_block block_expression_with_repeat a_block) |> should equal true
 
     [<Test>] 
     let ``Shouldnt match with repeated header`` ()=
@@ -47,5 +47,5 @@ module RepeatRowBlockMatchTests=
                 ["subtitle_1.1"; ""; "";"";"";""; ""]
                 ["";"th1"; ""; "th2";"";"th3";""]
             ]
-        (match_s_block block_expression_with_repeat 0 a_block) |> should equal false
+        (match_s_block block_expression_with_repeat a_block) |> should equal false
 

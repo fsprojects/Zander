@@ -29,7 +29,7 @@ module SampleBlockMatchTests=
                         ["";"1.1.1"; ""; "1.1.2";"";"1.1.3";""]
                         ["";"1.2.1"; ""; "1.2.2";"";"1.2.3";""]
         ]
-        parse_and_match_block block_expression 0 a_block |> should equal true
+        parse_and_match_block block_expression a_block |> should equal true
 
 
     [<Test>] 
@@ -44,7 +44,7 @@ module SampleBlockMatchTests=
                         ["";"1.1.1"; ""; "1.1.2";"";"1.1.3";""]
                         ["";"1.2.1"; ""; "1.2.2";"";"1.2.3";""]
         ]
-        parse_and_match_block block_expression 0 a_block |> should equal false
+        parse_and_match_block block_expression a_block |> should equal false
 
     [<Test>] 
     let ``Shouldnt recognize with wrong title row`` ()=
@@ -58,10 +58,10 @@ module SampleBlockMatchTests=
                         ["";"1.1.1"; ""; "1.1.2";"";"1.1.3";""]
                         ["";"1.2.1"; ""; "1.2.2";"";"1.2.3";""]
         ]
-        parse_and_match_block block_expression 0 a_block |> should equal false
+        parse_and_match_block block_expression a_block |> should equal false
 
     [<Test>] 
     let ``Should not recognize other block`` ()=
-        parse_and_match_block block_expression 0 [[""]] |> should equal false
+        parse_and_match_block block_expression [[""]] |> should equal false
 
 

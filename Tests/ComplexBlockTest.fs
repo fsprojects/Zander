@@ -37,6 +37,5 @@ module ComplexBlockTest =
                      ]
     [<Test>] 
     let ``Can parse complex example`` ()=
-           (Parse.rowsOf (s_block specification 0 first_section)) |> should equal expected
-           //(spec first_section) |> Seq.head |> should equal expected
+        Parse.rowsOf (s_block specification first_section) |> should equal expected
 

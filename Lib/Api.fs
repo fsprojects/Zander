@@ -70,8 +70,9 @@ type BlockEx(expression:string, options: ParseOptions)=
     let block=Lang.block expression
     member internal self.Match (input:string array array, position:int option) : MatchBlock=
         let start = match position with |Some v->v;|None -> 0
-        let parsed = Parse.block block options start (input |> Array.map Array.toList
-                                                    |> Array.toList)
+        let parsed = Parse.block block options (input |> Array.skip start 
+                                                      |> Array.map Array.toList
+                                                      |> Array.toList)
         MatchBlock(parsed)
     member self.Match (input:string array array, position:int) : MatchBlock=
         self.Match(input, Some position)
@@ -92,7 +93,7 @@ type BlockEx(expression:string, options: ParseOptions)=
             |> Array.toList 
             |> List.map Array.toList
             |> Matches.split_list (fun ( arr :string list list)->
-                let parsed = Parse.block block options 0 arr
+                let parsed = Parse.block block options arr
                 (Match.block parsed, List.length parsed)
             )
         |> List.map (List.map List.toArray)
