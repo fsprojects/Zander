@@ -49,7 +49,10 @@ type MatchRow(matches: Parse.Result list)=
     member self.Length with get() = List.length matches
     member self.Cells with get() =  cells |> List.toArray
     member self.ToDictionary() = to_dictionary()
-    override self.ToString()= sprintf "MatchRow( %s )" (to_tuples() |> Seq.map (fun (k,v) -> sprintf "(%s, %s)" k v) |> String.concat "; ")
+    override self.ToString() = 
+        sprintf "MatchRow( %s )" (to_tuples() 
+                                    |> Seq.map (fun (k,v) -> sprintf "(%s, %s)" k v) 
+                                    |> String.concat "; ")
 
 type MatchBlock(matches: Parse.RecognizedBlock)=
     let height = matches |> List.length

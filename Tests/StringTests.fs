@@ -18,13 +18,6 @@ module StringTests =
     let ``Regex match ending with`` ()=
         regex_match_i "^abc" {input="xyzabc";position=0} |> should equal (None)
 
-
-    (*
-     match (" @Test",0) with | RegexMatch "^\@[A-Z]\w*" ([g], l) -> Some (g, l) ; | _ -> None;;
-     match (" @Test",1) with | RegexMatch "\@[A-Z]\w*" ([g], l) -> Some (g, l) ; | _ -> None;;
-     match ("@Test     ",0) with | RegexMatch "^\@[A-Z]\w*" ([g], l) -> Some (g, l) ; | _ -> None;;
-    *)
-
     [<Test>] 
     let ``match quoted constant`` ()=
         let input = "\"Test\""
