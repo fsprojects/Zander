@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
+# Visual Studio 2012
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{2FE3B230-D395-4C38-BCE1-827AC4AE865C}"
@@ -8,11 +8,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{2FE3B2
 		paket.dependencies = paket.dependencies
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Zander", "Lib\Zander.fsproj", "{D65A576C-4E1E-4FBF-8EC6-5E785D56E78F}"
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "Zander", "Lib\Zander.fsproj", "{D65A576C-4E1E-4FBF-8EC6-5E785D56E78F}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Zander.Tests", "Tests\Zander.Tests.fsproj", "{F9429771-B51C-4090-97BB-15D54F36D7D7}"
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "Zander.Tests", "Tests\Zander.Tests.fsproj", "{F9429771-B51C-4090-97BB-15D54F36D7D7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharp.Tests", "CSharp.Tests\CSharp.Tests.csproj", "{981F16A6-70ED-4B6F-A951-DCBAEFE6A4B0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E23F4F2F-5657-4A90-AF13-0E4B532A0000}"
+	ProjectSection(SolutionItems) = preProject
+		build.fsx = build.fsx
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +25,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{981F16A6-70ED-4B6F-A951-DCBAEFE6A4B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{981F16A6-70ED-4B6F-A951-DCBAEFE6A4B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{981F16A6-70ED-4B6F-A951-DCBAEFE6A4B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{981F16A6-70ED-4B6F-A951-DCBAEFE6A4B0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D65A576C-4E1E-4FBF-8EC6-5E785D56E78F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D65A576C-4E1E-4FBF-8EC6-5E785D56E78F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D65A576C-4E1E-4FBF-8EC6-5E785D56E78F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -28,10 +37,8 @@ Global
 		{F9429771-B51C-4090-97BB-15D54F36D7D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9429771-B51C-4090-97BB-15D54F36D7D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9429771-B51C-4090-97BB-15D54F36D7D7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{981F16A6-70ED-4B6F-A951-DCBAEFE6A4B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{981F16A6-70ED-4B6F-A951-DCBAEFE6A4B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{981F16A6-70ED-4B6F-A951-DCBAEFE6A4B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{981F16A6-70ED-4B6F-A951-DCBAEFE6A4B0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

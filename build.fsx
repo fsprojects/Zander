@@ -85,11 +85,12 @@ Target "push" (fun _ ->
 // Run all targets by default. Invoke 'build <Target>' to override
 
 Target "all" DoNothing
+"clean"
+  ==> "pack"
 
 "clean"
   ==> "build"
   ==> "CopyBinaries"
-  ==> "pack"
   ==> "test"
   ==> "all"
 

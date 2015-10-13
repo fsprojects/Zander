@@ -4,7 +4,7 @@ open NUnit.Framework
 open FsUnit
 open Zander.Internal
 open TestHelpers
-
+[<TestFixture>]
 module StringTests = 
     open Zander.Internal.String
 
