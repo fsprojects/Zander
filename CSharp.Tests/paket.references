@@ -1,3 +1,4 @@
-NUnit
-FSharp.Core
+xunit
 With
+xunit.runner.visualstudio
+Microsoft.NET.Test.Sdk
