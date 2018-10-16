@@ -1,4 +1,7 @@
 ﻿namespace Zander.Internal
+open System.Runtime.CompilerServices
+[<assembly: InternalsVisibleTo("Zander.Tests")>]
+do ()
 open System
 open System.Text.RegularExpressions
 type InputAndPosition<'t> = { input:'t; position:int }
@@ -6,6 +9,7 @@ type InputAndPosition<'t> = { input:'t; position:int }
 type StringAndPosition = InputAndPosition<string>
 
 type StringAndLength = (string*int)
+
 
 module internal String = 
 

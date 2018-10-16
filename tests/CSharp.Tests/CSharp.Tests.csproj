@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RootNamespace>CSharp.Tests</RootNamespace>
     <AssemblyName>CSharp.Tests</AssemblyName>
-    <ErrorReport>prompt</ErrorReport>
+    <OutputType>Exe</OutputType>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
@@ -24,7 +24,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Lib\Zander.fsproj" />
+    <ProjectReference Include="..\..\src\Zander\Zander.fsproj" />
   </ItemGroup>
-  <Import Project="..\.paket\Paket.Restore.targets" />
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

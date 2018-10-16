@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Name>Zander.Tests</Name>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="TestHelpers.fs" />
@@ -22,7 +23,6 @@
     <Compile Include="SplitTests.fs" />
     <None Include="Script.fsx" />
     <Content Include="paket.references" />
-    <Content Include="app.config" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework) == 'net45'">
     <Reference Include="mscorlib" />
@@ -31,7 +31,7 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Lib\Zander.fsproj" />
+    <ProjectReference Include="..\..\src\Zander\Zander.fsproj" />
   </ItemGroup>
-  <Import Project="..\.paket\Paket.Restore.targets" />
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
