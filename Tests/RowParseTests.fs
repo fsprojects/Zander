@@ -17,11 +17,11 @@ module RowParseTests =
 
     [<Fact>] 
     let ``Single empty column match empty expression`` ()=
-        valuesOfExpression [Empty] [""] |> should equal []
+        Assert.Empty (valuesOfExpression [Empty] [""])
 
     [<Fact>] 
     let ``Single column match constant expression`` ()=
-        valuesOfExpression  [Const "1"] ["1"] |> should equal []
+        Assert.Empty (valuesOfExpression [Const "1"] ["1"])
 
     [<Fact>] 
     let ``Single column should match variable`` ()=

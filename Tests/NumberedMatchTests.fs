@@ -77,10 +77,10 @@ module NumberedMatchTests =
     let ``Match zero or many 1 when empty`` ()=
         let l = matches zeroToThree someIsOk [ (ZeroOrMany, '1'); ]
                               []
-        l |> should equal []
+        Assert.Empty l
 
     [<Fact>] 
     let ``Match zero or one 1 when empty`` ()=
         let l = matches zeroToThree someIsOk [ (ZeroOrOne, '1'); ]
                               []
-        l |> should equal []
+        Assert.Empty l

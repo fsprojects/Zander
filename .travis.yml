@@ -5,7 +5,6 @@ script:
   - mono .paket/paket.bootstrapper.exe
   - mono .paket/paket.exe restore
   - dotnet restore
-  - dotnet build
   - dotnet test Tests
   - dotnet test CSharp.Tests
 branches:
