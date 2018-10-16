@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Zander;
-using With.Linq;
 namespace CSharp.Tests
 {
     public class TestHelper
@@ -41,7 +40,7 @@ namespace CSharp.Tests
         }
         public IDictionary<string,string> ToDictionary(KeyValuePair<string, string>[] v)
         {
-            return v.ToDictionary();
+            return v.ToDictionary(kv=>kv.Key,kv=>kv.Value);
         }
         public static string ToCsv(string[][] matrix)
         {

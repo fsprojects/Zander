@@ -1,2 +1,12 @@
+before_build:
+  - .paket\paket.bootstrapper.exe
+  - .paket\paket.exe restore
+  - dotnet restore
 build_script:
-  - build.cmd build
+  - dotnet build
+test_script:
+  - dotnet test Tests
+  - dotnet test CSharp.Tests
+branches:
+  only: 
+    - master
