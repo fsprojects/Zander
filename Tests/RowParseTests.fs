@@ -1,10 +1,10 @@
 ﻿namespace Tests
-open NUnit.Framework
+open Xunit
+open FsUnit.Xunit
 open FsUnit
 open Zander.Internal
 open TestHelpers
 
-[<TestFixture>] 
 module RowParseTests = 
 
     open Parse
@@ -15,23 +15,23 @@ module RowParseTests =
             |> List.choose Token.tryValue
 
 
-    [<Test>] 
+    [<Fact>] 
     let ``Single empty column match empty expression`` ()=
         valuesOfExpression [Empty] [""] |> should equal []
 
-    [<Test>] 
+    [<Fact>] 
     let ``Single column match constant expression`` ()=
         valuesOfExpression  [Const "1"] ["1"] |> should equal []
 
-    [<Test>] 
+    [<Fact>] 
     let ``Single column should match variable`` ()=
         valuesOfExpression [Value ""] ["2"] |> should equal ["2"]
 
-    [<Test>] 
+    [<Fact>] 
     let ``Single column should match variable or empty`` ()=
         valuesOfExpression [Or [ Value ""; Empty ]] ["2"] |> should equal ["2"]
 
-    [<Test>] 
+    [<Fact>] 
     let ``Should match more complicated example`` ()=
         valuesOfExpression  
             [Empty; Const "1"; Value "" ; Const "2" ] 

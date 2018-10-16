@@ -18,14 +18,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RealWorld\First_section.cs" />
-    <Compile Include="RealWorld\Parse_slightly_complicated_format.cs" />
-    <Compile Include="RealWorld\Second_section.cs" />
-    <Compile Include="TestHelper.cs" />
-    <Compile Include="PublicApiTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="paket.references" />
     <Content Include="RealWorld\slightly_complicated_format.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

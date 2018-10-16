@@ -1,10 +1,10 @@
 ﻿namespace Tests
 
-open NUnit.Framework
+open FsUnit.Xunit
 open FsUnit
+open Xunit
 open Zander.Internal
 
-[<TestFixture>] 
 module RepeatRowBlockParseTests=
 
 
@@ -18,7 +18,7 @@ module RepeatRowBlockParseTests=
             One,    ([Empty; Const "th1"; Empty; Const "th2"; Empty; Const "th3"; Empty]), "header_row"
         ]
 
-    [<Test>] 
+    [<Fact>] 
     let ``Should match with no repeated subtitles`` ()=
         let a_block = 
             [
@@ -31,7 +31,7 @@ module RepeatRowBlockParseTests=
                 (["subtitle_1.1"],"subtitles")
                 ([],"header_row")]
 
-    [<Test>] 
+    [<Fact>] 
     let ``Should match repeated subtitles`` ()=
         let a_block = 
             [
@@ -53,7 +53,7 @@ module RepeatRowBlockParseTests=
             One,    ([Empty; Const "th1"; Empty; Const "th2"; Empty; Const "th3"; Empty]), "header_row"
         ]
 
-    [<Test>] 
+    [<Fact>] 
     let ``Should match 0 or many subtitles : many`` ()=
         let a_block = 
             [
@@ -68,7 +68,7 @@ module RepeatRowBlockParseTests=
             (["subtitle_1.2"],"subtitles")
             ([],"header_row")]
 
-    [<Test>] 
+    [<Fact>] 
     let ``Should match 0 or many subtitles : 0`` ()=
         let a_block = 
             [

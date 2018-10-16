@@ -6,7 +6,6 @@
     <Name>Zander.Tests</Name>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="TestHelpers.fs" />
     <Compile Include="StringTests.fs" />
     <Compile Include="RowMatchTests.fs" />
