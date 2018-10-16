@@ -28,7 +28,7 @@ before_install:
 #      sudo: required
       
 script: 
-  - ./build.sh All
-branches:	
-  only: 	
+  - ./build.sh -t All
+branches:
+  only:
     - master
