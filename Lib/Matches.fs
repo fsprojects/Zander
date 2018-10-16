@@ -50,7 +50,7 @@ module Matches=
                        | Some idx -> (sliceOrEmpty None (Some (idx-1)) input) 
                                         :: split matcher (sliceOrEmpty (Some(idx+1)) (Some (List.length input-1)) input)
 
-    let rec split_list (matcher: 'v list -> (bool*int)) = function
+    let rec splitList (matcher: 'v list -> (bool*int)) = function
             | [] -> []
             | (input: 'v list)->
 
@@ -70,7 +70,7 @@ module Matches=
                 match maybeIndex with
                        | None -> [ input ]
                        | Some (idx,len) -> (sliceOrEmpty None (Some (idx-1)) input) 
-                                        :: split_list matcher (sliceOrEmpty (Some(idx+len)) (Some (List.length input-1)) input)
+                                        :: splitList matcher (sliceOrEmpty (Some(idx+len)) (Some (List.length input-1)) input)
 
     let matches 
             (matcher:'m->'a->'v) 

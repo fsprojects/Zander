@@ -16,7 +16,7 @@ module SampleBlockMatchTests=
             One,    ([Empty; Const "th1"; Empty; Const "th2"; Empty; Const "th3"; Empty]), "header_row"
             Many,   ([Empty; Value ""; Empty; Value ""; Empty; Value ""; Empty]), "data_rows"
          ] 
-         |> map_to_block_single_columns
+         |> mapToBlockSingleColumns
 
     [<Fact>] 
     let ``Can recognize simple block expression`` ()=
@@ -30,7 +30,7 @@ module SampleBlockMatchTests=
                         ["";"1.1.1"; ""; "1.1.2";"";"1.1.3";""]
                         ["";"1.2.1"; ""; "1.2.2";"";"1.2.3";""]
         ]
-        parse_and_match_block block_expression a_block |> should equal true
+        parseAndMatchBlock block_expression a_block |> should equal true
 
 
     [<Fact>] 
@@ -45,7 +45,7 @@ module SampleBlockMatchTests=
                         ["";"1.1.1"; ""; "1.1.2";"";"1.1.3";""]
                         ["";"1.2.1"; ""; "1.2.2";"";"1.2.3";""]
         ]
-        parse_and_match_block block_expression a_block |> should equal false
+        parseAndMatchBlock block_expression a_block |> should equal false
 
     [<Fact>] 
     let ``Shouldnt recognize with wrong title row`` ()=
@@ -59,10 +59,10 @@ module SampleBlockMatchTests=
                         ["";"1.1.1"; ""; "1.1.2";"";"1.1.3";""]
                         ["";"1.2.1"; ""; "1.2.2";"";"1.2.3";""]
         ]
-        parse_and_match_block block_expression a_block |> should equal false
+        parseAndMatchBlock block_expression a_block |> should equal false
 
     [<Fact>] 
     let ``Should not recognize other block`` ()=
-        parse_and_match_block block_expression [[""]] |> should equal false
+        parseAndMatchBlock block_expression [[""]] |> should equal false
 
 

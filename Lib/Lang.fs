@@ -17,7 +17,7 @@ module Lang=
             let length = index-input.position+1
             return (constant, length)
         }
-    let number_of (g:string)=
+    let numberOf (g:string)=
         match g with
             | "" -> One
             | "+" -> Many
@@ -25,14 +25,14 @@ module Lang=
             | "?" -> ZeroOrOne
             | v -> failwithf "Could not interpret: '%s' as number of" v
 
-    let rec parseCells parseCell length_of_input input =
+    let rec parseCells parseCell lengthOfInput input =
         let {input = s; position= i} = input
         let head = parseCell input
         let l = i+ (snd head)
-        if l >= length_of_input input then
+        if l >= lengthOfInput input then
             [head]
         else
-            head :: parseCells parseCell length_of_input {input=s; position=l} 
+            head :: parseCells parseCell lengthOfInput {input=s; position=l} 
 
     [<CompiledName("Row")>]
     let row (v:string) : RecognizesCells list=
@@ -51,14 +51,14 @@ module Lang=
                     let conditions = 
                             cells |> List.map snd
                     Some (One, (Or conditions)), l
-                | RegexMatch "^(_)([+*?])?" ([_;_;numberOf], l) -> 
-                    Some (number_of numberOf.Value, Empty), l
+                | RegexMatch "^(_)([+*?])?" ([_;_;number], l) -> 
+                    Some (numberOf number.Value, Empty), l
                 | LooksLikeConstant (Some (c, l)) -> 
                     Some((One,Const(c))), l 
-                | RegexMatch @"^\@(\w+)([+*?])?" ([_;value;numberOf], l) -> 
-                    Some( (number_of numberOf.Value, Value( value.Value ))) , l
-                | RegexMatch @"^(\w+)([+*?])?" ([_;value;numberOf], l) -> 
-                    Some( (number_of numberOf.Value, Const( value.Value ))) , l
+                | RegexMatch @"^\@(\w+)([+*?])?" ([_;value;number], l) -> 
+                    Some( (numberOf number.Value, Value( value.Value ))) , l
+                | RegexMatch @"^(\w+)([+*?])?" ([_;value;number], l) -> 
+                    Some( (numberOf number.Value, Const( value.Value ))) , l
                 | _ -> 
                     failwithf "Could not interpret: '%s' at position %i" (sub v) (getPosition v)
 
@@ -82,7 +82,7 @@ module Lang=
             row (m.Groups.["columns"].Value) 
 
         let name =  m.Groups.["name"].Value
-        let modifier = number_of m.Groups.["modifier"].Value
+        let modifier = numberOf m.Groups.["modifier"].Value
 
         (modifier,{recognizer= columns; name= name})
 

@@ -26,7 +26,7 @@ module RepeatRowBlockParseTests=
                 ["subtitle_1.1"; ""; "";"";"";""; ""]
                 ["";"th1"; ""; "th2";"";"th3";""]
             ]
-        (rowsOf (s_block block_expression_with_repeat a_block)) |> should equal [
+        (rowsOf (sBlock block_expression_with_repeat a_block)) |> should equal [
                 (["Header1";"Something else"; "Page:1"], "header")
                 (["subtitle_1.1"],"subtitles")
                 ([],"header_row")]
@@ -40,7 +40,7 @@ module RepeatRowBlockParseTests=
                 ["subtitle_1.2"; ""; "";"";"";""; ""]
                 ["";"th1"; ""; "th2";"";"th3";""]
             ]
-        (rowsOf (s_block block_expression_with_repeat a_block)) |> should equal [
+        (rowsOf (sBlock block_expression_with_repeat a_block)) |> should equal [
             (["Header1";"Something else"; "Page:1"],"header")
             (["subtitle_1.1"],"subtitles")
             (["subtitle_1.2"],"subtitles")
@@ -62,7 +62,7 @@ module RepeatRowBlockParseTests=
                 ["subtitle_1.2"; ""; "";"";"";""; ""]
                 ["";"th1"; ""; "th2";"";"th3";""]
             ]
-        (rowsOf (s_block block_expression_with_zero_or_many_subtitles a_block)) |> should equal [
+        (rowsOf (sBlock block_expression_with_zero_or_many_subtitles a_block)) |> should equal [
             (["Header1";"Something else"; "Page:1"],"header")
             (["subtitle_1.1"],"subtitles")
             (["subtitle_1.2"],"subtitles")
@@ -75,6 +75,6 @@ module RepeatRowBlockParseTests=
                 [""; ""; "Header1";"";"";"Something else"; "Page:1"]
                 ["";"th1"; ""; "th2";"";"th3";""]
             ]
-        (rowsOf (s_block block_expression_with_zero_or_many_subtitles a_block)) |> should equal [
+        (rowsOf (sBlock block_expression_with_zero_or_many_subtitles a_block)) |> should equal [
             (["Header1";"Something else"; "Page:1"],"header")
             ([],"header_row")]

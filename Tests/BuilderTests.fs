@@ -29,7 +29,7 @@ module BuilderTests =
     open TestHelpers
     [<Fact>] 
     let ``Can parse first part when block may have partial match`` ()=
-        parse_and_match_block first_expression sections |> should equal true
+        parseAndMatchBlock first_expression sections |> should equal true
 
         Parse.block first_expression opts (sections |> List.take 3)
                  |> List.length
@@ -47,11 +47,11 @@ module BuilderTests =
 
     [<Fact>] 
     let ``Cant parse second part with first expression`` ()=
-        ( parse_and_match_block first_expression (sections |> List.skip 3)) |> should equal false
+        ( parseAndMatchBlock first_expression (sections |> List.skip 3)) |> should equal false
 
     [<Fact>] 
     let ``Can parse second part with second expression`` ()=
-        ( parse_and_match_block second_expression (sections |> List.skip 3) ) |> should equal true
+        ( parseAndMatchBlock second_expression (sections |> List.skip 3) ) |> should equal true
 
 
     [<Fact>] 

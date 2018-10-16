@@ -10,7 +10,7 @@ module RowParseTests =
     open Parse
     
     let private valuesOfExpression v a= 
-        s_expression v a 
+        sExpression v a 
             |> List.map Result.value
             |> List.choose Token.tryValue
 

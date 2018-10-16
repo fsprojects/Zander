@@ -37,13 +37,13 @@ type ParserBuilder(array : BuildingBlock list)=
     let array = array
     let opts = ParseOptions.Default
     let rowsOf v = 
-        let to_kv (v:(string*string)) : KeyValuePair<string,string>=
+        let toKv (v:(string*string)) : KeyValuePair<string,string>=
             new KeyValuePair<string,string>(fst v, snd v)
         let valuesOf v' =
             v'
             |> List.map Parse.Result.value
             |> List.choose Parse.Token.tryKeyValue
-            |> List.map to_kv
+            |> List.map toKv
 
         v |> List.map (
              fun (row,name)-> (valuesOf row) , name
@@ -60,13 +60,13 @@ type ParserBuilder(array : BuildingBlock list)=
             blocks |> Array.map Array.toList
                    |> Array.toList
 
-        let to_rows (parsed: (Parse.Result list*string) list) =
+        let toRows (parsed: (Parse.Result list*string) list) =
             parsed |> rowsOf
                    |> List.map (fun next -> { Name= (snd next); Values= (fst next |> List.toArray) } ) 
                    |> List.toArray
 
         let rec parse index : ParsedBlock list =
-            let as_csv (m:string list) =
+            let asCsv (m:string list) =
                 System.String.Join(", ", ( List.map (fun s->sprintf "\"%s\"" s) m) )
 
             if index >= List.length matrix then
@@ -77,9 +77,9 @@ type ParserBuilder(array : BuildingBlock list)=
                     | Some next -> 
                         let parsed = Parse.block (next.block) opts (matrix|> List.skip index)
                         let nextIndex = index + (List.length parsed)
-                        [ { Name=next.name; Rows= (to_rows parsed) } ] @ (parse nextIndex) 
+                        [ { Name=next.name; Rows= (toRows parsed) } ] @ (parse nextIndex) 
                     | None -> 
-                        (failwithf "could not find block to interpret %s" (as_csv (List.item index matrix)))
+                        (failwithf "could not find block to interpret %s" (asCsv (List.item index matrix)))
 
         parse 0 |> List.toSeq
 

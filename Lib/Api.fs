@@ -38,19 +38,16 @@ type MatchCell(matches: Parse.Result)=
 
 type MatchRow(matches: Parse.Result list)=
     let cells = matches |> List.map (fun m->new MatchCell(m))
-    let to_tuples ()=
+    let toTuples ()=
             matches 
             |> List.choose Parse.Result.tryValue
             |> List.choose Parse.Token.tryKeyValue
-    let to_dictionary ()=
-        to_tuples()
-            |> dict
     member self.Success with get() = Match.expression matches
     member self.Length with get() = List.length matches
     member self.Cells with get() =  cells |> List.toArray
-    member self.ToDictionary() = to_dictionary()
+    member self.ToDictionary() = toTuples() |> dict
     override self.ToString() = 
-        sprintf "MatchRow( %s )" (to_tuples() 
+        sprintf "MatchRow( %s )" (toTuples() 
                                     |> Seq.map (fun (k,v) -> sprintf "(%s, %s)" k v) 
                                     |> String.concat "; ")
 
@@ -95,7 +92,7 @@ type BlockEx(expression:string, options: ParseOptions)=
         input 
             |> Array.toList 
             |> List.map Array.toList
-            |> Matches.split_list (fun ( arr :string list list)->
+            |> Matches.splitList (fun ( arr :string list list)->
                 let parsed = Parse.block block options arr
                 (Match.block parsed, List.length parsed)
             )
