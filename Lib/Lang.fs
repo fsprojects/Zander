@@ -65,7 +65,7 @@ module Lang=
        parseCells parseCell getLength {input =v; position=0} 
             |> List.choose fst
 
-    let rowRegex = new Regex(@"
+    let rowRegex = Regex(@"
           ^
           (?<columns>[^:]*) \s*
           (

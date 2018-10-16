@@ -23,7 +23,7 @@ module BlockExTests =
         let sections = [["";"H"];["D1";""];["D2";""];["";"D3"]]
                         |> List.map List.toArray
                         |> List.toArray
-        let blockEx = new BlockEx("_ \"H\" : header
+        let blockEx = BlockEx("_ \"H\" : header
         @D _ : data_rows+
         _ @D : data_rows2+
         ")
@@ -39,7 +39,7 @@ module BlockExTests =
         let sections = [["";"H"];["D1";""];]
                         |> List.map List.toArray
                         |> List.toArray
-        let blockEx = new BlockEx("_ \"H\"
+        let blockEx = BlockEx("_ \"H\"
         @D _ 
         ")
         let m = blockEx.Match(sections)
@@ -52,7 +52,7 @@ module BlockExTests =
         let sections = [["";"H"];["D1";""];["D2";""];]
                         |> List.map List.toArray
                         |> List.toArray
-        let blockEx = new BlockEx("_ \"H\"
+        let blockEx = BlockEx("_ \"H\"
         @D _ :+
         ")
         let m = blockEx.Match(sections)
@@ -65,7 +65,7 @@ module BlockExTests =
         let sections = [["";"H"];["D1";""];["D2";""];["";"H"];["D3";""];["D4";""];["";"H"];["D5";""];["D6";""];]
                         |> List.map List.toArray    
                         |> List.toArray
-        let blockEx = new BlockEx("_ \"H\"")
+        let blockEx = BlockEx("_ \"H\"")
         let split = blockEx.Split(sections) |> toList
         //printf "%O" (split)
         split |> should equal [[];[["D1";""];["D2";""]];[["D3";""];["D4";""]];[["D5";""];["D6";""]]]
@@ -75,7 +75,7 @@ module BlockExTests =
         let sections = [["";"H"];["";"H2"];["D1";""];["D2";""];["";"H"];["";"H2"];["D3";""];["D4";""];["";"H"];["";"H2"];["D5";""];["D6";""];]
                         |> List.map List.toArray    
                         |> List.toArray
-        let blockEx = new BlockEx("_ \"H\"
+        let blockEx = BlockEx("_ \"H\"
         _ \"H2\"
         ")
         let split = blockEx.Split(sections) |> toList
@@ -87,7 +87,7 @@ module BlockExTests =
         let sections = [["";"H"];["";"H"];["D1";""];["D2";""];["D2_";""];["";"H"];["D3";""];["D4";""];["";"H"];["D5";""];["D6";""];]
                         |> List.map List.toArray    
                         |> List.toArray
-        let blockEx = new BlockEx("_ \"H\" : +
+        let blockEx = BlockEx("_ \"H\" : +
         ")
         let split = blockEx.Split(sections)|> toList
         //printf "%O" (split)

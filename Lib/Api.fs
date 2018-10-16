@@ -37,7 +37,7 @@ type MatchCell(matches: Parse.Result)=
     override self.ToString()= sprintf "MatchCell(%O, %s : %s)" self.CellType self.Name self.Value
 
 type MatchRow(matches: Parse.Result list)=
-    let cells = matches |> List.map (fun m->new MatchCell(m))
+    let cells = matches |> List.map MatchCell
     let toTuples ()=
             matches 
             |> List.choose Parse.Result.tryValue
@@ -56,7 +56,7 @@ type MatchBlock(matches: Parse.RecognizedBlock)=
     let width = matches |> List.map (fst >> List.length) |> List.max
     let size = {Height=height;Width=width}
     
-    let rows = matches |> List.map (fun (m,name)->(new MatchRow(m),name))
+    let rows = matches |> List.map (fun (m,name)->(MatchRow m, name))
 
     member self.Success with get() = Match.block matches
     member self.Size with get(): Size= size
@@ -99,13 +99,11 @@ type BlockEx(expression:string, options: ParseOptions)=
         |> List.map (List.map List.toArray)
         |> List.map List.toArray
         |> List.toArray
-    new (expression:string)=
-        new BlockEx(expression, ParseOptions.Default)
+    new (expression:string)=BlockEx(expression, ParseOptions.Default)
 
 
 type RowEx(expression:string, options: ParseOptions)=
     let row= Lang.row expression
     member self.Match (input:string array) : MatchRow=
         new MatchRow(Parse.expression row options (input |> Array.toList))
-    new (expression:string)=
-        new RowEx(expression, ParseOptions.Default)
+    new (expression:string)=RowEx(expression, ParseOptions.Default)

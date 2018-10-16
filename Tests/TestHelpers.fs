@@ -2,8 +2,7 @@
 open System.Collections.Generic
 open Zander
 open Zander.Internal
-let kv key value=
-    new KeyValuePair<_,_>(key, value)
+let kv key value=KeyValuePair<_,_>(key, value)
 let mapToSingle c=
     One,c
 let mapToBlockSingleColumns blockExpression = 

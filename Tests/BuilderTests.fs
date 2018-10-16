@@ -57,7 +57,7 @@ module BuilderTests =
     [<Fact>] 
     let ``Can parse complex example`` ()=
         let spec input= 
-           (new ParserBuilder())
+           ParserBuilder()
                 .RawBlock( ("fst", first_expression) )
                 .RawBlock( ("snd",second_expression) )
                 .Parse( input )

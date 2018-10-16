@@ -16,7 +16,7 @@ module RowExTests =
     let ``Can specify simple row``() =
         let sections = ["";"Header"]
                         |> List.toArray
-        let rowEx = new RowEx("_ @H")
+        let rowEx = RowEx("_ @H")
         let m = rowEx.Match(sections)
         m.Success |> should equal true
         m.Length |> should equal 2
@@ -26,7 +26,7 @@ module RowExTests =
     let ``Can specify simple row repeated cells``() =
         let sections = ["";"D1";"D2"]
                         |> List.toArray
-        let rowEx = new RowEx("_ @D+")
+        let rowEx = RowEx("_ @D+")
         let m = rowEx.Match(sections)
         m.Success |> should equal true
         m.Length |> should equal 3

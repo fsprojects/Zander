@@ -30,7 +30,7 @@ module internal String =
     let trim chars (v:string)=
         v.Trim(chars|>List.toArray)
     let regexMatchI pattern input=
-        let r = new Regex(pattern)
+        let r = Regex(pattern)
         let m = r.Match ( sub input )
         if m.Success then
             Some ([for x in m.Groups -> x], m.Length)

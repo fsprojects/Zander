@@ -37,8 +37,7 @@ type ParserBuilder(array : BuildingBlock list)=
     let array = array
     let opts = ParseOptions.Default
     let rowsOf v = 
-        let toKv (v:(string*string)) : KeyValuePair<string,string>=
-            new KeyValuePair<string,string>(fst v, snd v)
+        let toKv (v:(string*string)) =KeyValuePair<string,string>(fst v, snd v)
         let valuesOf v' =
             v'
             |> List.map Parse.Result.value
@@ -50,10 +49,10 @@ type ParserBuilder(array : BuildingBlock list)=
              )
 
     member internal this.RawBlock  (x : string* (RecognizesRows list)) = 
-        new ParserBuilder(array @ [ new BuildingBlock(fst x, snd x) ])
+        ParserBuilder(array @ [ BuildingBlock(fst x, snd x) ])
 
     member this.Block(name: string, x : string ) = 
-        new ParserBuilder(array @ [ new BuildingBlock( name, (Lang.block x) )])
+        ParserBuilder(array @ [ BuildingBlock( name, (Lang.block x) )])
 
     member this.Parse(blocks : string array array) : ParsedBlock seq=
         let matrix = 
