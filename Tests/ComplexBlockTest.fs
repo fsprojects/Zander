@@ -1,9 +1,9 @@
 ﻿namespace Tests
-open NUnit.Framework
+open Xunit
 open FsUnit
+open FsUnit.Xunit
 open Zander.Internal
 
-[<TestFixture>] 
 module ComplexBlockTest = 
     open TestHelpers
 
@@ -35,7 +35,7 @@ module ComplexBlockTest =
                      (["1.1.1"; "1.1.2";"1.1.3"],"data_rows")
                      (["1.2.1"; "1.2.2";"1.2.3"],"data_rows")
                      ]
-    [<Test>] 
+    [<Fact>] 
     let ``Can parse complex example`` ()=
         Parse.rowsOf (s_block specification first_section) |> should equal expected
 

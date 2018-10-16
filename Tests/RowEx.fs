@@ -1,18 +1,18 @@
 ﻿namespace Tests
-open NUnit.Framework
+open Xunit
+open FsUnit.Xunit
 open FsUnit
 open Zander
 open Zander.Internal
 open TestHelpers
 
-[<TestFixture>] 
 module RowExTests = 
     let getValues (m:MatchRow)=
         m.Cells
         |> Array.filter (fun c->c.CellType = Zander.CellType.Value)
         |> Array.map (fun c-> (c.Name, c.Value))
 
-    [<Test>]
+    [<Fact>]
     let ``Can specify simple row``() =
         let sections = ["";"Header"]
                         |> List.toArray
@@ -22,7 +22,7 @@ module RowExTests =
         m.Length |> should equal 2
         getValues m |> should equal [| ("H","Header"); |]
 
-    [<Test>]
+    [<Fact>]
     let ``Can specify simple row repeated cells``() =
         let sections = ["";"D1";"D2"]
                         |> List.toArray

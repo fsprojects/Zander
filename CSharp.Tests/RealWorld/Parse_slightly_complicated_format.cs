@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+﻿using Xunit;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,13 +7,11 @@ using Zander;
 
 namespace CSharp.Tests.RealWorld
 {
-    [TestFixture]
     public class Parse_slightly_complicated_format : TestHelper
     {
         private string[][] file_content;
 
-        [TestFixtureSetUp]
-        public void OnceBeforeAnyTest()
+        public Parse_slightly_complicated_format()
         {
             file_content = ParseCsv(File.ReadAllText(Path.Combine("RealWorld", "slightly_complicated_format.csv")));
         }
@@ -25,13 +23,12 @@ namespace CSharp.Tests.RealWorld
                     new[] { "Text", "that goes on and explains the report" },
                     new[] {"Id", "44" },new[] {"Value", "XYZ" }, new[] {"Type", "A" },
                 };
-        [Test]
+        [Fact]
         public void Can_extract_information_from_first_block()
         {
             var parsed = new BlockEx(type1)
                 .Match(file_content.Take(6).ToArray());
-            Assert.That(ToValueTuples(parsed), Is.EquivalentTo(ToTuples(
-                expected_1)));
+            Assert.Equal(ToTuples(expected_1),ToValueTuples(parsed));
         }
         private readonly string type2 = Second_section.Full();
         private string[][] expected_2 = new[] { new[] { "Time", "16/09/15 16:17" }, new[] { "Page", "Page: 2" },
@@ -40,13 +37,13 @@ namespace CSharp.Tests.RealWorld
                     new [] {"Id", "51" }, new [] {"Value", "XYZ" },new [] {"Type", "A" },
                             new [] {"Attribute1", "255" },
                 };
-        [Test]
+        [Fact]
         public void Can_extract_information_from_second_block()
         {
             var parsed = new BlockEx(type2)
                 .Match(file_content.Skip(10).Take(6).ToArray());
-            Assert.That(ToValueTuples(parsed), Is.EquivalentTo(
-                ToTuples(expected_2)));
+            Assert.Equal(ToTuples(expected_2),
+                ToValueTuples(parsed));
         }
 
         /// <summary>
@@ -77,7 +74,7 @@ namespace CSharp.Tests.RealWorld
             }
         }
 
-        [Test]
+        [Fact]
         public void Can_extract_entire_thing()
         {
             var header = new BlockEx(string.Join(Environment.NewLine, new[] {
@@ -88,7 +85,7 @@ namespace CSharp.Tests.RealWorld
             var split = header.Split(file_content)
                 .Where(arr=>arr.Any())
                 .ToArray();
-            Assert.That(split.Length, Is.EqualTo(3));
+            Assert.Equal(3, split.Length);
             var types = new[] {
                 new BlockEx(string.Join(Environment.NewLine, new[] {
                     First_section.D_header, First_section.E_row
@@ -101,7 +98,7 @@ namespace CSharp.Tests.RealWorld
             ).ToArray();
         }
 
-        [Test]
+        [Fact]
         public void Parse_a_simple_format()
         {
             var section = ParseCsv(@";H
@@ -116,8 +113,8 @@ D2;
                             new BlockEx(
                                 "_   @V : row+")
             }, section).ToArray();
-            Assert.That(parsed.SelectMany(ToValueTuples), Is.EquivalentTo(ToTuples(
-                new[] { new[] { "V", "D1" }, new[] { "V", "D2" }, new[] { "V", "D3" } })));
+            Assert.Equal(ToTuples(new[] { new[] { "V", "D1" }, new[] { "V", "D2" }, new[] { "V", "D3" } }),
+                        parsed.SelectMany(ToValueTuples));
         }
 
     }

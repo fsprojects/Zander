@@ -10,8 +10,8 @@ module Lang=
 
     let (|LooksLikeConstant|) (input:StringAndPosition) : (StringAndLength) option=
         opt{
-            let! m = regex_match_i "^\"" input
-            let without_first_quote = (s_incr (snd m) input)
+            let! m = regexMatchI "^\"" input
+            let without_first_quote = (sIncr (snd m) input)
             let! index = indexOfFirstNonEscapedQuote without_first_quote
             let constant = input.input.Substring(input.position+1, (index-input.position-1))
             let length = index-input.position+1

@@ -29,7 +29,7 @@ module internal String =
         o.ToString()
     let trim chars (v:string)=
         v.Trim(chars|>List.toArray)
-    let regex_match_i pattern input=
+    let regexMatchI pattern input=
         let r = new Regex(pattern)
         let m = r.Match ( sub input )
         if m.Success then
@@ -38,12 +38,11 @@ module internal String =
             None
 
     let (|RegexMatch|_|) pattern (input:StringAndPosition) =
-        let r = new Regex(pattern)
         if (getInput input) = null then 
             None
         else 
-            regex_match_i pattern input
+            regexMatchI pattern input
 
-    let s_incr add (input:StringAndPosition) : StringAndPosition =
+    let sIncr add (input:StringAndPosition) : StringAndPosition =
         {input=getInput input;position= add+(getPosition input)}
 

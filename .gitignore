@@ -114,3 +114,5 @@ UpgradeLog*.XML
 paket-files
 
 .fake
+.vs
+

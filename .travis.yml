@@ -1,6 +1,12 @@
 language: csharp
-
-sudo: false 
+dotnet: 2.1.401
 
 script: 
-  - bash ./build.sh test
+  - mono .paket/paket.bootstrapper.exe
+  - mono .paket/paket.exe restore
+  - dotnet restore
+  - dotnet test Tests
+  - dotnet test CSharp.Tests
+branches:
+  only: 
+    - master

@@ -1,3 +1,5 @@
-FsUnit
-NUnit
+xunit
+FsUnit.xUnit
+xunit.runner.visualstudio
+Microsoft.NET.Test.Sdk
 FSharp.Core

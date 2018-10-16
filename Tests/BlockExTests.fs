@@ -1,11 +1,11 @@
 ﻿namespace Tests
-open NUnit.Framework
+open Xunit
+open FsUnit.Xunit
 open FsUnit
 open Zander
 open Zander.Internal
 open TestHelpers
 
-[<TestFixture>] 
 module BlockExTests = 
     let getValues (m:MatchBlock)=
              m.Rows 
@@ -18,7 +18,7 @@ module BlockExTests =
         |> Array.map Array.toList
         |> Array.toList
 
-    [<Test>] 
+    [<Fact>] 
     let ``Can parse complex example`` ()=
         let sections = [["";"H"];["D1";""];["D2";""];["";"D3"]]
                         |> List.map List.toArray
@@ -34,7 +34,7 @@ module BlockExTests =
         m.WithName "data_rows" |> Array.length |> should equal 2
         m.WithName "data_rows2" |> Array.length |> should equal 1
 
-    [<Test>]
+    [<Fact>]
     let ``Can specify simple 2d block``() =
         let sections = [["";"H"];["D1";""];]
                         |> List.map List.toArray
@@ -47,7 +47,7 @@ module BlockExTests =
         m.Size |> should equal {Height=2;Width=2};
         getValues m |> should equal [| ("D","D1"); |]
 
-    [<Test>]
+    [<Fact>]
     let ``Can specify simple 2d block with repeated row``() =
         let sections = [["";"H"];["D1";""];["D2";""];]
                         |> List.map List.toArray
@@ -60,7 +60,7 @@ module BlockExTests =
         m.Size |> should equal {Height=3;Width=2};
         getValues m |> should equal [| ("D","D1"); ("D","D2");|]
 
-    [<Test>]
+    [<Fact>]
     let ``Can split``() =
         let sections = [["";"H"];["D1";""];["D2";""];["";"H"];["D3";""];["D4";""];["";"H"];["D5";""];["D6";""];]
                         |> List.map List.toArray    
@@ -70,7 +70,7 @@ module BlockExTests =
         //printf "%O" (split)
         split |> should equal [[];[["D1";""];["D2";""]];[["D3";""];["D4";""]];[["D5";""];["D6";""]]]
 
-    [<Test>]
+    [<Fact>]
     let ``Can split block with length``() =
         let sections = [["";"H"];["";"H2"];["D1";""];["D2";""];["";"H"];["";"H2"];["D3";""];["D4";""];["";"H"];["";"H2"];["D5";""];["D6";""];]
                         |> List.map List.toArray    
@@ -82,7 +82,7 @@ module BlockExTests =
         //printf "%O" (split)
         split |> should equal [[];[["D1";""];["D2";""]];[["D3";""];["D4";""]];[["D5";""];["D6";""]]]
 
-    [<Test>]
+    [<Fact>]
     let ``Can split blocks with different lengths``() =
         let sections = [["";"H"];["";"H"];["D1";""];["D2";""];["D2_";""];["";"H"];["D3";""];["D4";""];["";"H"];["D5";""];["D6";""];]
                         |> List.map List.toArray    

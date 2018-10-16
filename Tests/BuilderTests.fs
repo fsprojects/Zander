@@ -1,11 +1,11 @@
 ﻿namespace Tests
-open NUnit.Framework
+open Xunit
+open FsUnit.Xunit
 open FsUnit
 open Zander
 open Zander.Internal
 open TestHelpers
 
-[<TestFixture>] 
 module BuilderTests = 
     let first_expression = [
                         (One,{recognizer= ([One,Empty; One,Value ""]); name= "header"})
@@ -27,7 +27,7 @@ module BuilderTests =
                                 {Name= "data_rows2"; Values= [|kv "" "D3"|]}
                                |] }
     open TestHelpers
-    [<Test>] 
+    [<Fact>] 
     let ``Can parse first part when block may have partial match`` ()=
         parse_and_match_block first_expression sections |> should equal true
 
@@ -35,7 +35,7 @@ module BuilderTests =
                  |> List.length
                  |> should equal 3
 
-    [<Test>] 
+    [<Fact>] 
     let ``Can parse first part (complete match)`` ()=
         Parse.block first_expression ParseOptions.BlockMatchesAll (sections |> List.take 3)
                  |> List.length
@@ -45,16 +45,16 @@ module BuilderTests =
                  |> Match.block
                  |> should equal false
 
-    [<Test>] 
+    [<Fact>] 
     let ``Cant parse second part with first expression`` ()=
         ( parse_and_match_block first_expression (sections |> List.skip 3)) |> should equal false
 
-    [<Test>] 
+    [<Fact>] 
     let ``Can parse second part with second expression`` ()=
         ( parse_and_match_block second_expression (sections |> List.skip 3) ) |> should equal true
 
 
-    [<Test>] 
+    [<Fact>] 
     let ``Can parse complex example`` ()=
         let spec input= 
            (new ParserBuilder())

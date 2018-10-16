@@ -1,38 +1,38 @@
 ﻿namespace Tests
 open System
-open NUnit.Framework
+open Xunit
 open FsUnit
+open FsUnit.Xunit
 open Zander.Internal
 open TestHelpers
-[<TestFixture>]
 module StringTests = 
     open Zander.Internal.String
 
-    [<Test>] 
+    [<Fact>] 
     let ``Regex match starting with`` ()=
-        regex_match_i "^abc" {input="abcxyz";position=0} |> Option.map snd |> should equal (Some 3)
-        regex_match_i "^abc" {input="???abcxyz";position=3} |> Option.map snd |> should equal (Some 3)
+        regexMatchI "^abc" {input="abcxyz";position=0} |> Option.map snd |> should equal (Some 3)
+        regexMatchI "^abc" {input="???abcxyz";position=3} |> Option.map snd |> should equal (Some 3)
 
 
-    [<Test>] 
+    [<Fact>] 
     let ``Regex match ending with`` ()=
-        regex_match_i "^abc" {input="xyzabc";position=0} |> should equal (None)
+        regexMatchI "^abc" {input="xyzabc";position=0} |> should equal (None)
 
-    [<Test>] 
+    [<Fact>] 
     let ``match quoted constant`` ()=
         let input = "\"Test\""
         match {input=input;position=0} with | Lang.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
             |> should equal (Some ("Test",6))
         input.Length |> should equal 6
 
-    [<Test>] 
+    [<Fact>] 
     let ``match quoted constant among other`` ()=
         let input ="abc \"Test\" ert"
         match {input=input;position=4} with | Lang.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
             |> should equal (Some ("Test",6))
         input.Substring(4,6) |> should equal "\"Test\""
 
-    [<Test>] 
+    [<Fact>] 
     let ``should not match quoted constant if it's not quoted`` ()=
          match {input="abc Test\" ert";position=4} with | Lang.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
             |> should equal None

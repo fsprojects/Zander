@@ -1,9 +1,10 @@
 ﻿namespace Tests
 
-open NUnit.Framework
+open Xunit
+open FsUnit.Xunit
 open FsUnit
 open Zander.Internal
-[<TestFixture>] 
+
 module SampleBlockMatchTests=
     open TestHelpers
 
@@ -17,7 +18,7 @@ module SampleBlockMatchTests=
          ] 
          |> map_to_block_single_columns
 
-    [<Test>] 
+    [<Fact>] 
     let ``Can recognize simple block expression`` ()=
         let a_block = [
                         [""; ""; "Header1";"";"";"Something else"; "Page:1"]
@@ -32,7 +33,7 @@ module SampleBlockMatchTests=
         parse_and_match_block block_expression a_block |> should equal true
 
 
-    [<Test>] 
+    [<Fact>] 
     let ``Shouldnt recognize with wrong header`` ()=
         let a_block = [
                         [""; ""; "Header1";"XX";"";"Something else"; "Page:1"]
@@ -46,7 +47,7 @@ module SampleBlockMatchTests=
         ]
         parse_and_match_block block_expression a_block |> should equal false
 
-    [<Test>] 
+    [<Fact>] 
     let ``Shouldnt recognize with wrong title row`` ()=
         let a_block = [
                         [""; ""; "Header1";"";"";"Something else"; "Page:1"]
@@ -60,7 +61,7 @@ module SampleBlockMatchTests=
         ]
         parse_and_match_block block_expression a_block |> should equal false
 
-    [<Test>] 
+    [<Fact>] 
     let ``Should not recognize other block`` ()=
         parse_and_match_block block_expression [[""]] |> should equal false
 
