@@ -37,5 +37,5 @@ module ComplexBlockTest =
                      ]
     [<Fact>] 
     let ``Can parse complex example`` ()=
-        Parse.rowsOf (sBlock specification first_section) |> should equal expected
+        rowsOf (sBlock specification first_section) |> should equal expected
 

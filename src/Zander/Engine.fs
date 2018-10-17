@@ -1,41 +1,48 @@
 ﻿namespace Zander.Internal
 open System
-open Zander.Internal.Option
 
-module Matches= 
-    let rec mapWhile (map: ('T -> 'V)) ( predicate )= function 
-    | [] -> []
-    | (source: 'T list)->
-        let h = map (List.head source)
-        match predicate h with
-            | true -> h :: mapWhile map predicate (List.tail source)
-            | false -> []
-    type MatchResult<'t,'a> =
-        | MatchOk of 't
-        | MatchEmptyList
-        | MatcherMissing of 'a
-        | MatchFailure
+type NumberOf=
+    | One 
+    ///  Zero or one also known as '?'
+    | ZeroOrOne
+    /// Zero or many also known as '*'
+    | ZeroOrMany
+    /// Many also known as '+'
+    | Many
+    with
+        override self.ToString()=
+            match self with
+                | One -> "One"
+                | Many -> "Many"
+                | ZeroOrOne -> "ZeroOrOne"
+                | ZeroOrMany -> "ZeroOrMany"
+module NumberOf=
+    let tryParse (g:string)=
+        match g with
+            | "" -> Ok One
+            | "+" -> Ok Many
+            | "*" -> Ok ZeroOrMany
+            | "?" -> Ok ZeroOrOne
+            | v -> Error <| sprintf "Could not interpret: '%s' as number of" v
+    let parse = tryParse >> function | Ok num->num | Error err->failwith err 
+/// Error returned by match engine
+type MatchError<'a>=
+    | MatchEmptyList
+    | MatcherMissing of 'a
+    | MatchFailure
 
-    module MatchResult=
-        let isOk m =
-            match m with
-                | MatchOk _-> true
-                | _ -> false
-        let value m=
-            match m with
-                | MatchOk v->v
-                | _ -> failwith "Not an ok match!"
+
+/// This is the match engine for Zander. This code does most of the heavy lifting in having regular expression like
+/// syntax over both cells and rows.
+module Engine= 
 
     let sliceOrEmpty (from: int option) (to' : int option)= function
         | [] -> []
         | (list : _ list)-> 
-            let none_if_out_of_bounds v=
-                opt{ 
-                    let! v' = v
-                    return! if List.length list > v' && v'>=0 then Some v' else None
-                }
-            let to'' = none_if_out_of_bounds to'
-            let from'' =none_if_out_of_bounds from
+            let notOutOfBounds idx = List.length list > idx && idx>=0
+            let noneIfOutOfBounds v= v |> Option.bind (fun v'-> if notOutOfBounds v' then Some v' else None)
+            let to'' = noneIfOutOfBounds to'
+            let from'' =noneIfOutOfBounds from
             if  Option.isSome from'' || Option.isSome to'' then
                 list.GetSlice (from'', to'')
             else
@@ -76,12 +83,12 @@ module Matches=
             (matcher:'m->'a->'v) 
             (predicate: 'v->bool)
             (expr: (NumberOf*'m) list) 
-            (row: 'a list) : (MatchResult<'v,'a>) list =
+            (row: 'a list) : (Result<'v,MatchError<'a>>) list =
 
         let rec matchMany = function
             | [],[] -> []
-            | [], v -> v |> List.map MatcherMissing 
-            | (One,_)::_, [] -> [MatchEmptyList]
+            | [], v -> v |> List.map (fun a->Error <| MatcherMissing a) 
+            | (One,_)::_, [] -> [Error MatchEmptyList]
             | recognizers,input -> 
                 let matchTail r_num num=
                     matchMany ((sliceOrEmpty (Some r_num) None recognizers), (sliceOrEmpty (Some num) None input) )
@@ -90,12 +97,13 @@ module Matches=
                 let match_h_rec = (matcher (snd h_rec))
                 match (fst h_rec) with
                     | ZeroOrMany -> 
-                        let matchedList = mapWhile match_h_rec predicate input |> List.map MatchOk 
-                        matchedList @ matchTail 1 matchedList.Length 
+                        let matchedList = Seq.map match_h_rec input
+                                          |> Seq.takeWhile predicate |> Seq.map Ok |> Seq.toList
+                        matchedList @ matchTail 1 matchedList.Length
                     | One -> 
                         let h_input = List.head input
                         let head = match_h_rec h_input
-                        MatchOk(head) ::  matchTail 1 1
+                        Ok head ::  matchTail 1 1
                     | ZeroOrOne ->
                         if List.isEmpty input then
                             matchTail 1 0
@@ -103,7 +111,7 @@ module Matches=
                             let h_input = List.head input
                             let head = match_h_rec h_input
                             if predicate head then
-                                MatchOk(head) ::  matchTail 1 1
+                                Ok head ::  matchTail 1 1
                             else
                                 matchTail 1 0
                     | Many -> 

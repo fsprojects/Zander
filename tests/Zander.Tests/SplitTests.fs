@@ -7,7 +7,7 @@ open Zander.Internal
 open TestHelpers
 
 module SplitTests = 
-    open Zander.Internal.Matches
+    open Zander.Internal.Engine
 
     [<Fact>] 
     let ``Split on 1 where 1 starts`` ()=

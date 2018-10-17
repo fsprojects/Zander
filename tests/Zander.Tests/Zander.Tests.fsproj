@@ -24,12 +24,6 @@
     <None Include="Script.fsx" />
     <Content Include="paket.references" />
   </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework) == 'net45'">
-    <Reference Include="mscorlib" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Zander\Zander.fsproj" />
   </ItemGroup>

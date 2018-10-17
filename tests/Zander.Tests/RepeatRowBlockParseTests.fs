@@ -8,7 +8,6 @@ open Zander.Internal
 module RepeatRowBlockParseTests=
 
 
-    open Parse
     open TestHelpers
 
     let block_expression_with_repeat = 

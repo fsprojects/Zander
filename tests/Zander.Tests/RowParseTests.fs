@@ -7,14 +7,6 @@ open TestHelpers
 
 module RowParseTests = 
 
-    open Parse
-    
-    let private valuesOfExpression v a= 
-        sExpression v a 
-            |> List.map Result.value
-            |> List.choose Token.tryValue
-
-
     [<Fact>] 
     let ``Single empty column match empty expression`` ()=
         Assert.Empty (valuesOfExpression [Empty] [""])

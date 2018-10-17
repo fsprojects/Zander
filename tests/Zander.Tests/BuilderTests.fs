@@ -7,42 +7,51 @@ open Zander.Internal
 open TestHelpers
 
 module BuilderTests = 
+    open Zander.Internal
+    let okKv k v=Token.createValue (k, v) |> Result.Ok |> MatchCell
+    let okC k v=Token.createConstant (k, v) |> Result.Ok |> MatchCell 
+    let toArrayArray ll = ll |> List.map List.toArray |> List.toArray
+    let firstExpressionStr = @"_ @_ : header
+                               @_ _ : data_rows+"
     let first_expression = [
-                        (One,{recognizer= ([One,Empty; One,Value ""]); name= "header"})
-                        (Many,{recognizer= ([One,Value ""; One,Empty]); name= "data_rows"})
+                        (One,{recognizer= ([One,Empty; One,Value "_"]); name= "header"})
+                        (Many,{recognizer= ([One,Value "_"; One,Empty]); name= "data_rows"})
                     ]
-    let second_expression = [(Many,{recognizer=([One,Empty; One,Value ""]); name= "data_rows2"})]
+    let secondExpressionStr = @"_ @_ : data_rows2+"
+    let second_expression = [(Many,{recognizer=([One,Empty; One,Value "_"]); name= "data_rows2"})]
 
     let sections = [["";"H"];["D1";""];["D2";""];["";"D3"]]
 
     let expected_first_part = 
         {Name = "fst" ; Rows = [|
-                                 {Name= "header"; Values= [| kv "" "H"|]}
-                                 {Name="data_rows";Values= [|kv "" "D1"|]}
-                                 {Name="data_rows";Values= [|kv "" "D2"|]}
+                                 {Name= "header"; Cells= [|okC "" "" ; okKv "_" "H"|]}
+                                 {Name="data_rows"; Cells= [|okKv "_" "D1"; okC "" "" |]}
+                                 {Name="data_rows"; Cells= [|okKv "_" "D2"; okC "" "" |]}
                                |]}
         
     let expected_second_part =  
         { Name = "snd"; Rows= [|
-                                {Name= "data_rows2"; Values= [|kv "" "D3"|]}
+                                {Name= "data_rows2"; Cells= [|okC "" ""; okKv "_" "D3"|]}
                                |] }
     open TestHelpers
     [<Fact>] 
     let ``Can parse first part when block may have partial match`` ()=
         parseAndMatchBlock first_expression sections |> should equal true
-
-        Parse.block first_expression opts (sections |> List.take 3)
+        Block.parse first_expression opts (sections |> List.take 3)
                  |> List.length
                  |> should equal 3
+        let b= BlockEx(firstExpressionStr)
+        let m =b.Match(sections |> toArrayArray) 
+        m.Success |> should equal true
 
     [<Fact>] 
     let ``Can parse first part (complete match)`` ()=
-        Parse.block first_expression ParseOptions.BlockMatchesAll (sections |> List.take 3)
+        Block.parse first_expression ParseOptions.BlockMatchesAll (sections |> List.take 3)
                  |> List.length
                  |> should equal 3
 
-        Parse.block first_expression ParseOptions.BlockMatchesAll sections 
-                 |> Match.block
+        Block.parse first_expression ParseOptions.BlockMatchesAll sections 
+                 |> Block.isMatch
                  |> should equal false
 
     [<Fact>] 
@@ -58,8 +67,8 @@ module BuilderTests =
     let ``Can parse complex example`` ()=
         let spec input= 
            ParserBuilder()
-                .RawBlock( ("fst", first_expression) )
-                .RawBlock( ("snd",second_expression) )
+                .Block( ("fst", firstExpressionStr) )
+                .Block( ("snd", secondExpressionStr) )
                 .Parse( input )
 
         let expected =  
@@ -71,5 +80,5 @@ module BuilderTests =
              sections |> List.map List.toArray
                       |> List.toArray
         
-        (spec s) |> should equal expected
+        Assert.Equal<ParsedBlock list> (expected, (spec s)|> Seq.toList)
     
