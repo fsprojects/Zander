@@ -143,10 +143,7 @@ Target.create "Restore" (fun _ ->
 )
 
 Target.create "Build" (fun _ ->
-    (*solutionFile
-    |> DotNet.build (fun p ->
-        { p with
-            Configuration = buildConfiguration })*)
+    let buildMode = Environment.environVarOrDefault "buildMode" configuration
     let setParams (defaults:MSBuildParams) =
         { defaults with
             Verbosity = Some(Quiet)
@@ -155,7 +152,7 @@ Target.create "Build" (fun _ ->
                 [
                     "Optimize", "True"
                     "DebugSymbols", "True"
-                    "Configuration", configuration
+                    "Configuration", buildMode
                 ]
          }
     MSBuild.build setParams solutionFile
@@ -390,6 +387,7 @@ Target.create "All" ignore
 
 "RunTests" ?=> "CleanDocs"
 
+"CopyBinaries" ==> "ReferenceDocs" 
 "GenerateDocs" ==> "All"
 
 "CleanDocs"
