@@ -149,9 +149,9 @@ module Row=
                     Ok value
                 | Const v1,v2 when v1<>v2-> 
                     Error <| WrongConstant (v1, v2)
-                | Value n, v when String.IsNullOrEmpty(v) && valueMatchEmpty -> 
+                | Value n, v when String.IsNullOrEmpty v && valueMatchEmpty ->
                     Ok value
-                | Value n, v when not(String.IsNullOrEmpty(v)) ->
+                | Value n, v when not <| String.IsNullOrEmpty v ->
                     Ok value
                 | Value n, v ->
                     Error <| UnRecognized v
@@ -169,8 +169,8 @@ module Row=
 
         let mapToError = function
                 | MatchEmptyList -> Missing
-                | (MatcherMissing v) -> UnRecognized v
-                | MatchFailure -> failwith "match failure"
+                | MatcherMissing v -> UnRecognized v
+                | MatchFailure -> failwith "match failure" //TODO: Should map to something else!
 
         let res= matches columnMatch Result.isOk expr row
         let foldError =Result.mapError mapToError >> Result.bind id
@@ -217,7 +217,7 @@ module Block=
                         v|> List.map (Error << UnRecognized),"Matcher missing"
                     else
                         [], "Matcher missing"
-                | Error MatchFailure -> failwith "Match failure"
+                | Error MatchFailure -> failwith "Match failure" //TODO: Should map to something else!
 
         let result = matches blockMatch blockIsOk expr blocks
         let isMatcherMissing m=

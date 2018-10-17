@@ -12,12 +12,13 @@ type CellType=
 
 type MatchCell(matches: Result<_,_>)=
     let resultValue = matches |>Result.toOption
-    let cellType =resultValue
-                  |> Option.map (fun token->
+    let cellType =match resultValue with
+                  | Some token->
                               match token.cell with
-                              | CT.Value _ -> CellType.Value
-                              | _ -> CellType.Constant)
-                  |> Option.defaultValue CellType.Unknown
+                              | CT.Value _            -> CellType.Value
+                              | CT.Or _               -> CellType.Unknown
+                              | CT.Empty | CT.Const _ -> CellType.Constant
+                  | _ -> CellType.Unknown
     let value = resultValue
                |>Option.bind Token.tryValue
                |>Option.defaultValue (null:string)
