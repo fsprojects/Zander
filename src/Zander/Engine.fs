@@ -3,8 +3,11 @@ open System
 
 type NumberOf=
     | One 
+    ///  Zero or one also known as '?'
     | ZeroOrOne
+    /// Zero or many also known as '*'
     | ZeroOrMany
+    /// Many also known as '+'
     | Many
     with
         override self.ToString()=
@@ -13,7 +16,15 @@ type NumberOf=
                 | Many -> "Many"
                 | ZeroOrOne -> "ZeroOrOne"
                 | ZeroOrMany -> "ZeroOrMany"
-
+module NumberOf=
+    let tryParse (g:string)=
+        match g with
+            | "" -> Ok One
+            | "+" -> Ok Many
+            | "*" -> Ok ZeroOrMany
+            | "?" -> Ok ZeroOrOne
+            | v -> Error <| sprintf "Could not interpret: '%s' as number of" v
+    let parse = tryParse >> function | Ok num->num | Error err->failwith err 
 /// Error returned by match engine
 type MatchError<'a>=
     | MatchEmptyList

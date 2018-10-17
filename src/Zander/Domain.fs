@@ -1,7 +1,12 @@
 ﻿namespace Zander.Internal
-open Zander
 open System
-/// Type of Cell found in 
+open System.Text.RegularExpressions
+
+open Zander
+open Zander.Internal.Engine
+open Zander.Internal.StringAndPosition
+
+/// Type of Cell
 type CellType=
     /// empty constant
     | Empty
@@ -47,33 +52,19 @@ module Token=
         match t.cell with
             | Value (name) -> Some name
             | _ -> None
-type Error = 
+type BlockParseError = 
     | WrongConstant of (string * string)
     | UnRecognized of string
     | Missing
-module Result=
-    let tryValue result=
-        match result with
-            | Ok v -> Some v
-            | _ -> None
+module internal Result=
+    let toOption = function | Ok v -> Some v | _ -> None
+    let isOk =function | Ok v -> true | _ -> false
+    let value = function | Ok v -> v | Error err -> failwithf "%A" err
 
-    let isOk result=
-        match result with
-            | Ok v -> true
-            | _ -> false
-
-    let value result=
-        Option.get (tryValue result)
-
-type RecognizedBlock=((Result<Token,Error> list*string) list)
+type RecognizedBlock=((Result<Token,BlockParseError> list*string) list)
 type ColumnsAndPosition = InputAndPosition<string list>
-type ResultAndLength = (Result<Token,Error>*int)
-
-
-open Zander.Internal.Engine
-open Zander.Internal.StringAndPosition
-open System.Text.RegularExpressions
-
+type ResultAndLength = (Result<Token,BlockParseError>*int)
+[<AutoOpen>]
 module internal ParseHelpers=
 
     let startsWithQuote input = regexMatchI "^\"" input
@@ -94,14 +85,6 @@ module internal ParseHelpers=
         |> Option.bind indexOfFirstNonEscapedQuote
         |> Option.map constantAndLength
 
-    let numberOf (g:string)=
-        match g with
-            | "" -> One
-            | "+" -> Many
-            | "*" -> ZeroOrMany
-            | "?" -> ZeroOrOne
-            | v -> failwithf "Could not interpret: '%s' as number of" v
-
     let rec parseCells parseCell lengthOfInput input =
         let {input = s; position= i} = input
         let head = parseCell input
@@ -121,7 +104,6 @@ module internal ParseHelpers=
           $
     ", RegexOptions.IgnorePatternWhitespace)
 
-open ParseHelpers
 module Row=
     /// Parse single row expression to row recognizer
     [<CompiledName("Recognizer")>]
@@ -142,13 +124,13 @@ module Row=
                             cells |> List.map snd
                     Some (One, (Or conditions)), l
                 | RegexMatch "^(_)([+*?])?" ([_;_;number], l) -> 
-                    Some (numberOf number.Value, Empty), l
+                    Some (NumberOf.parse number.Value, Empty), l
                 | LooksLikeConstant (Some (c, l)) -> 
                     Some((One,Const(c))), l 
                 | RegexMatch @"^\@(\w+)([+*?])?" ([_;value;number], l) -> 
-                    Some( (numberOf number.Value, Value( value.Value ))) , l
+                    Some( (NumberOf.parse number.Value, Value( value.Value ))) , l
                 | RegexMatch @"^(\w+)([+*?])?" ([_;value;number], l) -> 
-                    Some( (numberOf number.Value, Const( value.Value ))) , l
+                    Some( (NumberOf.parse number.Value, Const( value.Value ))) , l
                 | _ -> 
                     failwithf "Could not interpret: '%s' at position %i" (sub v) (position v)
 
@@ -156,7 +138,7 @@ module Row=
             |> List.choose fst
     /// parse a row using a row recognizer
     [<CompiledName("Parse")>]
-    let parse (expr:RecognizesCells list) (opts: ParseOptions) row : Result<Token,Error> list=
+    let parse (expr:RecognizesCells list) (opts: ParseOptions) row : Result<Token,BlockParseError> list=
         let valueMatchEmpty = opts.HasFlag(ParseOptions.ValueMatchesEmpty)
         let rec columnMatch (columnExpr:CellType) column=
             let value = { value=column;cell= columnExpr }
@@ -205,7 +187,7 @@ module Rows=
         let m = rowRegex.Match(v)
         let columns = Row.recognizer (m.Groups.["columns"].Value)
         let name =  m.Groups.["name"].Value
-        let modifier = numberOf m.Groups.["modifier"].Value
+        let modifier = NumberOf.parse m.Groups.["modifier"].Value
 
         (modifier,{recognizer= columns; name= name})
 

@@ -1,6 +1,6 @@
 ﻿namespace Zander
 open Zander.Internal
-
+type private CT=Zander.Internal.CellType
 type Size={Height:int;Width:int}
     with
         override self.ToString()=sprintf "(%i, %i)" self.Height self.Width
@@ -11,11 +11,11 @@ type CellType=
     | Value=2
 
 type MatchCell(matches: Result<_,_>)=
-    let resultValue = matches |>Result.tryValue 
+    let resultValue = matches |>Result.toOption
     let cellType =resultValue
                   |> Option.map (fun token->
                               match token.cell with
-                              | Zander.Internal.CellType.Value _ -> CellType.Value
+                              | CT.Value _ -> CellType.Value
                               | _ -> CellType.Constant)
                   |> Option.defaultValue CellType.Unknown
     let value = resultValue
@@ -43,7 +43,7 @@ type MatchRow(matches: Result<_,_> list)=
     let cells = matches |> List.map MatchCell
     let toTuples ()=
             matches 
-            |> List.choose Result.tryValue
+            |> List.choose Result.toOption
             |> List.choose Token.tryKeyValue
     member self.Success with get() = Row.isMatch matches
     member self.Length with get() = List.length matches

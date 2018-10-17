@@ -13,7 +13,7 @@ let opts=ParseOptions.Default
 let rowsOf v = 
     let valuesOf v' =
         v'
-        |> List.choose Result.tryValue
+        |> List.choose Result.toOption
         |> List.choose Token.tryValue
 
     v |> List.map (fun (row,name)-> (valuesOf row) , name)
