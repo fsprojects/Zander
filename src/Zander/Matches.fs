@@ -1,6 +1,5 @@
 ﻿namespace Zander.Internal
 open System
-open Zander.Internal.Option
 
 module Matches= 
 

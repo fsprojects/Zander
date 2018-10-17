@@ -5,18 +5,27 @@ open System.Text.RegularExpressions
 module Lang=
 
     open Zander.Internal.StringAndPosition
-    open Zander.Internal.Option
-    open Zander.Internal.IndexOfNonEscapedQuote
 
+    module private Helpers=
+        let startsWithQuote input = regexMatchI "^\"" input
+        let regex = Regex(@"[^""\\]*(?:\\.[^""\\]*)*""")
+        let indexOfFirstNonEscapedQuote (input :StringAndPosition)=
+            let m = regex.Match(input.input, input.position)
+            if m.Success then 
+                Some (input.position+ m.Length-1)
+            else
+                None
+
+    open Helpers
     let (|LooksLikeConstant|) (input:StringAndPosition) : (StringAndLength) option=
-        opt{
-            let! m = regexMatchI "^\"" input
-            let without_first_quote = (sIncr (snd m) input)
-            let! index = indexOfFirstNonEscapedQuote without_first_quote
-            let constant = input.input.Substring(input.position+1, (index-input.position-1))
-            let length = index-input.position+1
-            return (constant, length)
-        }
+        let withoutFirstQuote = startsWithQuote input |> Option.map (fun m->(sIncr (snd m) input))
+        let constantAndLength i= 
+            let constant = input.input.Substring(input.position+1, (i-input.position-1))
+            let length = i-input.position+1
+            (constant, length)
+        withoutFirstQuote
+        |> Option.bind indexOfFirstNonEscapedQuote
+        |> Option.map constantAndLength
     let numberOf (g:string)=
         match g with
             | "" -> One
