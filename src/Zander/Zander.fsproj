@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <RootNamespace>Zander</RootNamespace>
     <AssemblyName>Zander</AssemblyName>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -24,9 +24,8 @@
     <Compile Include="Api.fs" />
     <Compile Include="Builder.fs" />
     <Content Include="paket.references" />
-    <None Include="paket.template" />
   </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework) == 'net45'">
+  <ItemGroup Condition="$(TargetFramework) != 'netstandard2.0'">
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Core" />

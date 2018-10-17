@@ -11,31 +11,34 @@ type CellType=
     | Value=2
 
 type MatchCell(matches: Parse.Result)=
-    let result_value = matches |>Parse.Result.tryValue 
-    let null_if_none opt=
-        match opt with
-        | Some v->v
-        | None -> null
-
+    let resultValue = matches |>Parse.Result.tryValue 
+    let cellType =resultValue
+                  |> Option.map (fun token->
+                              match token.cell with
+                              | Zander.Internal.CellType.Value _ -> CellType.Value
+                              | _ -> CellType.Constant)
+                  |> Option.defaultValue CellType.Unknown
+    let value = resultValue
+               |>Option.bind Parse.Token.tryValue
+               |>Option.defaultValue (null:string)
+    let name = resultValue
+               |>Option.bind Parse.Token.tryKey
+               |>Option.defaultValue (null:string)
     member self.Success with get()=Parse.Result.isOk matches
-    member self.Name with get()=
-                                result_value
-                                    |>Option.bind Parse.Token.tryKey
-                                    |>null_if_none
+    member self.Name with get()=name
+    member self.Value with get()= value                                 
+    member self.CellType with get()=cellType
                                     
-    member self.Value with get()= 
-                                result_value
-                                    |>Option.bind Parse.Token.tryValue
-                                    |>null_if_none
-    member self.CellType with get()=
-                                    Option.opt{
-                                        let! token = result_value
-                                        return match token.cell with
-                                                | Zander.Internal.CellType.Value _ -> CellType.Value
-                                                | _ -> CellType.Constant
-                                    } |> (fun v -> match v with | None -> CellType.Unknown; | Some v -> v ; )
-    override self.ToString()= sprintf "MatchCell(%O, %s : %s)" self.CellType self.Name self.Value
-
+    override self.ToString()= sprintf "MatchCell(%O, '%s' : '%s')" self.CellType self.Name self.Value
+    override self.Equals obj=
+        match obj with
+        | :? MatchCell as cell->
+            self.Success = cell.Success 
+            && self.Name = cell.Name 
+            && self.Value = cell.Value 
+            && self.CellType = cell.CellType
+        | _ -> false
+    override  self.GetHashCode() = (self.Success, self.Name, self.Value, self.CellType).GetHashCode()
 type MatchRow(matches: Parse.Result list)=
     let cells = matches |> List.map MatchCell
     let toTuples ()=
@@ -61,6 +64,8 @@ type MatchBlock(matches: Parse.RecognizedBlock)=
     member self.Success with get() = Match.block matches
     member self.Size with get(): Size= size
     member self.Rows with get()= rows |> List.map fst |> List.toArray
+    member internal self.RowAndNames with get()= rows
+    member self.RowNames with get()= rows |> List.map snd |> List.toArray
     member self.WithName name = rows 
                                 |> List.filter (snd >> (=) name) 
                                 |> List.map fst 
@@ -79,7 +84,10 @@ type BlockEx(expression:string, options: ParseOptions)=
 
     member self.Match (input:string array array) : MatchBlock=
         self.Match(input, None)
-
+    member self.IsMatch (input:string array array, position:int) : bool=
+        self.Match(input, Some position).Success
+    member self.IsMatch (input:string array array) : bool=
+        self.Match(input, None).Success
     member self.Matches (input:string array array)=
         let rec matchit position=
             let m = self.Match(input, Some position)

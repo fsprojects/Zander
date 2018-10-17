@@ -18,18 +18,21 @@ module Parse=
                     | Const c -> sprintf "'%s'" c
                     | Value v -> sprintf "%O = %s" (Value v) self.value
                     | Or cs -> sprintf "%O = %s" (Or cs) self.value
-            static member tryValue (t:Token)=
-                match t.cell with
-                    | Value (name) -> Some (t.value)
-                    | _ -> None
-            static member tryKeyValue (t:Token)=
-                match t.cell with
-                    | Value (name) -> Some (name, t.value)
-                    | _ -> None
-            static member tryKey (t:Token)=
-                match t.cell with
-                    | Value (name) -> Some name
-                    | _ -> None
+    module Token=
+        let createValue (name, value)={ value=value; cell=CellType.Value name }
+        let createConstant (name, value)={ value=value; cell=CellType.Const name }
+        let tryValue (t:Token)=
+            match t.cell with
+                | Value (name) -> Some (t.value)
+                | _ -> None
+        let tryKeyValue (t:Token)=
+            match t.cell with
+                | Value (name) -> Some (name, t.value)
+                | _ -> None
+        let tryKey (t:Token)=
+            match t.cell with
+                | Value (name) -> Some name
+                | _ -> None
 
     type Result=
         | Ok of Token

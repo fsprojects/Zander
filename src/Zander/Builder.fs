@@ -2,83 +2,57 @@
 open Zander.Internal
 open System.Collections.Generic
 
-[<System.Obsolete("Use MatchRow")>]
 type ParsedRow = {
         Name: string
-        Values: KeyValuePair<string,string>[]
+        Cells: MatchCell[]
     }
     with
-        override self.ToString()=
-            let kvs = self.Values |> Array.map (fun kv-> sprintf "%s : %s" kv.Key kv.Value)
-            sprintf "%s=%s" self.Name (String.concat "," kvs )
+        member this.Values = this.Cells |> Array.map (fun r->r.Value)
+        static member Create (row:MatchRow, name)={Name=name; Cells=row.Cells }
+        override self.ToString()= sprintf "%A" self
 
-[<System.Obsolete("Use MatchBlock")>]
 type ParsedBlock={
         Name: string
-        Rows: ParsedRow array
+        Rows: ParsedRow[]
     }
     with
-        override self.ToString() = 
-            let rows = 
-                self.Rows
-                |> Seq.map ( fun row-> row.ToString()) 
-                |> String.concat ",\n" 
-
-            sprintf "{%s : %s}" self.Name rows
+        override self.ToString()= sprintf "%A" self
 
 
-[<System.Obsolete("Use BlockEx")>]
-type BuildingBlock( name:string, block: RecognizesRows list)=
+/// The usage of Building Block is discouraged, prefer BlockEx 
+type BuildingBlock( name:string, block: BlockEx)=
     member this.name = name
     member this.block = block
 
-[<System.Obsolete("Use BlockEx")>]
+/// The usage of ParserBuilder is discouraged, prefer a list of BlockEx and compose thoose
 type ParserBuilder(array : BuildingBlock list)=
-    let array = array
-    let opts = ParseOptions.Default
-    let rowsOf v = 
-        let toKv (v:(string*string)) =KeyValuePair<string,string>(fst v, snd v)
-        let valuesOf v' =
-            v'
-            |> List.map Parse.Result.value
-            |> List.choose Parse.Token.tryKeyValue
-            |> List.map toKv
-
-        v |> List.map (
-             fun (row,name)-> (valuesOf row) , name
-             )
-
-    member internal this.RawBlock  (x : string* (RecognizesRows list)) = 
-        ParserBuilder(array @ [ BuildingBlock(fst x, snd x) ])
-
-    member this.Block(name: string, x : string ) = 
-        ParserBuilder(array @ [ BuildingBlock( name, (Lang.block x) )])
+    member this.Block(name: string, expression : string ) = 
+        ParserBuilder(array @ [ BuildingBlock( name, BlockEx(expression) )])
 
     member this.Parse(blocks : string array array) : ParsedBlock seq=
-        let matrix = 
-            blocks |> Array.map Array.toList
-                   |> Array.toList
-
-        let toRows (parsed: (Parse.Result list*string) list) =
-            parsed |> rowsOf
-                   |> List.map (fun next -> { Name= (snd next); Values= (fst next |> List.toArray) } ) 
-                   |> List.toArray
+        let matrix = blocks 
 
         let rec parse index : ParsedBlock list =
-            let asCsv (m:string list) =
-                System.String.Join(", ", ( List.map (fun s->sprintf "\"%s\"" s) m) )
+            let asCsv (m:string[]) =
+                System.String.Join(", ", ( Array.map (fun s->sprintf "\"%s\"" s) m) )
 
-            if index >= List.length matrix then
+            if index >= Array.length matrix then
                 []
             else
-                let maybeNext =  array |> List.tryFind (fun sp-> (Match.block (Parse.block (sp.block) opts (matrix |> List.skip index)) ))
+                let maybeNext =  array |> List.tryPick (fun sp-> 
+                    let m = sp.block.Match( (matrix |> Array.skip index))
+                    if m.Success then Some (m, sp.name) else None
+                )
                 match maybeNext with
-                    | Some next -> 
-                        let parsed = Parse.block (next.block) opts (matrix|> List.skip index)
+                    | Some (next,name) -> 
+                        let parsed = next.RowAndNames
+                        
                         let nextIndex = index + (List.length parsed)
-                        [ { Name=next.name; Rows= (toRows parsed) } ] @ (parse nextIndex) 
+                        [ { Name=name; 
+                            Rows= parsed |> List.map ParsedRow.Create |> List.toArray } 
+                        ] @ (parse nextIndex) 
                     | None -> 
-                        (failwithf "could not find block to interpret %s" (asCsv (List.item index matrix)))
+                        (failwithf "could not find block to interpret %s" (asCsv (Array.item index matrix)))
 
         parse 0 |> List.toSeq
 

@@ -16,6 +16,7 @@ open Fake.IO.Globbing.Operators
 open Fake.DotNet.Testing
 open Fake.Tools
 open Fake.Api
+open Fake.DotNet
 
 // --------------------------------------------------------------------------------------
 // START TODO: Provide project-specific details below
@@ -51,9 +52,7 @@ let solutionFile  = "Zander.sln"
 // Default target configuration
 let configuration = "Release"
 
-// Pattern specifying assemblies to be tested using Expecto
-let testAssemblies =  "tests/**/bin" </> configuration </> "**" </> "*.Tests.dll"
-
+let testProjects = ["./tests/CSharp.Tests";"./tests/Zander.Tests"] 
 // Git configuration (used for publishing documentation in gh-pages branch)
 // The profile where the project is posted
 let gitOwner = "fsprojects"
@@ -166,36 +165,37 @@ Target.create "Build" (fun _ ->
 // Run the unit tests using test runner
 
 Target.create "RunTests" (fun _ ->
-    let assemblies = !! testAssemblies
-
-    let setParams f =
-        match Environment.isWindows with
-        | true ->
-            fun p ->
-                { p with
-                    FileName = f}
-        | false ->
-            fun p ->
-                { p with
-                    FileName = "mono"
-                    Arguments = f }
-    assemblies
-    |> Seq.map (fun f ->
-        Process.execSimple (setParams f) System.TimeSpan.MaxValue
-    )
-    |>Seq.reduce (+)
-    |> (fun i -> if i > 0 then failwith "")
+    testProjects
+    |> Seq.iter (fun proj -> DotNet.test (fun p ->
+        { p with ResultsDirectory = Some __SOURCE_DIRECTORY__ }) proj)
 )
 
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
+let (nugetVersionPrefix,nugetVersionSuffix) = 
+  match release.NugetVersion.Split('-') |> Array.toList with
+  | prefix::[]->(prefix,"")
+  | prefix::suffix::[]->(prefix,suffix)
+  | _-> failwith "failed to recognise version"
 
 Target.create "NuGet" (fun _ ->
-    Paket.pack(fun p ->
-        { p with
-            OutputPath = "bin"
-            Version = release.NugetVersion
-            ReleaseNotes = String.toLines release.Notes})
+  let buildMode = Environment.environVarOrDefault "buildMode" configuration
+  let setParams (defaults:MSBuildParams) =
+        { defaults with
+           Targets = ["Pack"]
+           Verbosity = Some(Quiet)
+           Properties =
+            [
+                "Optimize", "True"
+                "DebugSymbols", "True"
+                #if MONO
+                "DefineConstants","MONO"
+                #endif
+                "PackageReleaseNotes", release.Notes |> List.head
+                "VersionSuffix", nugetVersionSuffix
+                "VersionPrefix", nugetVersionPrefix
+                "Configuration", buildMode]}
+  MSBuild.build setParams "./src/Zander/Zander.fsproj"
 )
 
 Target.create "PublishNuget" (fun _ ->
@@ -385,11 +385,12 @@ Target.create "All" ignore
   ==> "Build"
   ==> "CopyBinaries"
   ==> "RunTests"
-  ==> "GenerateDocs"
   ==> "NuGet"
   ==> "All"
 
 "RunTests" ?=> "CleanDocs"
+
+"GenerateDocs" ==> "All"
 
 "CleanDocs"
   ==>"Docs"
