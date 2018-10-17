@@ -2,4 +2,6 @@
 * Converted to .net core and fsprojects scaffold
 * Changed Builder to use BlockEx
 * Removed Obsolete attribute from Builder
-
+* Use Result (instead of homegrown Result like types) 
+* Instead of having modules with a set of operations for different abstractions, have entities as      
+* Matches renamed to Engine (Since it's a match engine)
