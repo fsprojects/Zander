@@ -4,7 +4,7 @@ open System.Text.RegularExpressions
 
 module Lang=
 
-    open Zander.Internal.String
+    open Zander.Internal.StringAndPosition
     open Zander.Internal.Option
     open Zander.Internal.IndexOfNonEscapedQuote
 
@@ -40,13 +40,13 @@ module Lang=
         |{position=0;input=""} -> failwith "Cannot parse empty cell!"
         |v ->
             let unwrap_to_cell (v:string) : (NumberOf*CellType) option =
-                let value, _ =parseCell (String.emptyPosition v) 
+                let value, _ =parseCell (firstPosition v)
                 value
             match v with
                 | RegexMatch @"^\s+" ([g], l) -> None, l
                 | RegexMatch @"^\|" ([g], l) -> None, l
                 | RegexMatch @"^\(([^)]*)\)" ([_;s], l) ->
-                    let cells = parseCells parseCell getLength (String.emptyPosition s.Value)
+                    let cells = parseCells parseCell length (firstPosition s.Value)
                                 |> List.choose fst
                     let conditions = 
                             cells |> List.map snd
@@ -60,9 +60,9 @@ module Lang=
                 | RegexMatch @"^(\w+)([+*?])?" ([_;value;number], l) -> 
                     Some( (numberOf number.Value, Const( value.Value ))) , l
                 | _ -> 
-                    failwithf "Could not interpret: '%s' at position %i" (sub v) (getPosition v)
+                    failwithf "Could not interpret: '%s' at position %i" (sub v) (position v)
 
-       parseCells parseCell getLength {input =v; position=0} 
+       parseCells parseCell length {input =v; position=0}
             |> List.choose fst
 
     let rowRegex = Regex(@"

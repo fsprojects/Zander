@@ -3,13 +3,7 @@ open System
 open Zander.Internal.Option
 
 module Matches= 
-    let rec mapWhile (map: ('T -> 'V)) ( predicate )= function 
-    | [] -> []
-    | (source: 'T list)->
-        let h = map (List.head source)
-        match predicate h with
-            | true -> h :: mapWhile map predicate (List.tail source)
-            | false -> []
+
     type MatchResult<'t,'a> =
         | MatchOk of 't
         | MatchEmptyList
@@ -29,13 +23,10 @@ module Matches=
     let sliceOrEmpty (from: int option) (to' : int option)= function
         | [] -> []
         | (list : _ list)-> 
-            let none_if_out_of_bounds v=
-                opt{ 
-                    let! v' = v
-                    return! if List.length list > v' && v'>=0 then Some v' else None
-                }
-            let to'' = none_if_out_of_bounds to'
-            let from'' =none_if_out_of_bounds from
+            let notOutOfBounds idx = List.length list > idx && idx>=0
+            let noneIfOutOfBounds v= v |> Option.bind (fun v'-> if notOutOfBounds v' then Some v' else None)
+            let to'' = noneIfOutOfBounds to'
+            let from'' =noneIfOutOfBounds from
             if  Option.isSome from'' || Option.isSome to'' then
                 list.GetSlice (from'', to'')
             else
@@ -90,8 +81,9 @@ module Matches=
                 let match_h_rec = (matcher (snd h_rec))
                 match (fst h_rec) with
                     | ZeroOrMany -> 
-                        let matchedList = mapWhile match_h_rec predicate input |> List.map MatchOk 
-                        matchedList @ matchTail 1 matchedList.Length 
+                        let matchedList = Seq.map match_h_rec input
+                                          |> Seq.takeWhile predicate |> Seq.map MatchOk |> Seq.toList
+                        matchedList @ matchTail 1 matchedList.Length
                     | One -> 
                         let h_input = List.head input
                         let head = match_h_rec h_input

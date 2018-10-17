@@ -27,5 +27,5 @@ type CellType=
                 | Empty -> "Empty"
                 | Const c -> sprintf "'%s'" c
                 | Value v -> sprintf "@%s" v
-                | Or cs-> cs |> List.map String.toString |> String.concat "||" |> sprintf "(%s)"
+                | Or cs-> cs |> List.map string |> String.concat "||" |> sprintf "(%s)"
 

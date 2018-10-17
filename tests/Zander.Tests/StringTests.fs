@@ -6,7 +6,7 @@ open FsUnit.Xunit
 open Zander.Internal
 open TestHelpers
 module StringTests = 
-    open Zander.Internal.String
+    open Zander.Internal.StringAndPosition
 
     [<Fact>] 
     let ``Regex match starting with`` ()=

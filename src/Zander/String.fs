@@ -10,27 +10,18 @@ type StringAndPosition = InputAndPosition<string>
 
 type StringAndLength = (string*int)
 
+module internal StringAndPosition =
 
-module internal String = 
+    let sub {input=(s:string); position=i} = s.Substring(i)
 
-    let sub (input:StringAndPosition) =
-        let {input=s; position=i} = input
-        s.Substring(i)
+    let input (v:StringAndPosition) = v.input
 
-    let getInput (v:StringAndPosition) =
-        v.input
+    let position (v:StringAndPosition) = v.position
 
-    let getPosition (v:StringAndPosition) =
-        v.position
+    let length (v:StringAndPosition) = v.input.Length
 
-    let getLength (v:StringAndPosition) =
-        v.input.Length
+    let firstPosition s= { input =s; position=0 }
 
-    let emptyPosition s=
-        { input =s; position=0 }
-
-    let toString o=
-        o.ToString()
     let trim chars (v:string)=
         v.Trim(chars|>List.toArray)
     let regexMatchI pattern input=
@@ -41,12 +32,12 @@ module internal String =
         else 
             None
 
-    let (|RegexMatch|_|) pattern (input:StringAndPosition) =
-        if (getInput input) = null then 
+    let (|RegexMatch|_|) pattern (value:StringAndPosition) =
+        if (input value) = null then
             None
         else 
-            regexMatchI pattern input
+            regexMatchI pattern value
 
-    let sIncr add (input:StringAndPosition) : StringAndPosition =
-        {input=getInput input;position= add+(getPosition input)}
+    let sIncr add (value:StringAndPosition) : StringAndPosition =
+        {input=input value;position= add+(position value)}
 

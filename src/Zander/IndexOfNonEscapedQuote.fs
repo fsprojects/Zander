@@ -1,7 +1,7 @@
 ﻿namespace Zander.Internal
 
 module IndexOfNonEscapedQuote=
-    open Zander.Internal.String
+    open Zander.Internal.StringAndPosition
     open Zander.Internal.Option
     /// internal state to identify unescaped double quotes
     type NonEscapedQuoteState=
@@ -40,11 +40,9 @@ module IndexOfNonEscapedQuote=
         | UnEscapedQuote l -> UnEscapedQuote l
 
     let indexOfFirstNonEscapedQuote (input :StringAndPosition)= 
-        opt{
-            let! index =
+            let index =
                 match transitionNonEscapedQuote (sub input) Start with
                 | UnEscapedQuote l-> Some l
                 | EndOfString -> None
                 | _ -> failwith "this should not happen"
-            return input.position+index
-        }
+            index |> Option.map (fun i->input.position+i)
