@@ -1,10 +1,29 @@
 ﻿namespace Zander.Internal
 open System
+
+type NumberOf=
+    | One 
+    | ZeroOrOne
+    | ZeroOrMany
+    | Many
+    with
+        override self.ToString()=
+            match self with
+                | One -> "One"
+                | Many -> "Many"
+                | ZeroOrOne -> "ZeroOrOne"
+                | ZeroOrMany -> "ZeroOrMany"
+
+/// Error returned by match engine
 type MatchError<'a>=
     | MatchEmptyList
     | MatcherMissing of 'a
     | MatchFailure
-module Matches= 
+
+
+/// This is the match engine for Zander. This code does most of the heavy lifting in having regular expression like
+/// syntax over both cells and rows.
+module Engine= 
 
     let sliceOrEmpty (from: int option) (to' : int option)= function
         | [] -> []

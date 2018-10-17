@@ -28,14 +28,9 @@ let valuesOfExpression v a=
         |> List.map Result.value
         |> List.choose Token.tryValue
 
-let matchSExpression expr=
-    Row.parse (List.map mapToSingle expr) opts>> Match.expression
-let matchSExpressionOpt expr opt=
-    Row.parse (List.map mapToSingle expr) opt>> Match.expression
-let parseAndMatchExpression expr=
-    Row.parse expr opts>> Match.expression
+let matchSExpression expr= Row.parse (List.map mapToSingle expr) opts>> Row.isMatch
+let matchSExpressionOpt expr opt= Row.parse (List.map mapToSingle expr) opt>> Row.isMatch
+let parseAndMatchExpression expr= Row.parse expr opts>> Row.isMatch
 
-let matchSBlock expr =
-    Block.parse (mapToBlockSingleColumns expr) opts >> Match.block
-let parseAndMatchBlock expr =
-    Block.parse expr opts  >> Match.block
+let matchSBlock expr = Block.parse (mapToBlockSingleColumns expr) opts >> Block.isMatch
+let parseAndMatchBlock expr = Block.parse expr opts  >> Block.isMatch

@@ -7,7 +7,7 @@ open Zander.Internal
 open TestHelpers
 
 module NumberedMatchTests = 
-    open Zander.Internal.Matches
+    open Zander.Internal.Engine
 
     let zeroToThree = (fun m a -> 
                                 match m, a with

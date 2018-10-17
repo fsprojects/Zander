@@ -51,7 +51,7 @@ module BuilderTests =
                  |> should equal 3
 
         Block.parse first_expression ParseOptions.BlockMatchesAll sections 
-                 |> Match.block
+                 |> Block.isMatch
                  |> should equal false
 
     [<Fact>] 

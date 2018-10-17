@@ -7,9 +7,6 @@ open Zander.Internal
 open TestHelpers
 module RepeatRowBlockMatchTests=
 
-
-    open Match
-
     let block_expression_with_repeat = 
         [
             One,    ([Empty; Empty; Value ""; Empty; Empty; Value ""; Value ""]), "header"

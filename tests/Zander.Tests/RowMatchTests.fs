@@ -7,7 +7,6 @@ open TestHelpers
 
 module RowMatchTests = 
 
-    open Match
     open Zander
 
     [<Fact>] 

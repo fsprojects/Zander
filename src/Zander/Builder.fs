@@ -19,15 +19,10 @@ type ParsedBlock={
         override self.ToString()= sprintf "%A" self
 
 
-/// The usage of Building Block is discouraged, prefer BlockEx 
-type BuildingBlock( name:string, block: BlockEx)=
-    member this.name = name
-    member this.block = block
-
 /// The usage of ParserBuilder is discouraged, prefer a list of BlockEx and compose thoose
-type ParserBuilder(array : BuildingBlock list)=
+type ParserBuilder(array : (string*BlockEx) list)=
     member this.Block(name: string, expression : string ) = 
-        ParserBuilder(array @ [ BuildingBlock( name, BlockEx(expression) )])
+        ParserBuilder(array @ [ ( name, BlockEx(expression) )])
 
     member this.Parse(blocks : string array array) : ParsedBlock seq=
         let matrix = blocks 
@@ -39,9 +34,9 @@ type ParserBuilder(array : BuildingBlock list)=
             if index >= Array.length matrix then
                 []
             else
-                let maybeNext =  array |> List.tryPick (fun sp-> 
-                    let m = sp.block.Match( (matrix |> Array.skip index))
-                    if m.Success then Some (m, sp.name) else None
+                let maybeNext =  array |> List.tryPick (fun (name,block)-> 
+                    let m = block.Match( (matrix |> Array.skip index))
+                    if m.Success then Some (m, name) else None
                 )
                 match maybeNext with
                     | Some (next,name) -> 

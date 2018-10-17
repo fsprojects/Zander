@@ -21,20 +21,20 @@ module StringTests =
     [<Fact>] 
     let ``match quoted constant`` ()=
         let input = "\"Test\""
-        match {input=input;position=0} with | Lang.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
+        match {input=input;position=0} with | ParseHelpers.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
             |> should equal (Some ("Test",6))
         input.Length |> should equal 6
 
     [<Fact>] 
     let ``match quoted constant among other`` ()=
         let input ="abc \"Test\" ert"
-        match {input=input;position=4} with | Lang.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
+        match {input=input;position=4} with | ParseHelpers.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
             |> should equal (Some ("Test",6))
         input.Substring(4,6) |> should equal "\"Test\""
 
     [<Fact>] 
     let ``should not match quoted constant if it's not quoted`` ()=
-         match {input="abc Test\" ert";position=4} with | Lang.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
+         match {input="abc Test\" ert";position=4} with | ParseHelpers.LooksLikeConstant (Some (c, l)) -> Some(c,l) ; | _-> None
             |> should equal None
      
 

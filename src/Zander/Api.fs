@@ -45,7 +45,7 @@ type MatchRow(matches: Result<_,_> list)=
             matches 
             |> List.choose Result.tryValue
             |> List.choose Token.tryKeyValue
-    member self.Success with get() = Match.expression matches
+    member self.Success with get() = Row.isMatch matches
     member self.Length with get() = List.length matches
     member self.Cells with get() =  cells |> List.toArray
     member self.ToDictionary() = toTuples() |> dict
@@ -61,7 +61,7 @@ type MatchBlock(matches: RecognizedBlock)=
     
     let rows = matches |> List.map (fun (m,name)->(MatchRow m, name))
 
-    member self.Success with get() = Match.block matches
+    member self.Success with get() = Block.isMatch matches
     member self.Size with get(): Size= size
     member self.Rows with get()= rows |> List.map fst |> List.toArray
     member internal self.RowAndNames with get()= rows
@@ -72,7 +72,7 @@ type MatchBlock(matches: RecognizedBlock)=
                                 |> List.toArray
 
 type BlockEx(expression:string, options: ParseOptions)=
-    let block=Lang.block expression
+    let block=Block.recognizer expression
     member internal self.Match (input:string array array, position:int option) : MatchBlock=
         let start = match position with |Some v->v;|None -> 0
         let parsed = Block.parse block options (input |> Array.skip start 
@@ -100,9 +100,9 @@ type BlockEx(expression:string, options: ParseOptions)=
         input 
             |> Array.toList 
             |> List.map Array.toList
-            |> Matches.splitList (fun ( arr :string list list)->
+            |> Engine.splitList (fun ( arr :string list list)->
                 let parsed = Block.parse block options arr
-                (Match.block parsed, List.length parsed)
+                (Block.isMatch parsed, List.length parsed)
             )
         |> List.map (List.map List.toArray)
         |> List.map List.toArray
@@ -111,7 +111,7 @@ type BlockEx(expression:string, options: ParseOptions)=
 
 
 type RowEx(expression:string, options: ParseOptions)=
-    let row= Lang.row expression
+    let row= Row.recognizer expression
     member self.Match (input:string array) : MatchRow=
         new MatchRow(Row.parse row options (input |> Array.toList))
     new (expression:string)=RowEx(expression, ParseOptions.Default)

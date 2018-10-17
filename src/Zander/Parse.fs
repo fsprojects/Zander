@@ -1,6 +1,22 @@
 ﻿namespace Zander.Internal
 open Zander
 open System
+/// Type of Cell found in 
+type CellType=
+    /// empty constant
+    | Empty
+    /// constant
+    | Const of string 
+    /// variable with name
+    | Value of string 
+    | Or of CellType list
+    with
+        override self.ToString()=
+            match self with
+                | Empty -> "Empty"
+                | Const c -> sprintf "'%s'" c
+                | Value v -> sprintf "@%s" v
+                | Or cs-> cs |> List.map string |> String.concat "||" |> sprintf "(%s)"
 type RecognizesCells = (NumberOf*CellType)
 
 type RecognizesRow = {recognizer:RecognizesCells list;name:string}
@@ -52,12 +68,95 @@ module Result=
 type RecognizedBlock=((Result<Token,Error> list*string) list)
 type ColumnsAndPosition = InputAndPosition<string list>
 type ResultAndLength = (Result<Token,Error>*int)
-open Zander.Internal.Matches
 
+
+open Zander.Internal.Engine
+open Zander.Internal.StringAndPosition
+open System.Text.RegularExpressions
+
+module internal ParseHelpers=
+
+    let startsWithQuote input = regexMatchI "^\"" input
+    let regex = Regex(@"[^""\\]*(?:\\.[^""\\]*)*""")
+    let indexOfFirstNonEscapedQuote (input :StringAndPosition)=
+        let m = regex.Match(input.input, input.position)
+        if m.Success then 
+            Some (input.position+ m.Length-1)
+        else
+            None
+    let (|LooksLikeConstant|) (input:StringAndPosition) : (StringAndLength) option=
+        let withoutFirstQuote = startsWithQuote input |> Option.map (fun m->(sIncr (snd m) input))
+        let constantAndLength i= 
+            let constant = input.input.Substring(input.position+1, (i-input.position-1))
+            let length = i-input.position+1
+            (constant, length)
+        withoutFirstQuote
+        |> Option.bind indexOfFirstNonEscapedQuote
+        |> Option.map constantAndLength
+
+    let numberOf (g:string)=
+        match g with
+            | "" -> One
+            | "+" -> Many
+            | "*" -> ZeroOrMany
+            | "?" -> ZeroOrOne
+            | v -> failwithf "Could not interpret: '%s' as number of" v
+
+    let rec parseCells parseCell lengthOfInput input =
+        let {input = s; position= i} = input
+        let head = parseCell input
+        let l = i+ (snd head)
+        if l >= lengthOfInput input then
+            [head]
+        else
+            head :: parseCells parseCell lengthOfInput {input=s; position=l}
+
+    let rowRegex = Regex(@"
+          ^
+          (?<columns>[^:]*) \s*
+          (
+            \: \s* 
+            (?<name>\w*) \s* (?<modifier>[+?*]?) \s*
+          )?
+          $
+    ", RegexOptions.IgnorePatternWhitespace)
+
+open ParseHelpers
 module Row=
+    /// Parse single row expression to row recognizer
+    [<CompiledName("Recognizer")>]
+    let recognizer (v:string) : RecognizesCells list=
+       let rec parseCell = function 
+        |{position=0;input=""} -> failwith "Cannot parse empty cell!"
+        |v ->
+            let unwrap_to_cell (v:string) : (NumberOf*CellType) option =
+                let value, _ =parseCell (firstPosition v)
+                value
+            match v with
+                | RegexMatch @"^\s+" ([g], l) -> None, l
+                | RegexMatch @"^\|" ([g], l) -> None, l
+                | RegexMatch @"^\(([^)]*)\)" ([_;s], l) ->
+                    let cells = parseCells parseCell length (firstPosition s.Value)
+                                |> List.choose fst
+                    let conditions = 
+                            cells |> List.map snd
+                    Some (One, (Or conditions)), l
+                | RegexMatch "^(_)([+*?])?" ([_;_;number], l) -> 
+                    Some (numberOf number.Value, Empty), l
+                | LooksLikeConstant (Some (c, l)) -> 
+                    Some((One,Const(c))), l 
+                | RegexMatch @"^\@(\w+)([+*?])?" ([_;value;number], l) -> 
+                    Some( (numberOf number.Value, Value( value.Value ))) , l
+                | RegexMatch @"^(\w+)([+*?])?" ([_;value;number], l) -> 
+                    Some( (numberOf number.Value, Const( value.Value ))) , l
+                | _ -> 
+                    failwithf "Could not interpret: '%s' at position %i" (sub v) (position v)
 
+       parseCells parseCell length {input =v; position=0}
+            |> List.choose fst
+    /// parse a row using a row recognizer
     [<CompiledName("Parse")>]
-    let parse (expr:(NumberOf*CellType) list) (opts: ParseOptions) row : Result<Token,Error> list=
+    let parse (expr:RecognizesCells list) (opts: ParseOptions) row : Result<Token,Error> list=
         let valueMatchEmpty = opts.HasFlag(ParseOptions.ValueMatchesEmpty)
         let rec columnMatch (columnExpr:CellType) column=
             let value = { value=column;cell= columnExpr }
@@ -95,11 +194,31 @@ module Row=
         let foldError =Result.mapError mapToError >> Result.bind id
         res |> List.map foldError
 
+    [<CompiledName("IsMatch")>]
+    let isMatch recognized = recognized |> List.forall Result.isOk
+
+module Rows=
+
+    /// Parse row expression to row recognizer
+    [<CompiledName("Recognizer")>]
+    let recognizer (v:string) : RecognizesRows=
+        let m = rowRegex.Match(v)
+        let columns = Row.recognizer (m.Groups.["columns"].Value)
+        let name =  m.Groups.["name"].Value
+        let modifier = numberOf m.Groups.["modifier"].Value
+
+        (modifier,{recognizer= columns; name= name})
 
 module Block=
+    [<CompiledName("Recognizer")>]
+    let recognizer (s : string) : (RecognizesRows list)=
+        let rows = s.Split([| '\n'; '\r'|], StringSplitOptions.RemoveEmptyEntries)
+                        |> Array.filter ( not << String.IsNullOrWhiteSpace)
+                        |> Array.map Rows.recognizer 
+        Array.toList rows
 
     [<CompiledName("Parse")>]
-    let parse (expr:(NumberOf*RecognizesRow) list) (opts: ParseOptions) blocks : RecognizedBlock=
+    let parse (expr:RecognizesRows list) (opts: ParseOptions) blocks : RecognizedBlock=
         let blockMatch (r:RecognizesRow) (row:string list)=
             let result = Row.parse r.recognizer opts row
             (result,r.name)
@@ -127,4 +246,10 @@ module Block=
         else result |> List.filter (not<< isMatcherMissing)
         |> List.map toResult
 
+    [<CompiledName("IsMatch")>]
+    let isMatch (recognized:RecognizedBlock) =
+        recognized
+        |> List.map fst
+        |> List.collect id
+        |> List.forall Result.isOk
 

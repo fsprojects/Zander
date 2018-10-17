@@ -11,13 +11,9 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="StringAndPosition.fs" />
-    <Compile Include="Types.fs" />
-    <Compile Include="Matches.fs" />
+    <Compile Include="Engine.fs" />
     <Compile Include="ParseOptions.fs" />
     <Compile Include="Parse.fs" />
-    <Compile Include="Match.fs" />
-    <Compile Include="Lang.fsi" />
-    <Compile Include="Lang.fs" />
     <Compile Include="Api.fs" />
     <Compile Include="Builder.fs" />
     <Content Include="paket.references" />
