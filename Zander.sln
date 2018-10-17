@@ -8,15 +8,50 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{2FE3B2
 		paket.dependencies = paket.dependencies
 	EndProjectSection
 EndProject
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "Zander", "Lib\Zander.fsproj", "{D65A576C-4E1E-4FBF-8EC6-5E785D56E78F}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Zander", "src\Zander\Zander.fsproj", "{D65A576C-4E1E-4FBF-8EC6-5E785D56E78F}"
 EndProject
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "Zander.Tests", "Tests\Zander.Tests.fsproj", "{F9429771-B51C-4090-97BB-15D54F36D7D7}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Zander.Tests", "tests\Zander.Tests\Zander.Tests.fsproj", "{F9429771-B51C-4090-97BB-15D54F36D7D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharp.Tests", "CSharp.Tests\CSharp.Tests.csproj", "{981F16A6-70ED-4B6F-A951-DCBAEFE6A4B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharp.Tests", "tests\CSharp.Tests\CSharp.Tests.csproj", "{981F16A6-70ED-4B6F-A951-DCBAEFE6A4B0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E23F4F2F-5657-4A90-AF13-0E4B532A0000}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BCDB95E1-E788-4679-9EBC-B1538F488194}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2A110AD3-4078-44D5-ACA0-9695ECA4F95D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{BF60BC93-E09B-4E5F-9D85-95A519479D54}"
 	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		RELEASE_NOTES.md = RELEASE_NOTES.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{83F16175-43B1-4C90-A1EE-8E351C33435D}"
+	ProjectSection(SolutionItems) = preProject
+		docsrc\tools\generate.fsx = docsrc\tools\generate.fsx
+		docsrc\tools\templates\template.cshtml = docsrc\tools\templates\template.cshtml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{8E6D5255-776D-4B61-85F9-73C37AA1FB9A}"
+	ProjectSection(SolutionItems) = preProject
+		docsrc\content\index.fsx = docsrc\content\index.fsx
+		docsrc\content\tutorial.fsx = docsrc\content\tutorial.fsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "git", "git", "{078A9C52-DDC1-46F4-9235-9E6C89C87AFD}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{7C6D08E7-3EAC-4335-8F4B-252C193C27C9}"
+	ProjectSection(SolutionItems) = preProject
+		.travis.yml = .travis.yml
+		appveyor.yml = appveyor.yml
+		build.cmd = build.cmd
 		build.fsx = build.fsx
+		build.proj = build.proj
+		build.sh = build.sh
 	EndProjectSection
 EndProject
 Global
@@ -39,6 +74,11 @@ Global
 		{F9429771-B51C-4090-97BB-15D54F36D7D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{D65A576C-4E1E-4FBF-8EC6-5E785D56E78F} = {BCDB95E1-E788-4679-9EBC-B1538F488194}
+		{981F16A6-70ED-4B6F-A951-DCBAEFE6A4B0} = {2A110AD3-4078-44D5-ACA0-9695ECA4F95D}
+		{F9429771-B51C-4090-97BB-15D54F36D7D7} = {2A110AD3-4078-44D5-ACA0-9695ECA4F95D}
+		{8E6D5255-776D-4B61-85F9-73C37AA1FB9A} = {A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}
+		{83F16175-43B1-4C90-A1EE-8E351C33435D} = {A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,12 +1,14 @@
-before_build:
-  - .paket\paket.bootstrapper.exe
-  - .paket\paket.exe restore
-  - dotnet restore
+image: Visual Studio 2017
+
+init:
+  - git config --global core.autocrlf input
 build_script:
-  - dotnet build
-test_script:
-  - dotnet test Tests
-  - dotnet test CSharp.Tests
-branches:
-  only: 
+  - cmd: build.cmd -t All
+test: off
+version: 0.0.1.{build}
+artifacts:
+  - path: bin
+    name: bin
+branches:	
+  only: 	
     - master
