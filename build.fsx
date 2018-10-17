@@ -191,7 +191,7 @@ Target.create "NuGet" (fun _ ->
                 #if MONO
                 "DefineConstants","MONO"
                 #endif
-                "PackageReleaseNotes", release.Notes |> List.head
+                "PackageReleaseNotes", release.Notes |> List.toSeq |> String.concat "\n"
                 "VersionSuffix", nugetVersionSuffix
                 "VersionPrefix", nugetVersionPrefix
                 "Configuration", buildMode]}
