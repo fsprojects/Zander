@@ -22,11 +22,8 @@ module internal StringAndPosition =
 
     let firstPosition s= { input =s; position=0 }
 
-    let trim chars (v:string)=
-        v.Trim(chars|>List.toArray)
     let regexMatchI pattern input=
-        let r = Regex(pattern)
-        let m = r.Match ( sub input )
+        let m = Regex.Match ( sub input, pattern )
         if m.Success then
             Some ([for x in m.Groups -> x], m.Length)
         else 

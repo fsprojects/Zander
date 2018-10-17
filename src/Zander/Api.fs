@@ -10,8 +10,8 @@ type CellType=
     | Constant=1
     | Value=2
 
-type MatchCell(matches: Parse.Result)=
-    let resultValue = matches |>Parse.Result.tryValue 
+type MatchCell(matches: Result<_,_>)=
+    let resultValue = matches |>Result.tryValue 
     let cellType =resultValue
                   |> Option.map (fun token->
                               match token.cell with
@@ -19,12 +19,12 @@ type MatchCell(matches: Parse.Result)=
                               | _ -> CellType.Constant)
                   |> Option.defaultValue CellType.Unknown
     let value = resultValue
-               |>Option.bind Parse.Token.tryValue
+               |>Option.bind Token.tryValue
                |>Option.defaultValue (null:string)
     let name = resultValue
-               |>Option.bind Parse.Token.tryKey
+               |>Option.bind Token.tryKey
                |>Option.defaultValue (null:string)
-    member self.Success with get()=Parse.Result.isOk matches
+    member self.Success with get()=Result.isOk matches
     member self.Name with get()=name
     member self.Value with get()= value                                 
     member self.CellType with get()=cellType
@@ -39,12 +39,12 @@ type MatchCell(matches: Parse.Result)=
             && self.CellType = cell.CellType
         | _ -> false
     override  self.GetHashCode() = (self.Success, self.Name, self.Value, self.CellType).GetHashCode()
-type MatchRow(matches: Parse.Result list)=
+type MatchRow(matches: Result<_,_> list)=
     let cells = matches |> List.map MatchCell
     let toTuples ()=
             matches 
-            |> List.choose Parse.Result.tryValue
-            |> List.choose Parse.Token.tryKeyValue
+            |> List.choose Result.tryValue
+            |> List.choose Token.tryKeyValue
     member self.Success with get() = Match.expression matches
     member self.Length with get() = List.length matches
     member self.Cells with get() =  cells |> List.toArray
@@ -54,7 +54,7 @@ type MatchRow(matches: Parse.Result list)=
                                     |> Seq.map (fun (k,v) -> sprintf "(%s, %s)" k v) 
                                     |> String.concat "; ")
 
-type MatchBlock(matches: Parse.RecognizedBlock)=
+type MatchBlock(matches: RecognizedBlock)=
     let height = matches |> List.length
     let width = matches |> List.map (fst >> List.length) |> List.max
     let size = {Height=height;Width=width}
@@ -75,7 +75,7 @@ type BlockEx(expression:string, options: ParseOptions)=
     let block=Lang.block expression
     member internal self.Match (input:string array array, position:int option) : MatchBlock=
         let start = match position with |Some v->v;|None -> 0
-        let parsed = Parse.block block options (input |> Array.skip start 
+        let parsed = Block.parse block options (input |> Array.skip start 
                                                       |> Array.map Array.toList
                                                       |> Array.toList)
         MatchBlock(parsed)
@@ -101,7 +101,7 @@ type BlockEx(expression:string, options: ParseOptions)=
             |> Array.toList 
             |> List.map Array.toList
             |> Matches.splitList (fun ( arr :string list list)->
-                let parsed = Parse.block block options arr
+                let parsed = Block.parse block options arr
                 (Match.block parsed, List.length parsed)
             )
         |> List.map (List.map List.toArray)
@@ -113,5 +113,5 @@ type BlockEx(expression:string, options: ParseOptions)=
 type RowEx(expression:string, options: ParseOptions)=
     let row= Lang.row expression
     member self.Match (input:string array) : MatchRow=
-        new MatchRow(Parse.expression row options (input |> Array.toList))
+        new MatchRow(Row.parse row options (input |> Array.toList))
     new (expression:string)=RowEx(expression, ParseOptions.Default)

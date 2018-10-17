@@ -10,12 +10,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="String.fs" />
+    <Compile Include="StringAndPosition.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="Matches.fs" />
     <Compile Include="ParseOptions.fs" />
     <Compile Include="Parse.fs" />
-    <Compile Include="Match.fsi" />
     <Compile Include="Match.fs" />
     <Compile Include="Lang.fsi" />
     <Compile Include="Lang.fs" />

@@ -7,9 +7,9 @@ open Zander.Internal
 open TestHelpers
 
 module BuilderTests = 
-    open Zander.Internal.Parse
-    let okKv k v=Token.createValue (k, v) |> Parse.Result.Ok |> MatchCell
-    let okC k v=Token.createConstant (k, v) |> Parse.Result.Ok |> MatchCell 
+    open Zander.Internal
+    let okKv k v=Token.createValue (k, v) |> Result.Ok |> MatchCell
+    let okC k v=Token.createConstant (k, v) |> Result.Ok |> MatchCell 
     let toArrayArray ll = ll |> List.map List.toArray |> List.toArray
     let firstExpressionStr = @"_ @_ : header
                                @_ _ : data_rows+"
@@ -37,7 +37,7 @@ module BuilderTests =
     [<Fact>] 
     let ``Can parse first part when block may have partial match`` ()=
         parseAndMatchBlock first_expression sections |> should equal true
-        Parse.block first_expression opts (sections |> List.take 3)
+        Block.parse first_expression opts (sections |> List.take 3)
                  |> List.length
                  |> should equal 3
         let b= BlockEx(firstExpressionStr)
@@ -46,11 +46,11 @@ module BuilderTests =
 
     [<Fact>] 
     let ``Can parse first part (complete match)`` ()=
-        Parse.block first_expression ParseOptions.BlockMatchesAll (sections |> List.take 3)
+        Block.parse first_expression ParseOptions.BlockMatchesAll (sections |> List.take 3)
                  |> List.length
                  |> should equal 3
 
-        Parse.block first_expression ParseOptions.BlockMatchesAll sections 
+        Block.parse first_expression ParseOptions.BlockMatchesAll sections 
                  |> Match.block
                  |> should equal false
 

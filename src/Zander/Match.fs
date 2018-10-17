@@ -5,11 +5,11 @@ module Match =
     [<CompiledName("Expression")>]
     let expression recognized=
         recognized
-            |> List.forall Parse.Result.isOk
+            |> List.forall Result.isOk
 
     [<CompiledName("Block")>]
-    let block (recognized:Parse.RecognizedBlock) =
+    let block (recognized:RecognizedBlock) =
         recognized
             |> List.map fst
             |> List.collect id
-            |> List.forall Parse.Result.isOk
+            |> List.forall Result.isOk
