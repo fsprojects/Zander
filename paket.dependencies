@@ -3,13 +3,18 @@ framework: auto-detect
 source https://nuget.org/api/v2
 source https://api.nuget.org/v3/index.json
 
-nuget FSharp.Core
+nuget FSharp.Core 4.5.2
 nuget FAKE
 nuget Microsoft.NET.Test.Sdk
 nuget xunit
 nuget FsUnit.xUnit
 nuget xunit.runner.visualstudio
 
+# This lines are used by Paket to get the latest version of the Type Provider SDK files
+github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fsi
+github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fs
+
+# In order to be able to run FAKE
 clitool dotnet-fake
 
 group Formatting
@@ -35,3 +40,12 @@ nuget Fake.DotNet.Paket
 nuget Fake.DotNet.Testing.Expecto 
 nuget Fake.DotNet.FSFormatting 
 nuget Fake.Api.GitHub
+
+group Test
+  source https://nuget.org/api/v2
+  frameworks: net461, netcoreapp2.0
+
+  nuget NUnit 3.6.1
+  nuget NUnit.Console 3.6.1
+  nuget NUnit3TestAdapter 3.7.0 version_in_path: true
+  nuget FSharp.Core 4.5.2
