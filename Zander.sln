@@ -54,6 +54,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{7C6D08
 		build.sh = build.sh
 	EndProjectSection
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.ZanderProvider.DesignTime", "src\FSharp.ZanderProvider.DesignTime\FSharp.ZanderProvider.DesignTime.fsproj", "{6607D52C-B457-494D-AFCD-F8F9092B5E5D}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.ZanderProvider.Runtime", "src\FSharp.ZanderProvider.Runtime\FSharp.ZanderProvider.Runtime.fsproj", "{CF8B6776-ACE5-41E4-9E17-625CF06886E9}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.ZanderProvider.Tests", "tests\FSharp.ZanderProvider.Tests\FSharp.ZanderProvider.Tests.fsproj", "{84D1C90C-665A-4BF9-808F-C78523529A4F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,6 +78,18 @@ Global
 		{F9429771-B51C-4090-97BB-15D54F36D7D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9429771-B51C-4090-97BB-15D54F36D7D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9429771-B51C-4090-97BB-15D54F36D7D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6607D52C-B457-494D-AFCD-F8F9092B5E5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6607D52C-B457-494D-AFCD-F8F9092B5E5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6607D52C-B457-494D-AFCD-F8F9092B5E5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6607D52C-B457-494D-AFCD-F8F9092B5E5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF8B6776-ACE5-41E4-9E17-625CF06886E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF8B6776-ACE5-41E4-9E17-625CF06886E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF8B6776-ACE5-41E4-9E17-625CF06886E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF8B6776-ACE5-41E4-9E17-625CF06886E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84D1C90C-665A-4BF9-808F-C78523529A4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84D1C90C-665A-4BF9-808F-C78523529A4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84D1C90C-665A-4BF9-808F-C78523529A4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84D1C90C-665A-4BF9-808F-C78523529A4F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D65A576C-4E1E-4FBF-8EC6-5E785D56E78F} = {BCDB95E1-E788-4679-9EBC-B1538F488194}
@@ -79,6 +97,9 @@ Global
 		{F9429771-B51C-4090-97BB-15D54F36D7D7} = {2A110AD3-4078-44D5-ACA0-9695ECA4F95D}
 		{8E6D5255-776D-4B61-85F9-73C37AA1FB9A} = {A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}
 		{83F16175-43B1-4C90-A1EE-8E351C33435D} = {A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}
+		{6607D52C-B457-494D-AFCD-F8F9092B5E5D} = {BCDB95E1-E788-4679-9EBC-B1538F488194}
+		{CF8B6776-ACE5-41E4-9E17-625CF06886E9} = {BCDB95E1-E788-4679-9EBC-B1538F488194}
+		{84D1C90C-665A-4BF9-808F-C78523529A4F} = {2A110AD3-4078-44D5-ACA0-9695ECA4F95D}
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

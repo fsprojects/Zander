@@ -10,28 +10,37 @@ nuget xunit
 nuget FsUnit.xUnit
 nuget xunit.runner.visualstudio
 
+nuget NETStandard.Library.NETFramework
+
+# This lines are used by Paket to get the latest version of the Type Provider SDK files
+github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fsi
+github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fs
+
+
 clitool dotnet-fake
 
 group Formatting
-source https://nuget.org/api/v2
-source https://ci.appveyor.com/nuget/fsharp-formatting
+    source https://nuget.org/api/v2
+    source https://ci.appveyor.com/nuget/fsharp-formatting
 
-nuget FSharp.Formatting prerelease
-nuget FSharp.Formatting.CommandTool prerelease
+    nuget FSharp.Formatting prerelease
+    nuget FSharp.Formatting.CommandTool prerelease
 
 group FakeBuild
-source https://api.nuget.org/v3/index.json
+    source https://api.nuget.org/v3/index.json
 
-storage: none
+    storage: none
 
-nuget Fake.Core.Target
-nuget Fake.IO.FileSystem
-nuget Fake.DotNet.Cli
-nuget Fake.Tools.Git
-nuget Fake.DotNet.MSBuild
-nuget Fake.Core.ReleaseNotes 
-nuget Fake.DotNet.AssemblyInfoFile
-nuget Fake.DotNet.Paket
-nuget Fake.DotNet.Testing.Expecto 
-nuget Fake.DotNet.FSFormatting 
-nuget Fake.Api.GitHub
+    nuget Fake.Core.Target
+    nuget Fake.IO.FileSystem
+    nuget Fake.DotNet.Cli
+    nuget Fake.Tools.Git
+    nuget Fake.DotNet.MSBuild
+    nuget Fake.Core.ReleaseNotes 
+    nuget Fake.DotNet.AssemblyInfoFile
+    nuget Fake.DotNet.Paket
+    nuget Fake.DotNet.Testing.Expecto 
+    nuget Fake.DotNet.FSFormatting 
+    nuget Fake.Api.GitHub
+
+
