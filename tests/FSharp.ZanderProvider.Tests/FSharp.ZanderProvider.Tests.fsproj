@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\netfx.props" />
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
+    <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <Compile Include="FSharp.ZanderProvider.Tests.fs" />
+    <None Include="paket.references" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\FSharp.ZanderProvider.Runtime\FSharp.ZanderProvider.Runtime.fsproj">
+      <Name>FSharp.ZanderProvider.Runtime</Name>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>
