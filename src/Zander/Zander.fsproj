@@ -6,6 +6,7 @@
     <AssemblyName>Zander</AssemblyName>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Name>Zander</Name>
   </PropertyGroup>
   <ItemGroup>
