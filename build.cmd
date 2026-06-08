@@ -1,7 +1,7 @@
 @echo off
 cls
 
-dotnet tool restore --tool-manifest dotnet-tools.json
+dotnet tool restore
 dotnet paket restore
 
 IF NOT EXIST build.fsx (
