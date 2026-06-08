@@ -6,7 +6,7 @@
 set -eu
 set -o pipefail
 
-dotnet tool restore
+dotnet tool restore --tool-manifest dotnet-tools.json
 dotnet paket restore
 
 if [ ! -f build.fsx ]; then
