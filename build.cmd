@@ -1,7 +1,8 @@
 @echo off
 cls
 
-dotnet restore build.proj
+dotnet tool restore
+dotnet paket restore
 
 IF NOT EXIST build.fsx (
   dotnet fake run init.fsx

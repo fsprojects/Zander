@@ -1,7 +1,11 @@
-image: Visual Studio 2017
+image: Visual Studio 2026
 
 init:
   - git config --global core.autocrlf input
+install:
+  - ps: >
+      Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -OutFile "$env:temp\dotnet-install.ps1";
+      & "$env:temp\dotnet-install.ps1" -Architecture x64 -Version '6.0.428' -InstallDir "$env:ProgramFiles\dotnet"
 build_script:
   - cmd: build.cmd -t All
 test: off

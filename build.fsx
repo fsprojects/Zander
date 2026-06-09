@@ -92,7 +92,7 @@ Target.create "AssemblyInfo" (fun _ ->
           AssemblyInfo.FileVersion release.AssemblyVersion
           AssemblyInfo.Configuration configuration ]
 
-    let getProjectDetails projectPath =
+    let getProjectDetails (projectPath: string) =
         let projectName = Path.GetFileNameWithoutExtension(projectPath)
         ( projectPath,
           projectName,
